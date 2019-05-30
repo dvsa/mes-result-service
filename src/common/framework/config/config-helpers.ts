@@ -42,8 +42,8 @@ export const tryFetchRdsAccessToken = async (
     return envvar;
   }
 
-  throwIfNotPresent(hostname, 'tarsReplicateDatabaseHostname');
-  throwIfNotPresent(username, 'tarsReplicaDatabaseUsername');
+  throwIfNotPresent(hostname, 'mesDatabaseHostname');
+  throwIfNotPresent(username, 'mesDatabaseUsername');
 
   const signer = new RDS.Signer();
   const signerOptions = generateSignerOptions(hostname, username);
