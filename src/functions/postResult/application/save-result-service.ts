@@ -22,20 +22,23 @@ export const saveTestResult = async (testResult: StandardCarTestCATBSchema): Pro
   const testResultInsert = buildResultInsertQuery(testResult);
   console.log(`built query ${testResultInsert}`);
 
-  connection.beginTransaction((err) => {
-    if (err) {
-      throw err;
-    }
-    connection.query(testResultInsert, (err) => {
+  return new Promise((resolve, reject) => {
+    connection.beginTransaction((err) => {
       if (err) {
-        return connection.rollback(() => { throw err; });
+        reject(err);
       }
-      connection.commit((err) => {
+      connection.query(testResultInsert, (err) => {
         if (err) {
-          return connection.rollback(() => {
-            throw err;
-          });
+          return connection.rollback(() => reject(err));
         }
+        connection.commit((err) => {
+          console.log('commit CB');
+          if (err) {
+            return connection.rollback(() => reject(err));
+          }
+          console.log('should have worked');
+          resolve();
+        });
       });
     });
   });
