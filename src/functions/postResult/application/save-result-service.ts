@@ -2,6 +2,8 @@ import { StandardCarTestCATBSchema, ApplicationReference } from '@dvsa/mes-test-
 import * as mysql from 'mysql2';
 import { config } from '../framework/config/config';
 import { ResultIntegration } from '../domain/result-integration';
+import { ResultStatus } from '../domain/result-status';
+import { ProcessingStatus } from '../domain/processing-status';
 
 export const saveTestResult = async (testResult: StandardCarTestCATBSchema): Promise<void> => {
   console.log(`I will save ${JSON.stringify(testResult)}`);
@@ -82,7 +84,6 @@ const buildResultInsertQuery = (test: StandardCarTestCATBSchema): string => {
   const testCentreId = 1; // TODO: Get this into the test schema
   const { driverNumber } = test.journalData.candidate;
   const driverSurname = test.journalData.candidate.candidateName.lastName;
-  const resultStatus = 0; // ACCEPTED;
 
   const args = [
     applicationReference,
@@ -92,7 +93,7 @@ const buildResultInsertQuery = (test: StandardCarTestCATBSchema): string => {
     testCentreId,
     driverNumber,
     driverSurname,
-    resultStatus,
+    ResultStatus.ACCEPTED,
   ];
 
   return mysql.format(template, args);
@@ -116,8 +117,15 @@ const buildUploadQueueQuery = (test: StandardCarTestCATBSchema, integration: Res
   const applicationReference = formatApplicationReference(test.journalData.applicationReference);
   const { staffNumber } = test.journalData.examiner;
   const timestamp = new Date();
-  const uploadStatus = 0;
   const retryCount = 0;
 
-  return mysql.format(template, [applicationReference, staffNumber, timestamp, integration, uploadStatus, retryCount]);
+  const args = [
+    applicationReference,
+    staffNumber,
+    timestamp,
+    integration,
+    ProcessingStatus.ACCEPTED,
+    retryCount,
+  ];
+  return mysql.format(template, args);
 };
