@@ -19,27 +19,43 @@ export const saveTestResult = async (testResult: StandardCarTestCATBSchema): Pro
       }
       connection.query(testResultInsert, (err) => {
         if (err) {
-          return connection.rollback(() => reject(err));
+          return connection.rollback(() => {
+            connection.end();
+            reject(err);
+          });
         }
       });
       connection.query(uploadQueueInsertTars, (err) => {
         if (err) {
-          return connection.rollback(() => reject(err));
+          return connection.rollback(() => {
+            connection.end();
+            reject(err);
+          });
         }
       });
       connection.query(uploadQueueInsertRsis, (err) => {
         if (err) {
-          return connection.rollback(() => reject(err));
+          return connection.rollback(() => {
+            connection.end();
+            reject(err);
+          });
         }
       });
       connection.query(uploadQueueInsertNotify, (err) => {
         if (err) {
-          return connection.rollback(() => reject(err));
+          return connection.rollback(() => {
+            connection.end();
+            reject(err);
+          });
         }
         connection.commit((err) => {
           if (err) {
-            return connection.rollback(() => reject(err));
+            return connection.rollback(() => {
+              connection.end();
+              reject(err);
+            });
           }
+          connection.end();
           resolve();
         });
       });
