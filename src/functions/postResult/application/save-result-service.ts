@@ -1,6 +1,7 @@
 import { StandardCarTestCATBSchema, ApplicationReference } from '@dvsa/mes-test-schema/categories/B';
 import * as mysql from 'mysql2';
 import { config } from '../framework/config/config';
+import { ResultIntegration } from '../domain/result-integration';
 
 export const saveTestResult = async (testResult: StandardCarTestCATBSchema): Promise<void> => {
   console.log(`I will save ${JSON.stringify(testResult)}`);
@@ -20,7 +21,9 @@ export const saveTestResult = async (testResult: StandardCarTestCATBSchema): Pro
   });
 
   const testResultInsert = buildResultInsertQuery(testResult);
-  console.log(`built query ${testResultInsert}`);
+  const uploadQueueQueryTars = buildUploadQueueQuery(testResult, ResultIntegration.TARS);
+  const uploadQueueQueryRsis = buildUploadQueueQuery(testResult, ResultIntegration.RSIS);
+  const uploadQueueQueryNotify = buildUploadQueueQuery(testResult, ResultIntegration.NOTIFY);
 
   return new Promise((resolve, reject) => {
     connection.beginTransaction((err) => {
@@ -31,12 +34,25 @@ export const saveTestResult = async (testResult: StandardCarTestCATBSchema): Pro
         if (err) {
           return connection.rollback(() => reject(err));
         }
+      });
+      connection.query(uploadQueueQueryTars, (err) => {
+        if (err) {
+          return connection.rollback(() => reject(err));
+        }
+      });
+      connection.query(uploadQueueQueryRsis, (err) => {
+        if (err) {
+          return connection.rollback(() => reject(err));
+        }
+      });
+      connection.query(uploadQueueQueryNotify, (err) => {
+        if (err) {
+          return connection.rollback(() => reject(err));
+        }
         connection.commit((err) => {
-          console.log('commit CB');
           if (err) {
             return connection.rollback(() => reject(err));
           }
-          console.log('should have worked');
           resolve();
         });
       });
@@ -84,4 +100,24 @@ const buildResultInsertQuery = (test: StandardCarTestCATBSchema): string => {
 
 const formatApplicationReference = (appRef: ApplicationReference) => {
   return `${appRef.applicationId}${appRef.bookingSequence}${appRef.checkDigit}`;
+};
+
+const buildUploadQueueQuery = (test: StandardCarTestCATBSchema, integration: ResultIntegration): string => {
+  const template = `
+    INSERT INTO UPLOAD_QUEUE (
+      application_reference,
+      staff_number,
+      timestamp,
+      interface,
+      upload_status,
+      retry_count
+    ) VALUES (?, ?, ?, ?, ?, ?)
+  `;
+  const applicationReference = formatApplicationReference(test.journalData.applicationReference);
+  const { staffNumber } = test.journalData.examiner;
+  const timestamp = new Date();
+  const uploadStatus = 0;
+  const retryCount = 0;
+
+  return mysql.format(template, [applicationReference, staffNumber, timestamp, integration, uploadStatus, retryCount]);
 };
