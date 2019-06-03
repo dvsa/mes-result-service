@@ -19,13 +19,14 @@ export const buildTestResultInsert = (test: StandardCarTestCATBSchema): string =
   VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  const applicationReference = formatApplicationReference(test.journalData.applicationReference);
-  const { staffNumber } = test.journalData.examiner;
+  const { journalData } = test;
+  const applicationReference = formatApplicationReference(journalData.applicationReference);
+  const { staffNumber } = journalData.examiner;
   const testResult = JSON.stringify(test);
-  const testDate = Date.parse(test.journalData.testSlotAttributes.start);
-  const testCentreId = 1; // TODO: Get this into the test schema
-  const { driverNumber } = test.journalData.candidate;
-  const driverSurname = test.journalData.candidate.candidateName.lastName;
+  const testDate = Date.parse(journalData.testSlotAttributes.start);
+  const testCentreId = journalData.testCentre.centreId;
+  const { driverNumber } = journalData.candidate;
+  const driverSurname = journalData.candidate.candidateName.lastName;
 
   const args = [
     applicationReference,
