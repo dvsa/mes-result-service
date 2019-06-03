@@ -1,17 +1,16 @@
-import { StandardCarTestCATBSchema, ApplicationReference } from '@dvsa/mes-test-schema/categories/B';
+import { StandardCarTestCATBSchema } from '@dvsa/mes-test-schema/categories/B';
 import * as mysql from 'mysql2';
 import { ResultIntegration } from '../domain/result-integration';
-import { ResultStatus } from '../domain/result-status';
-import { ProcessingStatus } from '../domain/processing-status';
 import { getConnection } from '../../../common/framework/mysql/database';
+import { buildTestResultInsert, buildUploadQueueInsert } from '../framework/database/query-builder';
 
 export const saveTestResult = async (testResult: StandardCarTestCATBSchema): Promise<void> => {
   const connection: mysql.Connection = getConnection();
 
-  const testResultInsert = buildResultInsertQuery(testResult);
-  const uploadQueueInsertTars = buildUploadQueueQuery(testResult, ResultIntegration.TARS);
-  const uploadQueueInsertRsis = buildUploadQueueQuery(testResult, ResultIntegration.RSIS);
-  const uploadQueueInsertNotify = buildUploadQueueQuery(testResult, ResultIntegration.NOTIFY);
+  const testResultInsert = buildTestResultInsert(testResult);
+  const uploadQueueInsertTars = buildUploadQueueInsert(testResult, ResultIntegration.TARS);
+  const uploadQueueInsertRsis = buildUploadQueueInsert(testResult, ResultIntegration.RSIS);
+  const uploadQueueInsertNotify = buildUploadQueueInsert(testResult, ResultIntegration.NOTIFY);
 
   return new Promise((resolve, reject) => {
     connection.beginTransaction((err) => {
@@ -46,72 +45,4 @@ export const saveTestResult = async (testResult: StandardCarTestCATBSchema): Pro
       });
     });
   });
-};
-
-const buildResultInsertQuery = (test: StandardCarTestCATBSchema): string => {
-  const template = `
-  INSERT INTO TEST_RESULT (
-    application_reference,
-    staff_number,
-    test_result,
-    test_date,
-    tc_id,
-    driver_number,
-    driver_surname,
-    result_status
-  )
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const applicationReference = formatApplicationReference(test.journalData.applicationReference);
-  const { staffNumber } = test.journalData.examiner;
-  const testResult = JSON.stringify(test);
-  const testDate = Date.parse(test.journalData.testSlotAttributes.start);
-  const testCentreId = 1; // TODO: Get this into the test schema
-  const { driverNumber } = test.journalData.candidate;
-  const driverSurname = test.journalData.candidate.candidateName.lastName;
-
-  const args = [
-    applicationReference,
-    staffNumber,
-    testResult,
-    testDate,
-    testCentreId,
-    driverNumber,
-    driverSurname,
-    ResultStatus.ACCEPTED,
-  ];
-
-  return mysql.format(template, args);
-};
-
-const formatApplicationReference = (appRef: ApplicationReference) => {
-  return `${appRef.applicationId}${appRef.bookingSequence}${appRef.checkDigit}`;
-};
-
-const buildUploadQueueQuery = (test: StandardCarTestCATBSchema, integration: ResultIntegration): string => {
-  const template = `
-    INSERT INTO UPLOAD_QUEUE (
-      application_reference,
-      staff_number,
-      timestamp,
-      interface,
-      upload_status,
-      retry_count
-    ) VALUES (?, ?, ?, ?, ?, ?)
-  `;
-  const applicationReference = formatApplicationReference(test.journalData.applicationReference);
-  const { staffNumber } = test.journalData.examiner;
-  const timestamp = new Date();
-  const retryCount = 0;
-
-  const args = [
-    applicationReference,
-    staffNumber,
-    timestamp,
-    integration,
-    ProcessingStatus.ACCEPTED,
-    retryCount,
-  ];
-  return mysql.format(template, args);
 };
