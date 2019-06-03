@@ -1,31 +1,17 @@
 import { StandardCarTestCATBSchema, ApplicationReference } from '@dvsa/mes-test-schema/categories/B';
 import * as mysql from 'mysql2';
-import { config } from '../framework/config/config';
 import { ResultIntegration } from '../domain/result-integration';
 import { ResultStatus } from '../domain/result-status';
 import { ProcessingStatus } from '../domain/processing-status';
+import { getConnection } from '../../../common/framework/mysql/database';
 
 export const saveTestResult = async (testResult: StandardCarTestCATBSchema): Promise<void> => {
-  console.log(`I will save ${JSON.stringify(testResult)}`);
-  const configuration = config();
-  const connection: mysql.Connection = mysql.createConnection({
-    host: configuration.mesDatabaseHostname,
-    database: configuration.mesDatabaseName,
-    user: configuration.mesDatabaseUsername,
-    password: configuration.mesDatabasePassword,
-    charset: 'UTF8_GENERAL_CI',
-    ssl: process.env.TESTING_MODE ? null : 'Amazon RDS',
-    authSwitchHandler(data: any, cb: any) {
-      if (data.pluginName === 'mysql_clear_password') {
-        cb(null, Buffer.from(`${configuration.mesDatabasePassword}\0`));
-      }
-    },
-  });
+  const connection: mysql.Connection = getConnection();
 
   const testResultInsert = buildResultInsertQuery(testResult);
-  const uploadQueueQueryTars = buildUploadQueueQuery(testResult, ResultIntegration.TARS);
-  const uploadQueueQueryRsis = buildUploadQueueQuery(testResult, ResultIntegration.RSIS);
-  const uploadQueueQueryNotify = buildUploadQueueQuery(testResult, ResultIntegration.NOTIFY);
+  const uploadQueueInsertTars = buildUploadQueueQuery(testResult, ResultIntegration.TARS);
+  const uploadQueueInsertRsis = buildUploadQueueQuery(testResult, ResultIntegration.RSIS);
+  const uploadQueueInsertNotify = buildUploadQueueQuery(testResult, ResultIntegration.NOTIFY);
 
   return new Promise((resolve, reject) => {
     connection.beginTransaction((err) => {
@@ -37,17 +23,17 @@ export const saveTestResult = async (testResult: StandardCarTestCATBSchema): Pro
           return connection.rollback(() => reject(err));
         }
       });
-      connection.query(uploadQueueQueryTars, (err) => {
+      connection.query(uploadQueueInsertTars, (err) => {
         if (err) {
           return connection.rollback(() => reject(err));
         }
       });
-      connection.query(uploadQueueQueryRsis, (err) => {
+      connection.query(uploadQueueInsertRsis, (err) => {
         if (err) {
           return connection.rollback(() => reject(err));
         }
       });
-      connection.query(uploadQueueQueryNotify, (err) => {
+      connection.query(uploadQueueInsertNotify, (err) => {
         if (err) {
           return connection.rollback(() => reject(err));
         }

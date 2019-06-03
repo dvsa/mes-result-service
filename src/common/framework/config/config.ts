@@ -1,8 +1,7 @@
 import {
-  defaultIfNotPresent,
   throwIfNotPresent,
   tryFetchRdsAccessToken,
-} from '../../../../common/framework/config/config-helpers';
+} from './config-helpers';
 
 export type Config = {
   mesDatabaseHostname: string;
@@ -32,7 +31,6 @@ export const bootstrapConfig = async (): Promise<void> => {
       'SECRET_DB_PASSWORD_KEY',
     ),
   };
-  console.log(`config is ${JSON.stringify(configuration)}`);
 };
 
 export const config = (): Config => configuration;

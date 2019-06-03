@@ -7,7 +7,7 @@ import { TestResultDecompressionError } from '../../domain/errors/test-result-de
 import { StandardCarTestCATBSchema } from '@dvsa/mes-test-schema/categories/B';
 import { HttpStatus } from '../../../../common/application/api/HttpStatus';
 import * as saveResultSvc from '../../application/save-result-service';
-import * as configSvc from '../config/config';
+import * as configSvc from '../../../../common/framework/config/config';
 
 describe('postResult handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
