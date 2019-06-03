@@ -7,58 +7,15 @@ import { buildTestResultInsert, buildUploadQueueInsert } from '../framework/data
 export const saveTestResult = async (testResult: StandardCarTestCATBSchema): Promise<void> => {
   const connection: mysql.Connection = getConnection();
 
-  const testResultInsert = buildTestResultInsert(testResult);
-  const uploadQueueInsertTars = buildUploadQueueInsert(testResult, IntegrationType.TARS);
-  const uploadQueueInsertRsis = buildUploadQueueInsert(testResult, IntegrationType.RSIS);
-  const uploadQueueInsertNotify = buildUploadQueueInsert(testResult, IntegrationType.NOTIFY);
-
-  return new Promise((resolve, reject) => {
-    connection.beginTransaction((err) => {
-      if (err) {
-        reject(err);
-      }
-      connection.query(testResultInsert, (err) => {
-        if (err) {
-          return connection.rollback(() => {
-            connection.end();
-            reject(err);
-          });
-        }
-      });
-      connection.query(uploadQueueInsertTars, (err) => {
-        if (err) {
-          return connection.rollback(() => {
-            connection.end();
-            reject(err);
-          });
-        }
-      });
-      connection.query(uploadQueueInsertRsis, (err) => {
-        if (err) {
-          return connection.rollback(() => {
-            connection.end();
-            reject(err);
-          });
-        }
-      });
-      connection.query(uploadQueueInsertNotify, (err) => {
-        if (err) {
-          return connection.rollback(() => {
-            connection.end();
-            reject(err);
-          });
-        }
-        connection.commit((err) => {
-          if (err) {
-            return connection.rollback(() => {
-              connection.end();
-              reject(err);
-            });
-          }
-          connection.end();
-          resolve();
-        });
-      });
-    });
-  });
+  try {
+    await connection.promise().query(buildTestResultInsert(testResult));
+    await connection.promise().query(buildUploadQueueInsert(testResult, IntegrationType.TARS));
+    await connection.promise().query(buildUploadQueueInsert(testResult, IntegrationType.RSIS));
+    await connection.promise().query(buildUploadQueueInsert(testResult, IntegrationType.NOTIFY));
+  } catch (err) {
+    connection.rollback();
+    throw err;
+  } finally {
+    connection.end();
+  }
 };
