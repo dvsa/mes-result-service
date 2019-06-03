@@ -1,4 +1,4 @@
-import { StandardCarTestCATBSchema } from '@dvsa/mes-test-schema/categories/B';
+import { StandardCarTestCATBSchema, ApplicationReference } from '@dvsa/mes-test-schema/categories/B';
 import * as mysql from 'mysql2';
 import { config } from '../framework/config/config';
 
@@ -59,7 +59,7 @@ const buildResultInsertQuery = (test: StandardCarTestCATBSchema): string => {
   VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  const { applicationReference } = test.journalData;
+  const applicationReference = formatApplicationReference(test.journalData.applicationReference);
   const { staffNumber } = test.journalData.examiner;
   const testResult = JSON.stringify(test);
   const testDate = Date.parse(test.journalData.testSlotAttributes.start);
@@ -80,4 +80,8 @@ const buildResultInsertQuery = (test: StandardCarTestCATBSchema): string => {
   ];
 
   return mysql.format(template, args);
+};
+
+const formatApplicationReference = (appRef: ApplicationReference) => {
+  return `${appRef.applicationId}${appRef.bookingSequence}${appRef.checkDigit}`;
 };
