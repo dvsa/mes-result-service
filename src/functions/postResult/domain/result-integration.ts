@@ -1,4 +1,4 @@
-export enum ResultIntegration {
+export enum IntegrationType {
   TARS,
   RSIS,
   NOTIFY,

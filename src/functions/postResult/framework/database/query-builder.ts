@@ -1,7 +1,7 @@
 import { StandardCarTestCATBSchema, ApplicationReference } from '@dvsa/mes-test-schema/categories/B';
 import { ResultStatus } from '../../domain/result-status';
 import * as mysql from 'mysql2';
-import { ResultIntegration } from '../../domain/result-integration';
+import { IntegrationType } from '../../domain/result-integration';
 import { ProcessingStatus } from '../../domain/processing-status';
 
 export const buildTestResultInsert = (test: StandardCarTestCATBSchema): string => {
@@ -41,7 +41,7 @@ export const buildTestResultInsert = (test: StandardCarTestCATBSchema): string =
   return mysql.format(template, args);
 };
 
-export const buildUploadQueueInsert = (test: StandardCarTestCATBSchema, integration: ResultIntegration): string => {
+export const buildUploadQueueInsert = (test: StandardCarTestCATBSchema, integration: IntegrationType): string => {
   const template = `
     INSERT INTO UPLOAD_QUEUE (
       application_reference,

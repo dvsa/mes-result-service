@@ -1,6 +1,6 @@
 import { StandardCarTestCATBSchema } from '@dvsa/mes-test-schema/categories/B';
 import * as mysql from 'mysql2';
-import { ResultIntegration } from '../domain/result-integration';
+import { IntegrationType } from '../domain/result-integration';
 import { getConnection } from '../../../common/framework/mysql/database';
 import { buildTestResultInsert, buildUploadQueueInsert } from '../framework/database/query-builder';
 
@@ -8,9 +8,9 @@ export const saveTestResult = async (testResult: StandardCarTestCATBSchema): Pro
   const connection: mysql.Connection = getConnection();
 
   const testResultInsert = buildTestResultInsert(testResult);
-  const uploadQueueInsertTars = buildUploadQueueInsert(testResult, ResultIntegration.TARS);
-  const uploadQueueInsertRsis = buildUploadQueueInsert(testResult, ResultIntegration.RSIS);
-  const uploadQueueInsertNotify = buildUploadQueueInsert(testResult, ResultIntegration.NOTIFY);
+  const uploadQueueInsertTars = buildUploadQueueInsert(testResult, IntegrationType.TARS);
+  const uploadQueueInsertRsis = buildUploadQueueInsert(testResult, IntegrationType.RSIS);
+  const uploadQueueInsertNotify = buildUploadQueueInsert(testResult, IntegrationType.NOTIFY);
 
   return new Promise((resolve, reject) => {
     connection.beginTransaction((err) => {
