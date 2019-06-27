@@ -8,13 +8,13 @@ export class GetResultRepository {
 
   async getResult(
     appRef: string,
-    driverNumber: string,
+    staffNumber: string,
   ): Promise<TestResultRecord> {
     const connection: mysql.Connection = getConnection();
     let result: TestResultRecord;
     try {
       result = await connection.promise().query(
-        buildGetResultQuery(appRef, driverNumber),
+        buildGetResultQuery(appRef, staffNumber),
       );
     } catch (err) {
       console.log(err);

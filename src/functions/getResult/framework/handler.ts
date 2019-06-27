@@ -10,9 +10,9 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
   await bootstrapConfig();
   try {
     const appRefPathParam = event.pathParameters['app-ref'];
-    const driverNumberParam = event.pathParameters['driver-number'];
+    const staffNumberParam = event.pathParameters['staff-number'];
     // TODO: Perform validation
-    const result = await new GetResultRepository().getResult(appRefPathParam, driverNumberParam);
+    const result = await new GetResultRepository().getResult(appRefPathParam, staffNumberParam);
     return createResponse(result, HttpStatus.OK);
   } catch (err) {
     console.log(err);
