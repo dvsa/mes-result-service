@@ -12,7 +12,7 @@ import {
   moreThanOneTestResult,
 } from '../__tests__/handler.spec.data';
 import * as getResultSvc from '../repositories/get-result-repository';
-import { gzipSync, gunzipSync } from 'zlib';
+import { gunzipSync } from 'zlib';
 import { StandardCarTestCATBSchema } from '@dvsa/mes-test-schema/categories/B';
 
 describe('searchResults handler', () => {
