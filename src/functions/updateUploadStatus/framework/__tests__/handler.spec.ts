@@ -44,7 +44,7 @@ describe('updateUploadStatus handler', () => {
 
     const res = await handler(dummyApigwEvent, dummyContext);
     expect(res.statusCode).toEqual(400);
-    expect(JSON.parse(res.body).message).toBe('Empty path app-ref or request body');
+    expect(res.body.message).toBe('Empty path app-ref or request body');
   });
 
   it('should send a BAD_REQUEST response when the {app-ref} path param is blank', async () => {
@@ -54,7 +54,7 @@ describe('updateUploadStatus handler', () => {
     });
     const res = await handler(dummyApigwEvent, dummyContext);
     expect(res.statusCode).toEqual(400);
-    expect(JSON.parse(res.body).message).toBe('Empty path app-ref or request body');
+    expect(res.body.message).toBe('Empty path app-ref or request body');
   });
 
   it('should send a BAD_REQUEST response when the body isnt in JSON', async () => {
@@ -62,7 +62,7 @@ describe('updateUploadStatus handler', () => {
     dummyApigwEvent.body = 'this is not json 1234';
     const res = await handler(dummyApigwEvent, dummyContext);
     expect(res.statusCode).toEqual(400);
-    expect(JSON.parse(res.body).message).toBe('Error parsing request body into JSON');
+    expect(res.body.message).toBe('Error parsing request body into JSON');
   });
 
   it('should send a BAD_REQUEST response when the application reference isnt a parsable string', async () => {
@@ -72,7 +72,7 @@ describe('updateUploadStatus handler', () => {
     });
     const res = await handler(dummyApigwEvent, dummyContext);
     expect(res.statusCode).toEqual(400);
-    expect(JSON.parse(res.body).message)
+    expect(res.body.message)
       .toBe(`Error application reference is NaN: ${dummyApigwEvent.pathParameters['app-ref']}`);
   });
 
@@ -83,7 +83,7 @@ describe('updateUploadStatus handler', () => {
     });
     const res = await handler(dummyApigwEvent, dummyContext);
     expect(res.statusCode).toEqual(500);
-    expect(JSON.parse(res.body).message)
+    expect(res.body.message)
       .toBe(`Error updating the status in UUS of Reference Number: ${dummyApigwEvent.pathParameters['app-ref']}`);
   });
 });

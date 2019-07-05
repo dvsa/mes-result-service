@@ -12,7 +12,7 @@ import {
   moreThanOneTestResult,
 } from '../__tests__/handler.spec.data';
 import * as getResultSvc from '../repositories/get-result-repository';
-import { inflateSync } from 'zlib';
+import { gzipSync, gunzipSync } from 'zlib';
 import { StandardCarTestCATBSchema } from '@dvsa/mes-test-schema/categories/B';
 
 describe('searchResults handler', () => {
@@ -76,7 +76,7 @@ describe('searchResults handler', () => {
       moqGetResult.setup(x => x(It.isAny())).returns(() => Promise.resolve(noTestResults));
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(400);
-      expect(JSON.parse(resp.body)).toEqual('No records found matching criteria');
+      expect(resp.body).toEqual('No records found matching criteria');
       moqGetResult.verify(x => x(It.isValue(applicationReference)), Times.once());
     });
   });
@@ -90,7 +90,7 @@ describe('searchResults handler', () => {
       moqGetResult.setup(x => x(It.isAny())).returns(() => Promise.resolve(moreThanOneTestResult));
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(400);
-      expect(JSON.parse(resp.body)).toEqual('More than one record found, internal error');
+      expect(resp.body).toEqual('More than one record found, internal error');
       moqGetResult.verify(x => x(It.isValue(applicationReference)), Times.once());
     });
   });
@@ -103,9 +103,9 @@ describe('searchResults handler', () => {
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(200);
       // Check that the compressed data matches the original test_result from the DB
-      const decompressedData = inflateSync(new Buffer(resp.body, 'base64'));
+      const decompressedData = gunzipSync(Buffer.from(resp.body, 'base64'));
       const categoryBTest: StandardCarTestCATBSchema = JSON
-        .parse(decompressedData.toString('utf8')) as StandardCarTestCATBSchema;
+        .parse(decompressedData.toString()) as StandardCarTestCATBSchema;
       expect(categoryBTest).toEqual(testResult[0].test_result);
       moqGetResult.verify(x => x(It.isValue(applicationReference)), Times.once());
     });

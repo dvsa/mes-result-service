@@ -12,6 +12,6 @@ export default (
   return {
     statusCode,
     headers: { ...accessControlAllowOriginHeader, ...reqHeaders },
-    body: body === null ? null : JSON.stringify(body),
+    body: body === null ? null : body,
   };
 };

@@ -41,7 +41,7 @@ describe('searchResults handler', () => {
       dummyApigwEvent.queryStringParameters = null;
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(400);
-      expect(JSON.parse(resp.body)).toBe('Query parameters have to be supplied');
+      expect(resp.body).toBe('Query parameters have to be supplied');
     });
   });
 
@@ -50,7 +50,7 @@ describe('searchResults handler', () => {
       dummyApigwEvent.queryStringParameters['isLDTM'] = 'true';
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(400);
-      expect(JSON.parse(resp.body)).toBe('Query parameters have to be supplied');
+      expect(resp.body).toBe('Query parameters have to be supplied');
     });
   });
 
@@ -59,7 +59,7 @@ describe('searchResults handler', () => {
       dummyApigwEvent.queryStringParameters['whatever'] = 'randomvalue';
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(400);
-      expect(JSON.parse(resp.body)).toBe('Query parameters have to be supplied');
+      expect(resp.body).toBe('Query parameters have to be supplied');
     });
   });
 
@@ -75,7 +75,7 @@ describe('searchResults handler', () => {
       moqSearchResults.setup(x => x(It.isAny())).returns(() => Promise.resolve(testResult));
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(200);
-      expect(JSON.parse(resp.body)).toEqual(testResultResponse);
+      expect(resp.body).toEqual(testResultResponse);
       moqSearchResults.verify(x => x(It.isObjectWith(queryParameter)), Times.once());
     });
   });

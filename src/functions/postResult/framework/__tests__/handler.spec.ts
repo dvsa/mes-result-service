@@ -56,13 +56,13 @@ describe('postResult handler', () => {
       dummyApigwEvent.body = null;
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(400);
-      expect(JSON.parse(resp.body).message).toEqual('Error: Null or blank request body');
+      expect(resp.body.message).toEqual('Error: Null or blank request body');
     });
     it('should return a 400 response if the request body is blank', async () => {
       dummyApigwEvent.body = '       ';
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(400);
-      expect(JSON.parse(resp.body).message).toEqual('Error: Null or blank request body');
+      expect(resp.body.message).toEqual('Error: Null or blank request body');
     });
   });
 
@@ -72,7 +72,7 @@ describe('postResult handler', () => {
       moqDecompressionSvc.setup(x => x(It.isAny())).throws(new TestResultDecompressionError());
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(400);
-      expect(JSON.parse(resp.body).message).toBe('The test result body could not be decompressed');
+      expect(resp.body.message).toBe('The test result body could not be decompressed');
     });
   });
 
@@ -81,7 +81,7 @@ describe('postResult handler', () => {
       dummyApigwEvent.headers.Authorization = null;
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toEqual(401);
-      expect(JSON.parse(resp.body).message).toBe('EmployeeId and staffId do not match');
+      expect(resp.body.message).toBe('EmployeeId and staffId do not match');
     });
   });
 
