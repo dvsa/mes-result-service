@@ -36,18 +36,18 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
     const results: StandardCarTestCATBSchema[] = result.map(row => row.test_result);
 
     if (results.length === 0) {
-      return createResponse('No records found matching criteria', HttpStatus.BAD_REQUEST);
+      return createResponse('No records found matching criteria', HttpStatus.BAD_REQUEST, null, false);
     }
 
     if (results.length > 1) {
       console.log(`More than one record found for URL params (${appRefPathParam}, ${staffNumberParam})`);
-      return createResponse('More than one record found, internal error', HttpStatus.BAD_REQUEST);
+      return createResponse('More than one record found, internal error', HttpStatus.BAD_REQUEST, null, false);
     }
 
     const compressed: Buffer = gzipSync(JSON.stringify(results[0]));
     const compressedEncodedPayload: string = compressed.toString('base64');
 
-    return createResponse(compressedEncodedPayload, HttpStatus.OK);
+    return createResponse(compressedEncodedPayload, HttpStatus.OK, null, false);
   } catch (err) {
     console.log(err);
     return createResponse(err, HttpStatus.BAD_REQUEST);
