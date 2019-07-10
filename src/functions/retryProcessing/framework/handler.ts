@@ -9,7 +9,7 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
 
   await bootstrapConfig();
   try {
-    processRetries();
+    await processRetries();
   } catch (err) {
     return createResponse(err, HttpStatus.BAD_REQUEST);
   }

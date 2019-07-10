@@ -1,5 +1,4 @@
 import * as mysql from 'mysql2';
-
 /**
  * Builds query to retrieve test results where TARS, RSIS and NOTIFY uploads
  * have been accepted
@@ -7,31 +6,30 @@ import * as mysql from 'mysql2';
  */
 export const buildSuccessfullyProcessedQuery = () => {
   const template = `
-  SELECT t.application_reference, t.staff_number
-  FROM TEST_RESULT t
-  WHERE t.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PROCESSING')
-  AND EXISTS (SELECT 'x'
-            FROM UPLOAD_QUEUE u
-            WHERE u.application_reference = t.application_reference
-            AND u.staff_number = t.staff_number
-            AND u.interface = 'TARS'
-            AND u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'ACCEPTED')
-            )
-  AND EXISTS (SELECT 'x'
-            FROM UPLOAD_QUEUE u
-            WHERE u.application_reference = t.application_reference
-            AND u.staff_number = t.staff_number
-            AND u.interface = 'RSIS'
-            AND u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'ACCEPTED')
-            )
-  AND EXISTS (SELECT 'x'
-            FROM UPLOAD_QUEUE u
-            WHERE u.application_reference = t.application_reference
-            AND u.staff_number = t.staff_number
-            AND u.interface = 'NOTIFY'
-            AND u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'ACCEPTED')
-            );
-  `;
+    SELECT t.application_reference, t.staff_number
+    FROM TEST_RESULT t
+    WHERE t.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PROCESSING')
+    AND EXISTS (SELECT 'x'
+              FROM UPLOAD_QUEUE u
+              WHERE u.application_reference = t.application_reference
+              AND u.staff_number = t.staff_number
+              AND u.interface =  (SELECT id FROM INTERFACE_TYPE WHERE interface_type_name = 'TARS')
+              AND u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'ACCEPTED')
+              )
+    AND EXISTS (SELECT 'x'
+              FROM UPLOAD_QUEUE u
+              WHERE u.application_reference = t.application_reference
+              AND u.staff_number = t.staff_number
+              AND u.interface = (SELECT id FROM INTERFACE_TYPE WHERE interface_type_name = 'RSIS')
+              AND u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'ACCEPTED')
+              )
+    AND EXISTS (SELECT 'x'
+              FROM UPLOAD_QUEUE u
+              WHERE u.application_reference = t.application_reference
+              AND u.staff_number = t.staff_number
+              AND u.interface = (SELECT id FROM INTERFACE_TYPE WHERE interface_type_name = 'NOTIFY')
+              AND u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'ACCEPTED')
+              );`;
 
   return mysql.format(template);
 };
@@ -163,6 +161,54 @@ export const buildQueueRowsToDeleteQuery = (cutOffPointInDays: number) => {
 };
 
 /**
+ * Generic routine to Delete UPLOAD QUEUE rows
+ * @param applicationReference
+ * @param staffNumber
+ * @param interfaceType
+*/
+export const buildDeleteQueueRowsQuery = (applicationReference: number,
+                                          staffNumber: number,
+                                          interfaceType: number) => {
+  const template = `
+    DELETE FROM UPLOAD_QUEUE u
+    WHERE u.application_reference = ?
+    AND   u.staff_number = ?
+    AND   u.interface = ?;`;
+  return mysql.format(template, [applicationReference, staffNumber, interfaceType]);
+};
+/**
+ * Generic routine to update UPLOAD QUEUE upload status and retry count
+ * @param applicationReference
+ * @param staffNumber
+ * @param interfaceType
+ * @param uploadStatusNameFrom
+ * @param uploadStatusNameTo
+ */
+
+export const buildUpdateQueueLoadStatusAndRetryCountQuery = (applicationReference: number,
+                                                             staffNumber: number,
+                                                             interfaceType: number,
+                                                             uploadStatusNameFrom: string,
+                                                             uploadStatusNameTo: string,
+                                                             retryCount: number) => {
+  const template = `
+    UPDATE UPLOAD_QUEUE u
+    SET u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = ?),
+        u.retry_count = ?
+    WHERE u.application_reference = ?
+    AND u.staff_number = ?
+    AND u.interface = ?
+    AND u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = ?);`;
+
+  return mysql.format(template, [uploadStatusNameTo,
+    retryCount,
+    applicationReference,
+    staffNumber,
+    interfaceType,
+    uploadStatusNameFrom]);
+};
+
+/**
  * Generic routine to update UPLOAD QUEUE upload status
  * @param applicationReference
  * @param staffNumber
@@ -175,7 +221,8 @@ export const buildUpdateQueueLoadStatusQuery = (applicationReference: number,
                                                 staffNumber: number,
                                                 interfaceType: number,
                                                 uploadStatusNameFrom: string,
-                                                uploadStatusNameTo: string) => {
+                                                uploadStatusNameTo: string,
+  ) => {
   const template = `
     UPDATE UPLOAD_QUEUE u
     SET u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = ?)
@@ -203,7 +250,7 @@ export const buildUpdateTestResultStatusQuery = (applicationReference: number,
     UPDATE TEST_RESULT t
     SET t.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = ?)
     WHERE t.application_reference = ?
-    AND t.staff_umber = ?
+    AND t.staff_number = ?
     AND t.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = ?);`;
 
   return mysql.format(template, [resultStatusNameTo, applicationReference, staffNumber, resultStatusNameFrom]);
