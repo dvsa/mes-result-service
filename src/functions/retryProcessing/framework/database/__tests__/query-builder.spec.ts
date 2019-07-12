@@ -68,14 +68,15 @@ describe('QueryBuilder', () => {
 
     it('should have the cutoffpoint in the SELECT', () => {
       const result = buildQueueRowsToDeleteQuery(30);
-      expect(result).toMatch(/AND u.timestamp < CURDATE\(\) - INTERVAL 30 DAY;/);
+      // /AND u.timestamp < \'(9999-99-99 99:99:99`')/
+      expect(result).toMatch(/AND u.timestamp < \'\d\d\d\d\-\d\d\-\d\d/);
     });
   });
 
   describe('buildUpdateQueueLoadStatusQuery', () => {
     it('should build a valid UPDATE query', () => {
       const result = buildUpdateQueueLoadStatusQuery(1234, 5678, 1, 'PROCESSED', 'FAILED');
-      expect(result).toMatch(/UPDATE UPLOAD_QUEUE u/);
+      expect(result).toMatch(/UPDATE UPLOAD_QUEUE/);
     });
 
     it('should have the uploadStatusNameTo in the UPDATE', () => {
@@ -100,34 +101,29 @@ describe('QueryBuilder', () => {
 
     it('should have the interfaceType in the UPDATE', () => {
       const result = buildUpdateQueueLoadStatusQuery(1234, 5678, 1, 'PROCESSED', 'FAILED');
-      expect(result).toMatch(/AND u.interface = 1/);
+      expect(result).toMatch(/AND interface = 1/);
     });
 
   });
 
   describe('buildUpdateTestResultStatusQuery', () => {
     it('should build a valid UPDATE query', () => {
-      const result = buildUpdateTestResultStatusQuery(1234, 5678, 'PROCESSED', 'FAILED');
-      expect(result).toMatch(/UPDATE TEST_RESULT t/);
+      const result = buildUpdateTestResultStatusQuery(1234, 5678, 'FAILED');
+      expect(result).toMatch(/UPDATE TEST_RESULT/);
     });
 
     it('should have the uploadStatusNameTo in the UPDATE', () => {
-      const result = buildUpdateTestResultStatusQuery(1234, 5678, 'PROCESSED', 'FAILED');
+      const result = buildUpdateTestResultStatusQuery(1234, 5678, 'FAILED');
       expect(result).toMatch(/SELECT id FROM RESULT_STATUS WHERE result_status_name = 'FAILED/);
     });
 
-    it('should have the uploadStatusNameFrom in the UPDATE', () => {
-      const result = buildUpdateTestResultStatusQuery(1234, 5678, 'PROCESSED', 'FAILED');
-      expect(result).toMatch(/SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PROCESSED'/);
-    });
-
     it('should have the staffNumber in the UPDATE', () => {
-      const result = buildUpdateTestResultStatusQuery(1234, 5678, 'PROCESSED', 'FAILED');
+      const result = buildUpdateTestResultStatusQuery(1234, 5678, 'FAILED');
       expect(result).toMatch(/5678/);
     });
 
     it('should have the applicationReferenceNumber in the UPDATE', () => {
-      const result = buildUpdateTestResultStatusQuery(1234, 5678, 'PROCESSED', 'FAILED');
+      const result = buildUpdateTestResultStatusQuery(1234, 5678, 'FAILED');
       expect(result).toMatch(/1234/);
     });
 
