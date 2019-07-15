@@ -48,7 +48,7 @@ describe('searchResults handler', () => {
   describe('handling of only isLDTM parameter', () => {
     it('should fail with bad request and give an error message', async () => {
       dummyApigwEvent.requestContext.authorizer = {
-        role: 'LDTM',
+        examinerRole: 'LDTM',
       };
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(400);
@@ -68,7 +68,7 @@ describe('searchResults handler', () => {
   describe('using valid query parameters as LDTM', () => {
     it('gets the relevant results', async () => {
       dummyApigwEvent.requestContext.authorizer = {
-        role: 'LDTM',
+        examinerRole: 'LDTM',
       };
       dummyApigwEvent.queryStringParameters['startDate'] = queryParameter.startDate;
       dummyApigwEvent.queryStringParameters['endDate'] = queryParameter.endDate;
