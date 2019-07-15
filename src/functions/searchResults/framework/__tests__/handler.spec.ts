@@ -5,6 +5,7 @@ import { Mock, It, Times } from 'typemoq';
 import * as configSvc from '../../../../common/framework/config/config';
 import { queryParameter, sampleToken_12345678, testResult, testResultResponse } from '../__tests__/handler.spec.data';
 import * as searchResultsSvc from '../repositories/search-repository';
+import { UserRole } from '../../../../common/domain/user-role';
 
 describe('searchResults handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
@@ -48,7 +49,7 @@ describe('searchResults handler', () => {
   describe('handling of only isLDTM parameter', () => {
     it('should fail with bad request and give an error message', async () => {
       dummyApigwEvent.requestContext.authorizer = {
-        examinerRole: 'LDTM',
+        examinerRole: UserRole.LDTM,
       };
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(400);
@@ -68,7 +69,7 @@ describe('searchResults handler', () => {
   describe('using valid query parameters as LDTM', () => {
     it('gets the relevant results', async () => {
       dummyApigwEvent.requestContext.authorizer = {
-        examinerRole: 'LDTM',
+        examinerRole: UserRole.LDTM,
       };
       dummyApigwEvent.queryStringParameters['startDate'] = queryParameter.startDate;
       dummyApigwEvent.queryStringParameters['endDate'] = queryParameter.endDate;

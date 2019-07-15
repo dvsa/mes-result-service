@@ -10,6 +10,7 @@ import { SearchResultTestSchema } from '@dvsa/mes-search-schema/index';
 import { getEmployeeIdFromRequestContext } from '../../../common/application/utils/getEmployeeId';
 import { StandardCarTestCATBSchema } from '@dvsa/mes-test-schema/categories/B';
 import { TestResultRecord } from '../../../common/domain/test-results';
+import { UserRole } from '../../../common/domain/user-role';
 
 export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<Response> {
   await bootstrapConfig();
@@ -77,7 +78,7 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
 
     const dePermittedQueries = ['driverNumber', 'applicationReference'];
 
-    const isLDTM = event.requestContext.authorizer.examinerRole === 'LDTM';
+    const isLDTM = event.requestContext.authorizer.examinerRole === UserRole.LDTM;
 
     // This is to be safe, incase new parameters are added for DE only in the future
     if (isLDTM) {
