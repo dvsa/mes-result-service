@@ -77,7 +77,7 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
 
     const dePermittedQueries = ['driverNumber', 'applicationReference'];
 
-    const isLDTM = event.requestContext.authorizer.role === 'LDTM';
+    const isLDTM = event.requestContext.authorizer.examinerRole === 'LDTM';
 
     // This is to be safe, incase new parameters are added for DE only in the future
     if (isLDTM) {
