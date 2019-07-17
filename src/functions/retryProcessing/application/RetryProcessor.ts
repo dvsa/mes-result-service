@@ -40,11 +40,10 @@ export class RetryProcessor implements IRetryProcessor {
     try {
       const [rows] = await connection.promise().query(buildSuccessfullyProcessedQuery());
 
-      // using for as foreach does not work with await - it just continues
-      for (let i = 0, len = rows.length; i < len; i = i + 1) {
+      for (const row of rows) {
         const [updated] = await connection.promise().query(buildUpdateTestResultStatusQuery(
-          rows[i].application_reference,
-          rows[i].staff_number,
+          row.application_reference,
+          row.staff_number,
           'PROCESSED',
         ));
       }
@@ -70,12 +69,11 @@ export class RetryProcessor implements IRetryProcessor {
           tarsRetryCount,
         ));
 
-      // using for as foreach does not work with await - it just continues
-      for (let i = 0, len = rows.length; i < len; i = i + 1) {
+      for (const row of rows) {
         const [updated] = await connection.promise().query(buildUpdateQueueLoadStatusQuery(
-          rows[i].application_reference,
-          rows[i].staff_number,
-          rows[i].interface,
+          row.application_reference,
+          row.staff_number,
+          row.interface,
           'FAILED',
           'PROCESSING',
         ));
@@ -101,11 +99,10 @@ export class RetryProcessor implements IRetryProcessor {
         tarsRetryCount,
       ));
 
-      // using for as foreach does not work with await - it just continues
-      for (let i = 0, len = rows.length; i < len; i = i + 1) {
+      for (const row of rows) {
         const [updated] = await connection.promise().query(buildUpdateTestResultStatusQuery(
-          rows[i].application_reference,
-          rows[i].staff_number,
+          row.application_reference,
+          row.staff_number,
           'ERROR',
         ));
       }
@@ -118,26 +115,24 @@ export class RetryProcessor implements IRetryProcessor {
   }
 
   async processSupportInterventions(): Promise<void> {
-
     const connection: mysql.Connection = getConnection();
 
     try {
       const [rows] = await connection.promise().query(buildSupportInterventionQuery());
 
-      // using for as foreach does not work with await - it just continues
-      for (let i = 0, len = rows.length; i < len; i = i + 1) {
+      for (const row of rows) {
         const [queueUpdated] = await connection.promise().query(buildUpdateQueueLoadStatusAndRetryCountQuery(
-          rows[i].application_reference,
-          rows[i].staff_number,
-          rows[i].interface,
+          row.application_reference,
+          row.staff_number,
+          row.interface,
           'FAILED',
           'PROCESSING',
           0,
         ));
 
         const [resultUpdated] = await connection.promise().query(buildUpdateTestResultStatusQuery(
-          rows[i].application_reference,
-          rows[i].staff_number,
+          row.application_reference,
+          row.staff_number,
           'PROCESSING',
         ));
       }
@@ -155,12 +150,11 @@ export class RetryProcessor implements IRetryProcessor {
     try {
       const [rows] = await connection.promise().query(buildQueueRowsToDeleteQuery(cutOffPointInDays));
 
-      // using for as foreach does not work with await - it just continues
-      for (let i = 0, len = rows.length; i < len; i = i + 1) {
+      for (const row of rows) {
         const [deleted] = await connection.promise().query(buildDeleteQueueRowsQuery(
-          rows[i].application_reference,
-          rows[i].staff_number,
-          rows[i].interface,
+          row.application_reference,
+          row.staff_number,
+          row.interface,
         ));
       }
     } catch (err) {
