@@ -1,5 +1,5 @@
 import * as sqlite3 from 'sqlite3';
-import { TestRetryProcessor } from './test-retry-processor';
+import { TestRetryProcessor } from './TestRetryProcessor';
 
 export let db: sqlite3.Database = null;
 export let retryProcessor: TestRetryProcessor = null;
