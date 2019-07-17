@@ -13,6 +13,7 @@ import {
   getDeleteQueueRowsQuery,
 } from '../../framework/database/query-templates';
 import moment = require('moment');
+import { run, get, all } from './sqlite-helper';
 
 export class TestRetryProcessor implements IRetryProcessor {
   private db: sqlite3.Database = null;
@@ -40,9 +41,9 @@ export class TestRetryProcessor implements IRetryProcessor {
   }
 
   async processSuccessful(): Promise<void> {
-    const rows: any[] = await this.all(this.db, getSuccessfullyProcessedQuery(), []);
+    const rows: any[] = await all(this.db, getSuccessfullyProcessedQuery(), []);
     for (const row of rows) {
-      await this.run(this.db, getUpdateTestResultStatusQuery(), [
+      await run(this.db, getUpdateTestResultStatusQuery(), [
         'PROCESSED',
         row.application_reference,
         row.staff_number,
@@ -51,13 +52,13 @@ export class TestRetryProcessor implements IRetryProcessor {
   }
 
   async processErrorsToRetry(rsisRetryCount: number, notifyRetryCount: number, tarsRetryCount: number): Promise<void> {
-    const rows: any[] = await this.all(this.db, getErrorsToRetryQuery(), [
+    const rows: any[] = await all(this.db, getErrorsToRetryQuery(), [
       rsisRetryCount,
       notifyRetryCount,
       tarsRetryCount,
     ]);
     for (const row of rows) {
-      await this.get(this.db, getUpdateQueueLoadStatusQuery(), [
+      await get(this.db, getUpdateQueueLoadStatusQuery(), [
         'PROCESSING',
         row.application_reference,
         row.staff_number,
@@ -68,13 +69,13 @@ export class TestRetryProcessor implements IRetryProcessor {
   }
 
   async processErrorsToAbort(rsisRetryCount: number, notifyRetryCount: number, tarsRetryCount: number): Promise<void> {
-    const rows: any[] = await this.all(this.db, getErrorsToAbortQuery(), [
+    const rows: any[] = await all(this.db, getErrorsToAbortQuery(), [
       rsisRetryCount,
       notifyRetryCount,
       tarsRetryCount,
     ]);
     for (const row of rows) {
-      await this.get(this.db, getUpdateTestResultStatusQuery(), [
+      await get(this.db, getUpdateTestResultStatusQuery(), [
         'ERROR',
         row.application_reference,
         row.staff_number,
@@ -83,9 +84,9 @@ export class TestRetryProcessor implements IRetryProcessor {
   }
 
   async processSupportInterventions(): Promise<void> {
-    const rows: any[] = await this.all(this.db, getSupportInterventionQuery(), []);
+    const rows: any[] = await all(this.db, getSupportInterventionQuery(), []);
     for (const row of rows) {
-      await this.get(this.db, getUpdateQueueLoadStatusAndRetryCountQuery(), [
+      await get(this.db, getUpdateQueueLoadStatusAndRetryCountQuery(), [
         'PROCESSING',
         0,
         row.application_reference,
@@ -93,7 +94,7 @@ export class TestRetryProcessor implements IRetryProcessor {
         row.interface,
         'FAILED',
       ]);
-      await this.get(this.db, getUpdateTestResultStatusQuery(), [
+      await get(this.db, getUpdateTestResultStatusQuery(), [
         'PROCESSING',
         row.application_reference,
         row.staff_number,
@@ -106,48 +107,14 @@ export class TestRetryProcessor implements IRetryProcessor {
     // with the various ways different flavours of SQL deal with dates.
     const startDate = moment().subtract(cutOffPointInDays, 'days').format('YYYY-MM-DD HH:mm:ss');
 
-    const rows: any[] = await this.all(this.db, getQueueRowsToDeleteQuery(), [startDate]);
+    const rows: any[] = await all(this.db, getQueueRowsToDeleteQuery(), [startDate]);
     for (const row of rows) {
-      await this.get(this.db, getDeleteQueueRowsQuery(), [
+      await get(this.db, getDeleteQueueRowsQuery(), [
         row.application_reference,
         row.staff_number,
         row.interface,
       ]);
     }
-  }
-
-  // helper functions to promisify sqlite3 db calls
-  run(db: sqlite3.Database, sql: string, params: any[]): Promise<void> {
-    return new Promise((resolve, reject) => {
-      db.run(sql, params, (err) => {
-        if (err) {
-          reject(err);
-        }
-        resolve();
-      });
-    });
-  }
-
-  get(db: sqlite3.Database, sql: string, params: any[]): Promise<void> {
-    return new Promise((resolve, reject) => {
-      db.get(sql, params, (err, row) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(row);
-      });
-    });
-  }
-
-  all(db: sqlite3.Database, sql: string, params: any[]): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      db.all(sql, params, (err, rows) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(rows);
-      });
-    });
   }
 
 }
