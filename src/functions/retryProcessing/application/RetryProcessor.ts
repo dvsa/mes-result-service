@@ -1,40 +1,38 @@
 import { getConnection } from '../../../common/framework/mysql/database';
 import * as mysql from 'mysql2';
 import {
-    buildSuccessfullyProcessedQuery,
-    buildErrorsToRetryQuery,
-    buildErrorsToAbortQuery,
-    buildSupportInterventionQuery,
-    buildQueueRowsToDeleteQuery,
-    buildUpdateTestResultStatusQuery,
-    buildUpdateQueueLoadStatusQuery,
-    buildUpdateQueueLoadStatusAndRetryCountQuery,
-    buildDeleteQueueRowsQuery,
+  buildSuccessfullyProcessedQuery,
+  buildErrorsToRetryQuery,
+  buildErrorsToAbortQuery,
+  buildSupportInterventionQuery,
+  buildQueueRowsToDeleteQuery,
+  buildUpdateTestResultStatusQuery,
+  buildUpdateQueueLoadStatusQuery,
+  buildUpdateQueueLoadStatusAndRetryCountQuery,
+  buildDeleteQueueRowsQuery,
 } from '../framework/database/query-builder';
 import { getRetryConfig, retryConfig } from '../framework/retryConfig';
 import { IRetryProcessor } from './IRetryProcessor';
 
 export class RetryProcessor implements IRetryProcessor {
+
   async processRetries(): Promise<void> {
+    await getRetryConfig();
+    await this.processSuccessful();
+    await this.processErrorsToRetry(
+      retryConfig().rsisRetryCount,
+      retryConfig().notifyRetryCount,
+      retryConfig().tarsRetryCount,
+    );
 
-    try {
-      await getRetryConfig();
-      await this.processSuccessful();
-      await this.processErrorsToRetry(
-        retryConfig().rsisRetryCount,
-        retryConfig().notifyRetryCount,
-        retryConfig().tarsRetryCount);
+    await this.processErrorsToAbort(
+      retryConfig().rsisRetryCount,
+      retryConfig().notifyRetryCount,
+      retryConfig().tarsRetryCount,
+    );
 
-      await this.processErrorsToAbort(
-        retryConfig().rsisRetryCount,
-        retryConfig().notifyRetryCount,
-        retryConfig().tarsRetryCount);
-
-      await this.processSupportInterventions();
-      await this.processOldEntryCleanup(retryConfig().retryCutOffPointDays);
-    } catch (err) {
-      throw err;
-    }
+    await this.processSupportInterventions();
+    await this.processOldEntryCleanup(retryConfig().retryCutOffPointDays);
   }
 
   async processSuccessful(): Promise<void> {
@@ -45,9 +43,10 @@ export class RetryProcessor implements IRetryProcessor {
       // using for as foreach does not work with await - it just continues
       for (let i = 0, len = rows.length; i < len; i = i + 1) {
         const [updated] = await connection.promise().query(buildUpdateTestResultStatusQuery(
-            rows[i].application_reference,
-            rows[i].staff_number,
-            'PROCESSED'));
+          rows[i].application_reference,
+          rows[i].staff_number,
+          'PROCESSED',
+        ));
       }
     } catch (err) {
       connection.rollback();
@@ -59,23 +58,27 @@ export class RetryProcessor implements IRetryProcessor {
   async processErrorsToRetry(
     rsisRetryCount: number,
     notifyRetryCount: number,
-    tarsRetryCount: number): Promise<void> {
+    tarsRetryCount: number,
+  ): Promise<void> {
     const connection: mysql.Connection = getConnection();
 
     try {
       const [rows] = await connection.promise().
-      query(buildErrorsToRetryQuery(rsisRetryCount,
-                                    notifyRetryCount,
-                                    tarsRetryCount));
+        query(buildErrorsToRetryQuery(
+          rsisRetryCount,
+          notifyRetryCount,
+          tarsRetryCount,
+        ));
 
       // using for as foreach does not work with await - it just continues
       for (let i = 0, len = rows.length; i < len; i = i + 1) {
         const [updated] = await connection.promise().query(buildUpdateQueueLoadStatusQuery(
-            rows[i].application_reference,
-            rows[i].staff_number,
-            rows[i].interface,
-            'FAILED',
-            'PROCESSING'));
+          rows[i].application_reference,
+          rows[i].staff_number,
+          rows[i].interface,
+          'FAILED',
+          'PROCESSING',
+        ));
       }
     } catch (err) {
       connection.rollback();
@@ -87,7 +90,8 @@ export class RetryProcessor implements IRetryProcessor {
   async processErrorsToAbort(
     rsisRetryCount: number,
     notifyRetryCount: number,
-    tarsRetryCount: number): Promise<void> {
+    tarsRetryCount: number,
+  ): Promise<void> {
     const connection: mysql.Connection = getConnection();
 
     try {
@@ -102,7 +106,8 @@ export class RetryProcessor implements IRetryProcessor {
         const [updated] = await connection.promise().query(buildUpdateTestResultStatusQuery(
           rows[i].application_reference,
           rows[i].staff_number,
-          'ERROR'));
+          'ERROR',
+        ));
       }
     } catch (err) {
       connection.rollback();
@@ -127,12 +132,14 @@ export class RetryProcessor implements IRetryProcessor {
           rows[i].interface,
           'FAILED',
           'PROCESSING',
-          0));
+          0,
+        ));
 
         const [resultUpdated] = await connection.promise().query(buildUpdateTestResultStatusQuery(
           rows[i].application_reference,
           rows[i].staff_number,
-          'PROCESSING'));
+          'PROCESSING',
+        ));
       }
     } catch (err) {
       connection.rollback();
@@ -153,7 +160,8 @@ export class RetryProcessor implements IRetryProcessor {
         const [deleted] = await connection.promise().query(buildDeleteQueueRowsQuery(
           rows[i].application_reference,
           rows[i].staff_number,
-          rows[i].interface));
+          rows[i].interface,
+        ));
       }
     } catch (err) {
       connection.rollback();
