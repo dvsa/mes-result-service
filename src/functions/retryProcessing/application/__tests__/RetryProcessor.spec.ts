@@ -1,12 +1,12 @@
 
 import { retryProcessor, dbSetup, db } from './database-setup';
 
-describe('retryProcessor database test', async () => {
-  dbSetup().then(() => {
+describe('retryProcessor database test', () => {
+
+  beforeAll(async () => {
+    await dbSetup();
     console.log('database initialised');
   });
-
-  // before all to ensure only run once per describe
 
   it('should run processSuccessful and check TEST_RESULT has a status of 2 (PROCESSED)', async () => {
     await retryProcessor.processSuccessful();
