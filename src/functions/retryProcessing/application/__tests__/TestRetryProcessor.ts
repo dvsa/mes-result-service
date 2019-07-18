@@ -2,7 +2,7 @@ import * as sqlite3 from 'sqlite3';
 import { getRetryConfig, retryConfig } from '../../framework/retryConfig';
 import { IRetryProcessor } from '../IRetryProcessor';
 import {
-  getSuccessfullyProcessedQuery,
+  successfullyProcessedQuery,
   getUpdateTestResultStatusQuery,
   getErrorsToRetryQuery,
   getUpdateQueueLoadStatusQuery,
@@ -41,7 +41,7 @@ export class TestRetryProcessor implements IRetryProcessor {
   }
 
   async processSuccessful(): Promise<void> {
-    const rows: any[] = await all(this.db, getSuccessfullyProcessedQuery(), []);
+    const rows: any[] = await all(this.db, successfullyProcessedQuery, []);
     for (const row of rows) {
       await run(this.db, getUpdateTestResultStatusQuery(), [
         'PROCESSED',

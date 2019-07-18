@@ -82,7 +82,8 @@ export const initialiseDb = async (): Promise<void> => {
         (2,'1234','{}',date('now'),1,2,'11111','Pearson',1),
         (3,'1234','{}',date('now'),1,2,'11111','Pearson',1),
         (4,'1234','{}',date('now'),1,2,'11111','Pearson',3),
-        (5,'1234','{}',date('now','-35 days'),1,2,'11111','Pearson',0)
+        (5,'1234','{}',date('now','-35 days'),1,2,'11111','Pearson',0),
+        (6,'1234','{}',date('now'),1,2,'11111','Pearson',1)
       `,
 
     );
@@ -107,12 +108,22 @@ export const initialiseDb = async (): Promise<void> => {
       )
       `,
     );
+
     await runOnDb(
       `
       INSERT INTO UPLOAD_QUEUE VALUES
         (1,'1234',datetime('now'),0,1,0,''),
         (1,'1234',datetime('now'),1,1,0,''),
         (1,'1234',datetime('now'),2,1,0,'')
+      `,
+    );
+
+    // Missing Notify record, indicates a terminated test
+    await runOnDb(
+      `
+      INSERT INTO UPLOAD_QUEUE VALUES
+        (6,'1234',datetime('now'),0,1,0,''),
+        (6,'1234',datetime('now'),1,1,0,'')
       `,
     );
 

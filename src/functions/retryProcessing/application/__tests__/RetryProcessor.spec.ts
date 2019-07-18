@@ -11,6 +11,7 @@ describe('retryProcessor database test', () => {
   it('should run processSuccessful and check TEST_RESULT has a status of 2 (PROCESSED)', async () => {
     await retryProcessor.processSuccessful();
     await checkProcessSuccessfulUpdatedTestResult();
+    await checkProcessSuccessfulUpdatedTerminatedTestResult();
   });
 
   it('should run processErrorsToRetry and check that UPLOAD QUEUE rows are set to 0 (PROCESSING)', async () => {
@@ -41,6 +42,23 @@ const checkProcessSuccessfulUpdatedTestResult = (): Promise<void> => {
     db.get(
       `
       SELECT * FROM TEST_RESULT WHERE application_reference = 1
+      and staff_number = '1234' and result_status = 2
+      `,
+      [],
+      (err, row) => {
+        if (err || !row) {
+          reject('Row not found or incorrect state');
+        }
+        resolve();
+      });
+  });
+};
+
+const checkProcessSuccessfulUpdatedTerminatedTestResult = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    db.get(
+      `
+      SELECT * FROM TEST_RESULT WHERE application_reference = 6
       and staff_number = '1234' and result_status = 2
       `,
       [],

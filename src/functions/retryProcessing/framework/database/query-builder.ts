@@ -1,5 +1,5 @@
 import {
-  getSuccessfullyProcessedQuery,
+  successfullyProcessedQuery,
   getErrorsToRetryQuery,
   getErrorsToAbortQuery,
   getSupportInterventionQuery,
@@ -17,7 +17,7 @@ import moment = require('moment');
  * have been accepted
  *
  */
-export const buildSuccessfullyProcessedQuery = () => mysql.format(getSuccessfullyProcessedQuery());
+export const buildSuccessfullyProcessedQuery = () => mysql.format(successfullyProcessedQuery);
 
 /**
  * Builds query to retrieve errors to retry. Will be run once per interace type (TARS, RSIS and NOTIFY)

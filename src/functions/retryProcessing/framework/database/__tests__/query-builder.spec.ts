@@ -1,21 +1,13 @@
 import {
-    buildSuccessfullyProcessedQuery,
-    buildErrorsToRetryQuery,
-    buildErrorsToAbortQuery,
-    buildSupportInterventionQuery,
-    buildQueueRowsToDeleteQuery,
-    buildUpdateQueueLoadStatusQuery,
-    buildUpdateTestResultStatusQuery,
+  buildErrorsToRetryQuery,
+  buildErrorsToAbortQuery,
+  buildSupportInterventionQuery,
+  buildQueueRowsToDeleteQuery,
+  buildUpdateQueueLoadStatusQuery,
+  buildUpdateTestResultStatusQuery,
 } from '../query-builder';
-import { InterfaceTypes } from '../../../domain/interface-types';
 
 describe('QueryBuilder', () => {
-  describe('buildSuccessfullyProcessedQuery', () => {
-    it('should build a valid SELECT query', () => {
-      const result = buildSuccessfullyProcessedQuery();
-      expect(result).toMatch(/SELECT t.application_reference, t.staff_number/);
-    });
-  });
 
   describe('buildErrorsToRetryQuery', () => {
     it('should build a valid SELECT query', () => {
