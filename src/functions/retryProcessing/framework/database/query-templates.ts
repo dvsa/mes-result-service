@@ -25,7 +25,7 @@ export const getSuccessfullyProcessedQuery = () => `
             AND u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'ACCEPTED')
             );`;
 
-export const getErrorsToRetryQuery = () =>  `
+export const getErrorsToRetryQuery = () => `
     SELECT u.application_reference, u.staff_number, u.interface
     FROM UPLOAD_QUEUE u
     WHERE u.interface = (SELECT ID FROM INTERFACE_TYPE WHERE interface_type_name = 'RSIS')

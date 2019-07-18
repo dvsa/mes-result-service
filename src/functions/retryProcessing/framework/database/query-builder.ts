@@ -7,9 +7,11 @@ import {
   getDeleteQueueRowsQuery,
   getUpdateQueueLoadStatusAndRetryCountQuery,
   getUpdateQueueLoadStatusQuery,
-  getUpdateTestResultStatusQuery } from './query-templates';
+  getUpdateTestResultStatusQuery,
+} from './query-templates';
 import * as mysql from 'mysql2';
 import moment = require('moment');
+
 /**
  * Builds query to retrieve test results where TARS, RSIS and NOTIFY uploads
  * have been accepted
@@ -23,10 +25,14 @@ export const buildSuccessfullyProcessedQuery = () => mysql.format(getSuccessfull
  * @param notifyRetryCount
  * @param tarsRetryCount
  */
-export const buildErrorsToRetryQuery = (rsisRetryCount: number,
-                                        notifyRetryCount: number,
-                                        tarsRetryCount: number) => mysql.format(
-                                          getErrorsToRetryQuery(), [rsisRetryCount, notifyRetryCount, tarsRetryCount]);
+export const buildErrorsToRetryQuery = (
+  rsisRetryCount: number,
+  notifyRetryCount: number,
+  tarsRetryCount: number,
+) => mysql.format(
+  getErrorsToRetryQuery(),
+  [rsisRetryCount, notifyRetryCount, tarsRetryCount],
+);
 
 /**
  * Builds query to retrieve errors to abort. Will be run once per interace typee (TARS, RSIS and NOTIFY)
@@ -34,10 +40,14 @@ export const buildErrorsToRetryQuery = (rsisRetryCount: number,
  * @param notifyRetryCount
  * @param tarsRetryCount
  */
-export const buildErrorsToAbortQuery = (rsisRetryCount: number,
-                                        notifyRetryCount: number,
-                                        tarsRetryCount: number) => mysql.format(
-                                          getErrorsToAbortQuery(), [rsisRetryCount, notifyRetryCount, tarsRetryCount]);
+export const buildErrorsToAbortQuery = (
+  rsisRetryCount: number,
+  notifyRetryCount: number,
+  tarsRetryCount: number,
+) => mysql.format(
+  getErrorsToAbortQuery(),
+  [rsisRetryCount, notifyRetryCount, tarsRetryCount],
+);
 
 /**
  * Builds query to retrieve support intervention results
@@ -49,8 +59,7 @@ export const buildSupportInterventionQuery = () => mysql.format(getSupportInterv
 export const buildQueueRowsToDeleteQuery = (cutOffPointInDays: number) => {
   const startDate = moment().subtract(cutOffPointInDays, 'days').format('YYYY-MM-DD HH:mm:ss');
 
-  return mysql.format(
-  getQueueRowsToDeleteQuery(), [startDate]);
+  return mysql.format(getQueueRowsToDeleteQuery(), [startDate]);
 };
 
 /**
@@ -59,11 +68,15 @@ export const buildQueueRowsToDeleteQuery = (cutOffPointInDays: number) => {
  * @param staffNumber
  * @param interfaceType
 */
-export const buildDeleteQueueRowsQuery = (applicationReference: number,
-                                          staffNumber: number,
-                                          interfaceType: number) => mysql.format(
-                                            getDeleteQueueRowsQuery(),
-                                            [applicationReference, staffNumber, interfaceType]);
+export const buildDeleteQueueRowsQuery = (
+  applicationReference: number,
+  staffNumber: number,
+  interfaceType: number,
+) => mysql.format(
+  getDeleteQueueRowsQuery(),
+  [applicationReference, staffNumber, interfaceType],
+);
+
 /**
  * Generic routine to update UPLOAD QUEUE upload status and retry count
  * @param applicationReference
@@ -72,20 +85,24 @@ export const buildDeleteQueueRowsQuery = (applicationReference: number,
  * @param uploadStatusNameFrom
  * @param uploadStatusNameTo
  */
-
-export const buildUpdateQueueLoadStatusAndRetryCountQuery = (applicationReference: number,
-                                                             staffNumber: number,
-                                                             interfaceType: number,
-                                                             uploadStatusNameFrom: string,
-                                                             uploadStatusNameTo: string,
-                                                             retryCount: number) => mysql.format(
-                                                               getUpdateQueueLoadStatusAndRetryCountQuery(),
-                                                               [uploadStatusNameTo,
-                                                                 retryCount,
-                                                                 applicationReference,
-                                                                 staffNumber,
-                                                                 interfaceType,
-                                                                 uploadStatusNameFrom]);
+export const buildUpdateQueueLoadStatusAndRetryCountQuery = (
+  applicationReference: number,
+  staffNumber: number,
+  interfaceType: number,
+  uploadStatusNameFrom: string,
+  uploadStatusNameTo: string,
+  retryCount: number,
+) => mysql.format(
+  getUpdateQueueLoadStatusAndRetryCountQuery(),
+  [
+    uploadStatusNameTo,
+    retryCount,
+    applicationReference,
+    staffNumber,
+    interfaceType,
+    uploadStatusNameFrom,
+  ],
+);
 
 /**
  * Generic routine to update UPLOAD QUEUE upload status
@@ -95,15 +112,16 @@ export const buildUpdateQueueLoadStatusAndRetryCountQuery = (applicationReferenc
  * @param uploadStatusNameFrom
  * @param uploadStatusNameTo
  */
-
-export const buildUpdateQueueLoadStatusQuery = (applicationReference: number,
-                                                staffNumber: number,
-                                                interfaceType: number,
-                                                uploadStatusNameFrom: string,
-                                                uploadStatusNameTo: string,
-  ) => mysql.format(
-    getUpdateQueueLoadStatusQuery(),
-    [uploadStatusNameTo, applicationReference, staffNumber, interfaceType, uploadStatusNameFrom]);
+export const buildUpdateQueueLoadStatusQuery = (
+  applicationReference: number,
+  staffNumber: number,
+  interfaceType: number,
+  uploadStatusNameFrom: string,
+  uploadStatusNameTo: string,
+) => mysql.format(
+  getUpdateQueueLoadStatusQuery(),
+  [uploadStatusNameTo, applicationReference, staffNumber, interfaceType, uploadStatusNameFrom],
+);
 
 /**
  * Generic routine to update TEST RESULT result status
@@ -112,10 +130,11 @@ export const buildUpdateQueueLoadStatusQuery = (applicationReference: number,
  * @param resultStatusNameFrom
  * @param resultStatusNameTo
  */
-export const buildUpdateTestResultStatusQuery = (applicationReference: number,
-                                                 staffNumber: number,
-                                                 resultStatusNameTo: string) => mysql.format(
-                                                   getUpdateTestResultStatusQuery(),
-                                                   [resultStatusNameTo,
-                                                     applicationReference,
-                                                     staffNumber]);
+export const buildUpdateTestResultStatusQuery = (
+  applicationReference: number,
+  staffNumber: number,
+  resultStatusNameTo: string,
+) => mysql.format(
+  getUpdateTestResultStatusQuery(),
+  [resultStatusNameTo, applicationReference, staffNumber],
+);
