@@ -1,6 +1,6 @@
 import {
   successfullyProcessedQuery,
-  getErrorsToRetryQuery,
+  errorsToRetryQuery,
   getErrorsToAbortQuery,
   getSupportInterventionQuery,
   getQueueRowsToDeleteQuery,
@@ -30,7 +30,7 @@ export const buildErrorsToRetryQuery = (
   notifyRetryCount: number,
   tarsRetryCount: number,
 ) => mysql.format(
-  getErrorsToRetryQuery(),
+  errorsToRetryQuery,
   [rsisRetryCount, notifyRetryCount, tarsRetryCount],
 );
 

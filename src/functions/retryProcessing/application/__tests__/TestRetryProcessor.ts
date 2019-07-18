@@ -4,7 +4,7 @@ import { IRetryProcessor } from '../IRetryProcessor';
 import {
   successfullyProcessedQuery,
   getUpdateTestResultStatusQuery,
-  getErrorsToRetryQuery,
+  errorsToRetryQuery,
   getUpdateQueueLoadStatusQuery,
   getErrorsToAbortQuery,
   getSupportInterventionQuery,
@@ -52,7 +52,7 @@ export class TestRetryProcessor implements IRetryProcessor {
   }
 
   async processErrorsToRetry(rsisRetryCount: number, notifyRetryCount: number, tarsRetryCount: number): Promise<void> {
-    const rows: any[] = await all(this.db, getErrorsToRetryQuery(), [
+    const rows: any[] = await all(this.db, errorsToRetryQuery, [
       rsisRetryCount,
       notifyRetryCount,
       tarsRetryCount,
