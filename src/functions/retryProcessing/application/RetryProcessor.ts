@@ -32,6 +32,7 @@ export class RetryProcessor implements IRetryProcessor {
           'PROCESSED',
         ));
       }
+      await this.connection.promise().commit();
     } catch (err) {
       this.connection.rollback();
       warn('Error caught marking test results as successfully submitted', err.messsage);
@@ -60,6 +61,7 @@ export class RetryProcessor implements IRetryProcessor {
           'PROCESSING',
         ));
       }
+      await this.connection.promise().commit();
     } catch (err) {
       this.connection.rollback();
       warn('Error caught marking interfaces as ready for retry', err.message);
@@ -85,6 +87,7 @@ export class RetryProcessor implements IRetryProcessor {
           'ERROR',
         ));
       }
+      await this.connection.promise().commit();
     } catch (err) {
       this.connection.rollback();
       warn('Error caught marking interfaces as aborted', err.message);
@@ -112,6 +115,7 @@ export class RetryProcessor implements IRetryProcessor {
           'PROCESSING',
         ));
       }
+      await this.connection.promise().commit();
     } catch (err) {
       this.connection.rollback();
       warn('Error caught updating records marked for reprocess by manual intervention', err.message);
@@ -130,6 +134,7 @@ export class RetryProcessor implements IRetryProcessor {
           row.interface,
         ));
       }
+      await this.connection.promise().commit();
     } catch (err) {
       this.connection.rollback();
       warn('Error caught processing old upload queue record cleanup', err.message);
