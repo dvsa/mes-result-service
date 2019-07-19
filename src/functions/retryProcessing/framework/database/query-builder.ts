@@ -1,7 +1,7 @@
 import {
   successfullyProcessedQuery,
-  errorsToRetryQuery,
-  getErrorsToAbortQuery,
+  errorsToRetryQueryTemplate,
+  errorsToAbortQueryTemplate,
   getSupportInterventionQuery,
   getQueueRowsToDeleteQuery,
   getDeleteQueueRowsQuery,
@@ -30,7 +30,7 @@ export const buildErrorsToRetryQuery = (
   notifyRetryCount: number,
   tarsRetryCount: number,
 ) => mysql.format(
-  errorsToRetryQuery,
+  errorsToRetryQueryTemplate,
   [rsisRetryCount, notifyRetryCount, tarsRetryCount],
 );
 
@@ -45,7 +45,7 @@ export const buildErrorsToAbortQuery = (
   notifyRetryCount: number,
   tarsRetryCount: number,
 ) => mysql.format(
-  getErrorsToAbortQuery(),
+  errorsToAbortQueryTemplate,
   [rsisRetryCount, notifyRetryCount, tarsRetryCount],
 );
 

@@ -4,9 +4,9 @@ import { IRetryProcessor } from '../IRetryProcessor';
 import {
   successfullyProcessedQuery,
   getUpdateTestResultStatusQuery,
-  errorsToRetryQuery,
+  errorsToRetryQueryTemplate,
   getUpdateQueueLoadStatusQuery,
-  getErrorsToAbortQuery,
+  errorsToAbortQueryTemplate,
   getSupportInterventionQuery,
   getUpdateQueueLoadStatusAndRetryCountQuery,
   getQueueRowsToDeleteQuery,
@@ -52,7 +52,7 @@ export class TestRetryProcessor implements IRetryProcessor {
   }
 
   async processErrorsToRetry(rsisRetryCount: number, notifyRetryCount: number, tarsRetryCount: number): Promise<void> {
-    const rows: any[] = await all(this.db, errorsToRetryQuery, [
+    const rows: any[] = await all(this.db, errorsToRetryQueryTemplate, [
       rsisRetryCount,
       notifyRetryCount,
       tarsRetryCount,
@@ -69,7 +69,7 @@ export class TestRetryProcessor implements IRetryProcessor {
   }
 
   async processErrorsToAbort(rsisRetryCount: number, notifyRetryCount: number, tarsRetryCount: number): Promise<void> {
-    const rows: any[] = await all(this.db, getErrorsToAbortQuery(), [
+    const rows: any[] = await all(this.db, errorsToAbortQueryTemplate, [
       rsisRetryCount,
       notifyRetryCount,
       tarsRetryCount,

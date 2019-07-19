@@ -1,5 +1,5 @@
 
-export const successfullyProcessedQuery: string = `
+export const successfullyProcessedQuery = `
     SELECT DISTINCT
         uq.application_reference,
         uq.staff_number
@@ -16,7 +16,7 @@ export const successfullyProcessedQuery: string = `
         )
 `;
 
-export const errorsToRetryQuery: string = `
+export const errorsToRetryQueryTemplate = `
     SELECT uq.application_reference, uq.staff_number, uq.interface
     FROM UPLOAD_QUEUE uq
     JOIN TEST_RESULT tr
@@ -34,42 +34,23 @@ export const errorsToRetryQuery: string = `
         )
 `;
 
-export const getErrorsToAbortQuery = () => `
-    SELECT u.application_reference, u.staff_number, u.interface
-    FROM UPLOAD_QUEUE u
-    WHERE u.interface = (SELECT ID FROM INTERFACE_TYPE WHERE interface_type_name = 'RSIS')
-    AND u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'FAILED')
-    AND u.retry_count >= ?
-    AND exists ( SELECT 'x'
-                FROM TEST_RESULT t
-                WHERE t.application_reference = u.application_reference
-                AND t.staff_number = u.staff_number
-                AND t.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PROCESSING')
-                )
-    UNION
-    SELECT u.application_reference, u.staff_number, u.interface
-    FROM UPLOAD_QUEUE u
-    WHERE u.interface = (SELECT ID FROM INTERFACE_TYPE WHERE interface_type_name = 'NOTIFY')
-    AND u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'FAILED')
-    AND u.retry_count >= ?
-    AND exists ( SELECT 'x'
-                FROM TEST_RESULT t
-                WHERE t.application_reference = u.application_reference
-                AND t.staff_number = u.staff_number
-                AND t.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PROCESSING')
-                )
-    UNION
-    SELECT u.application_reference, u.staff_number, u.interface
-    FROM UPLOAD_QUEUE u
-    WHERE u.interface = (SELECT ID FROM INTERFACE_TYPE WHERE interface_type_name = 'TARS')
-    AND u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'FAILED')
-    AND u.retry_count >= ?
-    AND exists ( SELECT 'x'
-                FROM TEST_RESULT t
-                WHERE t.application_reference = u.application_reference
-                AND t.staff_number = u.staff_number
-                AND t.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PROCESSING')
-                );`;
+export const errorsToAbortQueryTemplate = `
+  SELECT uq.application_reference, uq.staff_number, uq.interface
+  FROM UPLOAD_QUEUE uq
+  JOIN TEST_RESULT tr
+    ON uq.application_reference = tr.application_reference
+    AND uq.staff_number = tr.staff_number
+    AND tr.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PROCESSING')
+  WHERE
+    uq.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'FAILED')
+    AND (
+      (uq.interface = (SELECT id FROM INTERFACE_TYPE WHERE interface_type_name = 'RSIS') AND uq.retry_count >= ?)
+      OR
+      (uq.interface = (SELECT id FROM INTERFACE_TYPE WHERE interface_type_name = 'NOTIFY') AND uq.retry_count >= ?)
+      OR
+      (uq.interface = (SELECT id FROM INTERFACE_TYPE WHERE interface_type_name = 'TARS') AND uq.retry_count >= ?)
+    )
+`;
 
 export const getSupportInterventionQuery = () => `
     SELECT u.application_reference, u.staff_number, u.interface

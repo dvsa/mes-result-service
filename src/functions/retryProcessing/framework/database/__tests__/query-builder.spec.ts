@@ -23,14 +23,9 @@ describe('QueryBuilder', () => {
   });
 
   describe('buildErrorsToAbortQuery', () => {
-    it('should build a valid SELECT query', () => {
-      const result = buildErrorsToAbortQuery(9, 9, 9);
-      expect(result).toMatch(/SELECT u.application_reference, u.staff_number, u.interface/);
-    });
-
     it('should have the retry count in the SELECT', () => {
       const result = buildErrorsToAbortQuery(9, 9, 9);
-      expect(result).toMatch(/AND u.retry_count >= 9/);
+      expect(result).toMatch(/AND uq.retry_count >= 9/);
     });
     it('should have the interface type in the SELECT', () => {
       const result = buildErrorsToAbortQuery(9, 9, 9);
