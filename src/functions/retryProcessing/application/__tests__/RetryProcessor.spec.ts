@@ -1,5 +1,7 @@
 
 import { retryProcessor, dbSetup, db } from './database-setup';
+import { IRetryProcessor } from '../IRetryProcessor';
+import { RetryProcessor } from '../RetryProcessor';
 
 describe('retryProcessor database test', () => {
 
@@ -8,31 +10,80 @@ describe('retryProcessor database test', () => {
     console.log('database initialised');
   });
 
-  it('should run processSuccessful and check TEST_RESULT has a status of 2 (PROCESSED)', async () => {
-    await retryProcessor.processSuccessful();
-    await checkProcessSuccessfulUpdatedTestResult();
-    await checkProcessSuccessfulUpdatedTerminatedTestResult();
+  describe('Query correctness', () => {
+    it('should move TEST_RESULTs with all successful UPLOAD_QUEUE records to PROCESSED', async () => {
+      await retryProcessor.processSuccessful();
+      await checkProcessSuccessfulUpdatedTestResult();
+      await checkProcessSuccessfulUpdatedTerminatedTestResult();
+    });
+
+    it('should mark UPLOAD_QUEUE for reprocessing when they have failed but not exceeded the retry limit', async () => {
+      await retryProcessor.processErrorsToRetry(3, 3, 3);
+      await checkErrorsToRetryUpdatedUpLoadQueues();
+    });
+
+    it('should abort UPLOAD_QUEUE records that have exceeded the retry count for that interface', async () => {
+      await retryProcessor.processErrorsToAbort(3, 3, 3);
+      await checkErrorsToAbortUpdatedTestResult();
+    });
+
+    it('should update TEST_RESULT and UPLOAD_QUEUE to make them ready for reprocessing', async () => {
+      await retryProcessor.processSupportInterventions();
+      await checkSupportInterventionUpdatedUploadQueues();
+      await checkSupportInterventionUpdatedTestResult();
+    });
+
+    it('should clean out old UPLOAD_QUEUE records', async () => {
+      await retryProcessor.processOldEntryCleanup(30);
+      await checkOldEntryCleanupDeleteUploadQueues();
+    });
   });
 
-  it('should run processErrorsToRetry and check that UPLOAD QUEUE rows are set to 0 (PROCESSING)', async () => {
-    await retryProcessor.processErrorsToRetry(3, 3, 3);
-    await checkErrorsToRetryUpdatedUpLoadQueues();
-  });
-
-  it('should run processErrorsToAbort and check that TEST result has been set to 4 (ERROR)', async () => {
-    await retryProcessor.processErrorsToAbort(3, 3, 3);
-    await checkErrorsToAbortUpdatedTestResult();
-  });
-
-  it('should run processSupportInterventions and check that TEST result and UPLOAD QUEUEs set correctly', async () => {
-    await retryProcessor.processSupportInterventions();
-    await checkSupportInterventionUpdatedUploadQueues();
-    await checkSupportInterventionUpdatedTestResult();
-  });
-
-  it('should run processOldEntryCleanup and check that UPLOAD_QUEUES have been deleted correctly', async () => {
-    await retryProcessor.processOldEntryCleanup(30);
-    await checkOldEntryCleanupDeleteUploadQueues();
+  describe('Error handling', () => {
+    let connectionSpy;
+    let realRetryProcessor: IRetryProcessor;
+    beforeEach(() => {
+      connectionSpy = {
+        promise: () => jasmine.createSpyObj('promise', ['query', 'commit']),
+        rollback: jasmine.createSpy('rollback'),
+      };
+      realRetryProcessor = new RetryProcessor(connectionSpy);
+    });
+    describe('processSuccessful', () => {
+      it('should rollback the connection and resolve when any error occurs', async () => {
+        connectionSpy.promise().query.and.throwError('query failed');
+        await realRetryProcessor.processSuccessful();
+        expect(connectionSpy.rollback).toHaveBeenCalled();
+      });
+    });
+    describe('processErrorsToRetry', () => {
+      it('should rollback the connection and resolve when any error occurs', async () => {
+        connectionSpy.promise().query.and.throwError('query failed');
+        await realRetryProcessor.processErrorsToRetry(5, 5, 5);
+        expect(connectionSpy.rollback).toHaveBeenCalled();
+      });
+    });
+    describe('processErrorsToAbort', () => {
+      it('should rollback the connection and resolve when any error occurs', async () => {
+        connectionSpy.promise().query.and.throwError('query failed');
+        await realRetryProcessor.processErrorsToAbort(5, 5, 5);
+        expect(connectionSpy.rollback).toHaveBeenCalled();
+      });
+    });
+    describe('processSupportInterventions', () => {
+      it('should rollback the connection and resolve when any error occurs', async () => {
+        connectionSpy.promise().query.and.throwError('query failed');
+        await realRetryProcessor.processSupportInterventions();
+        expect(connectionSpy.rollback).toHaveBeenCalled();
+      });
+    });
+    describe('processOldEntryCleanup', () => {
+      it('should rollback the connection and resolve when any error occurs', async () => {
+        connectionSpy.promise().query.and.throwError('query failed');
+        await realRetryProcessor.processOldEntryCleanup(7);
+        expect(connectionSpy.rollback).toHaveBeenCalled();
+      });
+    });
   });
 
 });
