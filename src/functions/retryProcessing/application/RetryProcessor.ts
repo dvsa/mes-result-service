@@ -34,8 +34,6 @@ export class RetryProcessor implements IRetryProcessor {
     } catch (err) {
       this.connection.rollback();
       throw err;
-    } finally {
-      this.connection.end();
     }
   }
   async processErrorsToRetry(
@@ -63,8 +61,6 @@ export class RetryProcessor implements IRetryProcessor {
     } catch (err) {
       this.connection.rollback();
       throw err;
-    } finally {
-      this.connection.end();
     }
   }
   async processErrorsToAbort(
@@ -89,8 +85,6 @@ export class RetryProcessor implements IRetryProcessor {
     } catch (err) {
       this.connection.rollback();
       throw err;
-    } finally {
-      this.connection.end();
     }
   }
 
@@ -117,8 +111,6 @@ export class RetryProcessor implements IRetryProcessor {
     } catch (err) {
       this.connection.rollback();
       throw err;
-    } finally {
-      this.connection.end();
     }
   }
 
@@ -136,8 +128,6 @@ export class RetryProcessor implements IRetryProcessor {
     } catch (err) {
       this.connection.rollback();
       throw err;
-    } finally {
-      this.connection.end();
     }
   }
 

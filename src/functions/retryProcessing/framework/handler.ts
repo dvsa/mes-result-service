@@ -22,6 +22,8 @@ export async function handler(event: ScheduledEvent, fnCtx: Context): Promise<Re
   } catch (err) {
     error('Uncaught error in handler', err);
     return createResponse(err, HttpStatus.INTERNAL_SERVER_ERROR);
+  } finally {
+    connection.end();
   }
   return createResponse({}, HttpStatus.OK);
 }
