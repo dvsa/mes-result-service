@@ -1,5 +1,4 @@
 import * as sqlite3 from 'sqlite3';
-import { getRetryConfig, retryConfig } from '../../framework/retryConfig';
 import { IRetryProcessor } from '../IRetryProcessor';
 import {
   successfullyProcessedQuery,
@@ -16,27 +15,9 @@ import moment = require('moment');
 import { run, get, all } from './sqlite-helper';
 
 export class TestRetryProcessor implements IRetryProcessor {
-  private db: sqlite3.Database = null;
-  async processRetries(): Promise<void> {
-    await getRetryConfig();
-    await this.processSuccessful();
-    await this.processErrorsToRetry(
-      retryConfig().rsisRetryCount,
-      retryConfig().notifyRetryCount,
-      retryConfig().tarsRetryCount,
-    );
+  private db: sqlite3.Database;
 
-    await this.processErrorsToAbort(
-      retryConfig().rsisRetryCount,
-      retryConfig().notifyRetryCount,
-      retryConfig().tarsRetryCount,
-    );
-
-    await this.processSupportInterventions();
-    await this.processOldEntryCleanup(retryConfig().retryCutOffPointDays);
-  }
-
-  setDb(db: sqlite3.Database) {
+  constructor(db: sqlite3.Database) {
     this.db = db;
   }
 

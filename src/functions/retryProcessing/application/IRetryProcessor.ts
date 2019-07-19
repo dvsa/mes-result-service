@@ -1,7 +1,5 @@
 
 export interface IRetryProcessor {
-  processRetries(): Promise<void>;
-
   processSuccessful(): Promise<void>;
 
   processErrorsToRetry(

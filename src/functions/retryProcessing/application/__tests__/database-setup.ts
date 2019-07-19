@@ -180,8 +180,7 @@ export const dbSetup = async (): Promise<void> => {
           reject(err);
         }
         initialiseDb().then(() => {
-          retryProcessor = new TestRetryProcessor();
-          retryProcessor.setDb(db);
+          retryProcessor = new TestRetryProcessor(db);
           resolve();
         }).catch((err) => {
           reject(err);

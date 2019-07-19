@@ -11,47 +11,31 @@ import {
   buildUpdateQueueLoadStatusAndRetryCountQuery,
   buildDeleteQueueRowsQuery,
 } from '../framework/database/query-builder';
-import { getRetryConfig, retryConfig } from '../framework/retryConfig';
 import { IRetryProcessor } from './IRetryProcessor';
 
 export class RetryProcessor implements IRetryProcessor {
+  private connection: mysql.Connection;
 
-  async processRetries(): Promise<void> {
-    await getRetryConfig();
-    await this.processSuccessful();
-    await this.processErrorsToRetry(
-      retryConfig().rsisRetryCount,
-      retryConfig().notifyRetryCount,
-      retryConfig().tarsRetryCount,
-    );
-
-    await this.processErrorsToAbort(
-      retryConfig().rsisRetryCount,
-      retryConfig().notifyRetryCount,
-      retryConfig().tarsRetryCount,
-    );
-
-    await this.processSupportInterventions();
-    await this.processOldEntryCleanup(retryConfig().retryCutOffPointDays);
+  constructor(connection: mysql.Connection) {
+    this.connection = connection;
   }
 
   async processSuccessful(): Promise<void> {
-    const connection: mysql.Connection = getConnection();
     try {
-      const [rows] = await connection.promise().query(buildSuccessfullyProcessedQuery());
+      const [rows] = await this.connection.promise().query(buildSuccessfullyProcessedQuery());
 
       for (const row of rows) {
-        const [updated] = await connection.promise().query(buildUpdateTestResultStatusQuery(
+        const [updated] = await this.connection.promise().query(buildUpdateTestResultStatusQuery(
           row.application_reference,
           row.staff_number,
           'PROCESSED',
         ));
       }
     } catch (err) {
-      connection.rollback();
+      this.connection.rollback();
       throw err;
     } finally {
-      connection.end();
+      this.connection.end();
     }
   }
   async processErrorsToRetry(
@@ -59,10 +43,8 @@ export class RetryProcessor implements IRetryProcessor {
     notifyRetryCount: number,
     tarsRetryCount: number,
   ): Promise<void> {
-    const connection: mysql.Connection = getConnection();
-
     try {
-      const [rows] = await connection.promise().
+      const [rows] = await this.connection.promise().
         query(buildErrorsToRetryQuery(
           rsisRetryCount,
           notifyRetryCount,
@@ -70,7 +52,7 @@ export class RetryProcessor implements IRetryProcessor {
         ));
 
       for (const row of rows) {
-        const [updated] = await connection.promise().query(buildUpdateQueueLoadStatusQuery(
+        const [updated] = await this.connection.promise().query(buildUpdateQueueLoadStatusQuery(
           row.application_reference,
           row.staff_number,
           row.interface,
@@ -79,10 +61,10 @@ export class RetryProcessor implements IRetryProcessor {
         ));
       }
     } catch (err) {
-      connection.rollback();
+      this.connection.rollback();
       throw err;
     } finally {
-      connection.end();
+      this.connection.end();
     }
   }
   async processErrorsToAbort(
@@ -90,38 +72,34 @@ export class RetryProcessor implements IRetryProcessor {
     notifyRetryCount: number,
     tarsRetryCount: number,
   ): Promise<void> {
-    const connection: mysql.Connection = getConnection();
-
     try {
-      const [rows] = await connection.promise().query(buildErrorsToAbortQuery(
+      const [rows] = await this.connection.promise().query(buildErrorsToAbortQuery(
         rsisRetryCount,
         notifyRetryCount,
         tarsRetryCount,
       ));
 
       for (const row of rows) {
-        const [updated] = await connection.promise().query(buildUpdateTestResultStatusQuery(
+        const [updated] = await this.connection.promise().query(buildUpdateTestResultStatusQuery(
           row.application_reference,
           row.staff_number,
           'ERROR',
         ));
       }
     } catch (err) {
-      connection.rollback();
+      this.connection.rollback();
       throw err;
     } finally {
-      connection.end();
+      this.connection.end();
     }
   }
 
   async processSupportInterventions(): Promise<void> {
-    const connection: mysql.Connection = getConnection();
-
     try {
-      const [rows] = await connection.promise().query(buildSupportInterventionQuery());
+      const [rows] = await this.connection.promise().query(buildSupportInterventionQuery());
 
       for (const row of rows) {
-        const [queueUpdated] = await connection.promise().query(buildUpdateQueueLoadStatusAndRetryCountQuery(
+        const [queueUpdated] = await this.connection.promise().query(buildUpdateQueueLoadStatusAndRetryCountQuery(
           row.application_reference,
           row.staff_number,
           row.interface,
@@ -130,38 +108,36 @@ export class RetryProcessor implements IRetryProcessor {
           0,
         ));
 
-        const [resultUpdated] = await connection.promise().query(buildUpdateTestResultStatusQuery(
+        const [resultUpdated] = await this.connection.promise().query(buildUpdateTestResultStatusQuery(
           row.application_reference,
           row.staff_number,
           'PROCESSING',
         ));
       }
     } catch (err) {
-      connection.rollback();
+      this.connection.rollback();
       throw err;
     } finally {
-      connection.end();
+      this.connection.end();
     }
   }
 
   async processOldEntryCleanup(cutOffPointInDays: number): Promise<void> {
-    const connection: mysql.Connection = getConnection();
-
     try {
-      const [rows] = await connection.promise().query(buildQueueRowsToDeleteQuery(cutOffPointInDays));
+      const [rows] = await this.connection.promise().query(buildQueueRowsToDeleteQuery(cutOffPointInDays));
 
       for (const row of rows) {
-        const [deleted] = await connection.promise().query(buildDeleteQueueRowsQuery(
+        const [deleted] = await this.connection.promise().query(buildDeleteQueueRowsQuery(
           row.application_reference,
           row.staff_number,
           row.interface,
         ));
       }
     } catch (err) {
-      connection.rollback();
+      this.connection.rollback();
       throw err;
     } finally {
-      connection.end();
+      this.connection.end();
     }
   }
 
