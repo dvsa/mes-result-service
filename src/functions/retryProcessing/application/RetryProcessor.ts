@@ -1,4 +1,3 @@
-import { getConnection } from '../../../common/framework/mysql/database';
 import * as mysql from 'mysql2';
 import {
   buildSuccessfullyProcessedQuery,
@@ -12,6 +11,7 @@ import {
   buildDeleteQueueRowsQuery,
 } from '../framework/database/query-builder';
 import { IRetryProcessor } from './IRetryProcessor';
+import { warn } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 export class RetryProcessor implements IRetryProcessor {
   private connection: mysql.Connection;
@@ -22,6 +22,7 @@ export class RetryProcessor implements IRetryProcessor {
 
   async processSuccessful(): Promise<void> {
     try {
+      await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().query(buildSuccessfullyProcessedQuery());
 
       for (const row of rows) {
@@ -33,7 +34,7 @@ export class RetryProcessor implements IRetryProcessor {
       }
     } catch (err) {
       this.connection.rollback();
-      throw err;
+      warn('Error caught marking test results as successfully submitted', err.messsage);
     }
   }
   async processErrorsToRetry(
@@ -42,6 +43,7 @@ export class RetryProcessor implements IRetryProcessor {
     tarsRetryCount: number,
   ): Promise<void> {
     try {
+      await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().
         query(buildErrorsToRetryQuery(
           rsisRetryCount,
@@ -60,7 +62,7 @@ export class RetryProcessor implements IRetryProcessor {
       }
     } catch (err) {
       this.connection.rollback();
-      throw err;
+      warn('Error caught marking interfaces as ready for retry', err.message);
     }
   }
   async processErrorsToAbort(
@@ -69,6 +71,7 @@ export class RetryProcessor implements IRetryProcessor {
     tarsRetryCount: number,
   ): Promise<void> {
     try {
+      await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().query(buildErrorsToAbortQuery(
         rsisRetryCount,
         notifyRetryCount,
@@ -84,12 +87,13 @@ export class RetryProcessor implements IRetryProcessor {
       }
     } catch (err) {
       this.connection.rollback();
-      throw err;
+      warn('Error caught marking interfaces as aborted', err.message);
     }
   }
 
   async processSupportInterventions(): Promise<void> {
     try {
+      await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().query(buildSupportInterventionQuery());
 
       for (const row of rows) {
@@ -110,12 +114,13 @@ export class RetryProcessor implements IRetryProcessor {
       }
     } catch (err) {
       this.connection.rollback();
-      throw err;
+      warn('Error caught updating records marked for reprocess by manual intervention', err.message);
     }
   }
 
   async processOldEntryCleanup(cutOffPointInDays: number): Promise<void> {
     try {
+      await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().query(buildQueueRowsToDeleteQuery(cutOffPointInDays));
 
       for (const row of rows) {
@@ -127,7 +132,7 @@ export class RetryProcessor implements IRetryProcessor {
       }
     } catch (err) {
       this.connection.rollback();
-      throw err;
+      warn('Error caught processing old upload queue record cleanup', err.message);
     }
   }
 
