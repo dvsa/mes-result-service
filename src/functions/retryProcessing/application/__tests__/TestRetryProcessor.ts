@@ -7,7 +7,7 @@ import {
   errorsToRetryQueryTemplate,
   getUpdateQueueLoadStatusQuery,
   errorsToAbortQueryTemplate,
-  getSupportInterventionQuery,
+  supportInterventionQuery,
   getUpdateQueueLoadStatusAndRetryCountQuery,
   getQueueRowsToDeleteQuery,
   getDeleteQueueRowsQuery,
@@ -84,7 +84,7 @@ export class TestRetryProcessor implements IRetryProcessor {
   }
 
   async processSupportInterventions(): Promise<void> {
-    const rows: any[] = await all(this.db, getSupportInterventionQuery(), []);
+    const rows: any[] = await all(this.db, supportInterventionQuery, []);
     for (const row of rows) {
       await get(this.db, getUpdateQueueLoadStatusAndRetryCountQuery(), [
         'PROCESSING',

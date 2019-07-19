@@ -52,16 +52,19 @@ export const errorsToAbortQueryTemplate = `
     )
 `;
 
-export const getSupportInterventionQuery = () => `
-    SELECT u.application_reference, u.staff_number, u.interface
+export const supportInterventionQuery = `
+  SELECT u.application_reference, u.staff_number, u.interface
     FROM UPLOAD_QUEUE u
-    WHERE u.upload_status  = ( SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'FAILED')
-    AND exists ( SELECT 'x'
-    FROM TEST_RESULT t
-    WHERE t.application_reference = u.application_reference
-    AND t.staff_number = u.staff_number
-    AND t.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PENDING')
-    );`;
+    WHERE
+      u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'FAILED')
+      AND exists (
+        SELECT 'x'
+        FROM TEST_RESULT t
+        WHERE t.application_reference = u.application_reference
+        AND t.staff_number = u.staff_number
+        AND t.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PENDING')
+      )
+`;
 
 export const getQueueRowsToDeleteQuery = () => `
     SELECT application_reference, staff_number, interface
