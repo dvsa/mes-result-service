@@ -2,7 +2,7 @@ import {
   buildUpdateErrorsToRetryQuery,
   buildAbortTestsExceeingRetryQuery,
   buildSupportInterventionQuery,
-  buildQueueRowsToDeleteQuery,
+  buildDeleteAcceptedQueueRowsQuery,
   buildUpdateQueueLoadStatusQuery,
   buildUpdateTestResultStatusQuery,
 } from '../query-builder';
@@ -44,12 +44,12 @@ describe('QueryBuilder', () => {
 
   describe('buildQueueRowsToDeleteQuery', () => {
     it('should build a valid SELECT query', () => {
-      const result = buildQueueRowsToDeleteQuery(30);
+      const result = buildDeleteAcceptedQueueRowsQuery(30);
       expect(result).toMatch(/SELECT application_reference, staff_number, interface/);
     });
 
     it('should have the cutoffpoint in the SELECT', () => {
-      const result = buildQueueRowsToDeleteQuery(30);
+      const result = buildDeleteAcceptedQueueRowsQuery(30);
       // /AND u.timestamp < \'(9999-99-99 99:99:99`')/
       expect(result).toMatch(/AND u.timestamp < \'\d\d\d\d\-\d\d\-\d\d/);
     });

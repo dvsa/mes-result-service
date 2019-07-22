@@ -4,10 +4,9 @@ import {
   buildUpdateErrorsToRetryQuery,
   buildAbortTestsExceeingRetryQuery,
   buildSupportInterventionQuery,
-  buildQueueRowsToDeleteQuery,
+  buildDeleteAcceptedQueueRowsQuery,
   buildUpdateTestResultStatusQuery,
   buildUpdateQueueLoadStatusAndRetryCountQuery,
-  buildDeleteQueueRowsQuery,
 } from '../framework/database/query-builder';
 import { IRetryProcessor } from './IRetryProcessor';
 import { warn } from '@dvsa/mes-microservice-common/application/utils/logger';
@@ -106,15 +105,7 @@ export class RetryProcessor implements IRetryProcessor {
   async processOldEntryCleanup(cutOffPointInDays: number): Promise<void> {
     try {
       await this.connection.promise().beginTransaction();
-      const [rows] = await this.connection.promise().query(buildQueueRowsToDeleteQuery(cutOffPointInDays));
-
-      for (const row of rows) {
-        const [deleted] = await this.connection.promise().query(buildDeleteQueueRowsQuery(
-          row.application_reference,
-          row.staff_number,
-          row.interface,
-        ));
-      }
+      const [rows] = await this.connection.promise().query(buildDeleteAcceptedQueueRowsQuery(cutOffPointInDays));
       await this.connection.promise().commit();
     } catch (err) {
       this.connection.rollback();

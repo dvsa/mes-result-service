@@ -79,11 +79,18 @@ export const supportInterventionQuery = `
       )
 `;
 
-export const getQueueRowsToDeleteQuery = () => `
+export const deleteAccepetedUploadsQuery = `
+  DELETE UPLOAD_QUEUE FROM UPLOAD_QUEUE
+  JOIN (
     SELECT application_reference, staff_number, interface
-    FROM UPLOAD_QUEUE u
-    WHERE u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'ACCEPTED')
-    AND u.timestamp < ?;`;
+    FROM UPLOAD_QUEUE
+    WHERE upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'ACCEPTED')
+    AND timestamp < ?
+  ) to_delete
+    ON UPLOAD_QUEUE.application_reference = to_delete.application_reference
+    AND UPLOAD_QUEUE.staff_number = to_delete.staff_number
+    AND UPLOAD_QUEUE.interface = to_delete.interface;
+`;
 
 export const getDeleteQueueRowsQuery = () => `
     DELETE FROM UPLOAD_QUEUE

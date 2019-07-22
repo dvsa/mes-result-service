@@ -3,7 +3,7 @@ import {
   updateErrorsToRetryQueryTemplate,
   updateErrorsToAbortQueryTemplate as abortTestsExceedingRetryQueryTemplate,
   supportInterventionQuery,
-  getQueueRowsToDeleteQuery,
+  deleteAccepetedUploadsQuery,
   getDeleteQueueRowsQuery,
   getUpdateQueueLoadStatusAndRetryCountQuery,
   getUpdateQueueLoadStatusQuery,
@@ -57,10 +57,9 @@ export const buildAbortTestsExceeingRetryQuery = (
  */
 export const buildSupportInterventionQuery = () => mysql.format(supportInterventionQuery);
 
-export const buildQueueRowsToDeleteQuery = (cutOffPointInDays: number) => {
+export const buildDeleteAcceptedQueueRowsQuery = (cutOffPointInDays: number) => {
   const startDate = moment().subtract(cutOffPointInDays, 'days').format('YYYY-MM-DD HH:mm:ss');
-
-  return mysql.format(getQueueRowsToDeleteQuery(), [startDate]);
+  return mysql.format(deleteAccepetedUploadsQuery, [startDate]);
 };
 
 /**
