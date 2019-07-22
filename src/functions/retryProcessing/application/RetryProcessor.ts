@@ -1,12 +1,11 @@
 import * as mysql from 'mysql2';
 import {
   buildSuccessfullyProcessedQuery,
-  buildErrorsToRetryQuery,
+  buildUpdateErrorsToRetryQuery,
   buildErrorsToAbortQuery,
   buildSupportInterventionQuery,
   buildQueueRowsToDeleteQuery,
   buildUpdateTestResultStatusQuery,
-  buildUpdateQueueLoadStatusQuery,
   buildUpdateQueueLoadStatusAndRetryCountQuery,
   buildDeleteQueueRowsQuery,
 } from '../framework/database/query-builder';
@@ -46,21 +45,11 @@ export class RetryProcessor implements IRetryProcessor {
     try {
       await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().
-        query(buildErrorsToRetryQuery(
+        query(buildUpdateErrorsToRetryQuery(
           rsisRetryCount,
           notifyRetryCount,
           tarsRetryCount,
         ));
-
-      for (const row of rows) {
-        const [updated] = await this.connection.promise().query(buildUpdateQueueLoadStatusQuery(
-          row.application_reference,
-          row.staff_number,
-          row.interface,
-          'FAILED',
-          'PROCESSING',
-        ));
-      }
       await this.connection.promise().commit();
     } catch (err) {
       this.connection.rollback();

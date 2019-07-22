@@ -1,6 +1,6 @@
 import {
   successfullyProcessedQuery,
-  errorsToRetryQueryTemplate,
+  updateErrorsToRetryQueryTemplate,
   errorsToAbortQueryTemplate,
   supportInterventionQuery,
   getQueueRowsToDeleteQuery,
@@ -20,17 +20,17 @@ import moment = require('moment');
 export const buildSuccessfullyProcessedQuery = () => mysql.format(successfullyProcessedQuery);
 
 /**
- * Builds query to retrieve errors to retry. Will be run once per interace type (TARS, RSIS and NOTIFY)
+ * Builds query to update the UPLOAD_QUEUE, resetting retry counts/status on all errors to retry.
  * @param rsisRetryCount
  * @param notifyRetryCount
  * @param tarsRetryCount
  */
-export const buildErrorsToRetryQuery = (
+export const buildUpdateErrorsToRetryQuery = (
   rsisRetryCount: number,
   notifyRetryCount: number,
   tarsRetryCount: number,
 ) => mysql.format(
-  errorsToRetryQueryTemplate,
+  updateErrorsToRetryQueryTemplate,
   [rsisRetryCount, notifyRetryCount, tarsRetryCount],
 );
 
