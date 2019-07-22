@@ -2,7 +2,7 @@ import {
   markTestProcessedQuery,
   updateErrorsToRetryQueryTemplate,
   updateErrorsToAbortQueryTemplate as abortTestsExceedingRetryQueryTemplate,
-  supportInterventionQuery,
+  updateManuallyIntervenedForReprocessQuery,
   deleteAccepetedUploadsQuery,
   getDeleteQueueRowsQuery,
   getUpdateQueueLoadStatusAndRetryCountQuery,
@@ -51,10 +51,8 @@ export const buildAbortTestsExceeingRetryQuery = (
 
 /**
  * Builds query to retrieve support intervention results
- *
- * @param batchSize: number
  */
-export const buildSupportInterventionQuery = () => mysql.format(supportInterventionQuery);
+export const buildManualInterventionUpdateQuery = () => mysql.format(updateManuallyIntervenedForReprocessQuery);
 
 export const buildDeleteAcceptedQueueRowsQuery = (cutOffPointInDays: number) => {
   const startDate = moment().subtract(cutOffPointInDays, 'days').format('YYYY-MM-DD HH:mm:ss');

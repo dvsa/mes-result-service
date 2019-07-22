@@ -3,10 +3,8 @@ import {
   buildMarkTestProcessedQuery,
   buildUpdateErrorsToRetryQuery,
   buildAbortTestsExceeingRetryQuery,
-  buildSupportInterventionQuery,
+  buildManualInterventionUpdateQuery,
   buildDeleteAcceptedQueueRowsQuery,
-  buildUpdateTestResultStatusQuery,
-  buildUpdateQueueLoadStatusAndRetryCountQuery,
 } from '../framework/database/query-builder';
 import { IRetryProcessor } from './IRetryProcessor';
 import { warn } from '@dvsa/mes-microservice-common/application/utils/logger';
@@ -69,24 +67,7 @@ export class RetryProcessor implements IRetryProcessor {
   async processSupportInterventions(): Promise<void> {
     try {
       await this.connection.promise().beginTransaction();
-      const [rows] = await this.connection.promise().query(buildSupportInterventionQuery());
-
-      for (const row of rows) {
-        const [queueUpdated] = await this.connection.promise().query(buildUpdateQueueLoadStatusAndRetryCountQuery(
-          row.application_reference,
-          row.staff_number,
-          row.interface,
-          'FAILED',
-          'PROCESSING',
-          0,
-        ));
-
-        const [resultUpdated] = await this.connection.promise().query(buildUpdateTestResultStatusQuery(
-          row.application_reference,
-          row.staff_number,
-          'PROCESSING',
-        ));
-      }
+      const [rows] = await this.connection.promise().query(buildManualInterventionUpdateQuery());
       await this.connection.promise().commit();
     } catch (err) {
       this.connection.rollback();

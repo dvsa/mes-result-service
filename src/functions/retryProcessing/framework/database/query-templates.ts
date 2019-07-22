@@ -19,7 +19,7 @@ export const markTestProcessedQuery = `
   ) all_uploads_completed
     ON tr.application_reference = all_uploads_completed.application_reference
     AND tr.staff_number = all_uploads_completed.staff_number
-  SET tr.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PROCESSED');
+  SET tr.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PROCESSED')
 `;
 
 export const updateErrorsToRetryQueryTemplate = `
@@ -44,7 +44,7 @@ export const updateErrorsToRetryQueryTemplate = `
     ON uq1.application_reference = uq2.application_reference
     AND uq1.staff_number = uq2.staff_number
     AND uq1.interface = uq2.interface
-  SET uq1.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'PROCESSING');
+  SET uq1.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'PROCESSING')
 `;
 
 export const updateErrorsToAbortQueryTemplate = `
@@ -68,21 +68,20 @@ export const updateErrorsToAbortQueryTemplate = `
   ) abort
     ON tr.application_reference = abort.application_reference
     AND tr.staff_number = abort.staff_number
-  SET tr.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'ERROR');
+  SET tr.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'ERROR')
 `;
 
-export const supportInterventionQuery = `
-  SELECT u.application_reference, u.staff_number, u.interface
-    FROM UPLOAD_QUEUE u
-    WHERE
-      u.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'FAILED')
-      AND exists (
-        SELECT 'x'
-        FROM TEST_RESULT t
-        WHERE t.application_reference = u.application_reference
-        AND t.staff_number = u.staff_number
-        AND t.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PENDING')
-      )
+export const updateManuallyIntervenedForReprocessQuery = `
+  UPDATE TEST_RESULT tr
+  JOIN UPLOAD_QUEUE uq
+    ON tr.application_reference = uq.application_reference
+    AND tr.staff_number = uq.staff_number
+  SET
+    tr.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PROCESSING'),
+    uq.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'PROCESSING')
+  WHERE
+    tr.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PENDING')
+    AND uq.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'FAILED')
 `;
 
 export const deleteAccepetedUploadsQuery = `
@@ -95,7 +94,7 @@ export const deleteAccepetedUploadsQuery = `
   ) to_delete
     ON UPLOAD_QUEUE.application_reference = to_delete.application_reference
     AND UPLOAD_QUEUE.staff_number = to_delete.staff_number
-    AND UPLOAD_QUEUE.interface = to_delete.interface;
+    AND UPLOAD_QUEUE.interface = to_delete.interface
 `;
 
 export const getDeleteQueueRowsQuery = () => `

@@ -1,7 +1,7 @@
 import {
   buildUpdateErrorsToRetryQuery,
   buildAbortTestsExceeingRetryQuery,
-  buildSupportInterventionQuery,
+  buildManualInterventionUpdateQuery,
   buildDeleteAcceptedQueueRowsQuery,
   buildUpdateQueueLoadStatusQuery,
   buildUpdateTestResultStatusQuery,
@@ -35,23 +35,15 @@ describe('QueryBuilder', () => {
     });
   });
 
-  describe('buildSupportInterventionQuery', () => {
-    it('should build a valid SELECT query', () => {
-      const result = buildSupportInterventionQuery();
-      expect(result).toMatch(/SELECT u.application_reference, u.staff_number, u.interface/);
-    });
-  });
-
   describe('buildQueueRowsToDeleteQuery', () => {
     it('should build a valid SELECT query', () => {
       const result = buildDeleteAcceptedQueueRowsQuery(30);
       expect(result).toMatch(/SELECT application_reference, staff_number, interface/);
     });
-
     it('should have the cutoffpoint in the SELECT', () => {
       const result = buildDeleteAcceptedQueueRowsQuery(30);
       // /AND u.timestamp < \'(9999-99-99 99:99:99`')/
-      expect(result).toMatch(/AND u.timestamp < \'\d\d\d\d\-\d\d\-\d\d/);
+      expect(result).toMatch(/AND timestamp < \'\d\d\d\d\-\d\d\-\d\d/);
     });
   });
 
@@ -85,7 +77,6 @@ describe('QueryBuilder', () => {
       const result = buildUpdateQueueLoadStatusQuery(1234, 5678, 1, 'PROCESSED', 'FAILED');
       expect(result).toMatch(/AND interface = 1/);
     });
-
   });
 
   describe('buildUpdateTestResultStatusQuery', () => {
