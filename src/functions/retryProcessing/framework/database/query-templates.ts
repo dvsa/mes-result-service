@@ -96,32 +96,3 @@ export const deleteAccepetedUploadsQuery = `
     AND UPLOAD_QUEUE.staff_number = to_delete.staff_number
     AND UPLOAD_QUEUE.interface = to_delete.interface
 `;
-
-export const getDeleteQueueRowsQuery = () => `
-    DELETE FROM UPLOAD_QUEUE
-    WHERE application_reference = ?
-    AND   staff_number = ?
-    AND   interface = ?;`;
-
-export const getUpdateQueueLoadStatusAndRetryCountQuery = () => `
-    UPDATE UPLOAD_QUEUE
-    SET upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = ?),
-        retry_count = ?
-    WHERE application_reference = ?
-    AND staff_number = ?
-    AND interface = ?
-    AND upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = ?);`;
-
-export const getUpdateQueueLoadStatusQuery = () => `
-    UPDATE UPLOAD_QUEUE
-    SET upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = ?)
-    WHERE application_reference = ?
-    AND staff_number = ?
-    AND interface = ?
-    AND upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = ?);`;
-
-export const getUpdateTestResultStatusQuery = () => `
-    UPDATE TEST_RESULT
-    SET result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = ?)
-    WHERE application_reference = ?
-    AND staff_number = ?;`;

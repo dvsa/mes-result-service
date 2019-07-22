@@ -4,10 +4,6 @@ import {
   updateErrorsToAbortQueryTemplate as abortTestsExceedingRetryQueryTemplate,
   updateManuallyIntervenedForReprocessQuery,
   deleteAccepetedUploadsQuery,
-  getDeleteQueueRowsQuery,
-  getUpdateQueueLoadStatusAndRetryCountQuery,
-  getUpdateQueueLoadStatusQuery,
-  getUpdateTestResultStatusQuery,
 } from './query-templates';
 import * as mysql from 'mysql2';
 import moment = require('moment');
@@ -58,80 +54,3 @@ export const buildDeleteAcceptedQueueRowsQuery = (cutOffPointInDays: number) => 
   const startDate = moment().subtract(cutOffPointInDays, 'days').format('YYYY-MM-DD HH:mm:ss');
   return mysql.format(deleteAccepetedUploadsQuery, [startDate]);
 };
-
-/**
- * Generic routine to Delete UPLOAD QUEUE rows
- * @param applicationReference
- * @param staffNumber
- * @param interfaceType
-*/
-export const buildDeleteQueueRowsQuery = (
-  applicationReference: number,
-  staffNumber: number,
-  interfaceType: number,
-) => mysql.format(
-  getDeleteQueueRowsQuery(),
-  [applicationReference, staffNumber, interfaceType],
-);
-
-/**
- * Generic routine to update UPLOAD QUEUE upload status and retry count
- * @param applicationReference
- * @param staffNumber
- * @param interfaceType
- * @param uploadStatusNameFrom
- * @param uploadStatusNameTo
- */
-export const buildUpdateQueueLoadStatusAndRetryCountQuery = (
-  applicationReference: number,
-  staffNumber: number,
-  interfaceType: number,
-  uploadStatusNameFrom: string,
-  uploadStatusNameTo: string,
-  retryCount: number,
-) => mysql.format(
-  getUpdateQueueLoadStatusAndRetryCountQuery(),
-  [
-    uploadStatusNameTo,
-    retryCount,
-    applicationReference,
-    staffNumber,
-    interfaceType,
-    uploadStatusNameFrom,
-  ],
-);
-
-/**
- * Generic routine to update UPLOAD QUEUE upload status
- * @param applicationReference
- * @param staffNumber
- * @param interfaceType
- * @param uploadStatusNameFrom
- * @param uploadStatusNameTo
- */
-export const buildUpdateQueueLoadStatusQuery = (
-  applicationReference: number,
-  staffNumber: number,
-  interfaceType: number,
-  uploadStatusNameFrom: string,
-  uploadStatusNameTo: string,
-) => mysql.format(
-  getUpdateQueueLoadStatusQuery(),
-  [uploadStatusNameTo, applicationReference, staffNumber, interfaceType, uploadStatusNameFrom],
-);
-
-/**
- * Generic routine to update TEST RESULT result status
- * @param applicationReference
- * @param staffNumber
- * @param resultStatusNameFrom
- * @param resultStatusNameTo
- */
-export const buildUpdateTestResultStatusQuery = (
-  applicationReference: number,
-  staffNumber: number,
-  resultStatusNameTo: string,
-) => mysql.format(
-  getUpdateTestResultStatusQuery(),
-  [resultStatusNameTo, applicationReference, staffNumber],
-);
