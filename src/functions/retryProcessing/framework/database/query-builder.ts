@@ -1,5 +1,5 @@
 import {
-  successfullyProcessedQuery,
+  markTestProcessedQuery,
   updateErrorsToRetryQueryTemplate,
   updateErrorsToAbortQueryTemplate as abortTestsExceedingRetryQueryTemplate,
   supportInterventionQuery,
@@ -13,11 +13,10 @@ import * as mysql from 'mysql2';
 import moment = require('moment');
 
 /**
- * Builds query to retrieve test results where TARS, RSIS and NOTIFY uploads
- * have been accepted
- *
+ * Builds query to update TEST_RESULT records to ACCEPTED where all interface records in
+ * UPLOAD_QUEUE have been accepted
  */
-export const buildSuccessfullyProcessedQuery = () => mysql.format(successfullyProcessedQuery);
+export const buildMarkTestProcessedQuery = () => mysql.format(markTestProcessedQuery);
 
 /**
  * Builds query to update the UPLOAD_QUEUE, resetting retry counts/status on all errors to retry.
