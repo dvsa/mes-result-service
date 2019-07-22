@@ -63,6 +63,7 @@
     "security-scan": "git secrets --scan && git log -p | scanrepo",
     "start": "npm run compile && sls offline start",
     "test": "npm run compile && jasmine",
+    "test:int": "npm run compile && jasmine \"build/**/*int.js\"",
     "test:jasmine-coverage": "nyc npm run test"
   },
   "nyc": {
