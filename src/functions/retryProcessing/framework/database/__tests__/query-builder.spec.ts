@@ -1,6 +1,6 @@
 import {
   buildUpdateErrorsToRetryQuery,
-  buildErrorsToAbortQuery,
+  buildAbortTestsExceeingRetryQuery,
   buildSupportInterventionQuery,
   buildQueueRowsToDeleteQuery,
   buildUpdateQueueLoadStatusQuery,
@@ -24,11 +24,11 @@ describe('QueryBuilder', () => {
 
   describe('buildErrorsToAbortQuery', () => {
     it('should have the retry count in the SELECT', () => {
-      const result = buildErrorsToAbortQuery(9, 9, 9);
+      const result = buildAbortTestsExceeingRetryQuery(9, 9, 9);
       expect(result).toMatch(/AND uq.retry_count >= 9/);
     });
     it('should have the interface type in the SELECT', () => {
-      const result = buildErrorsToAbortQuery(9, 9, 9);
+      const result = buildAbortTestsExceeingRetryQuery(9, 9, 9);
       expect(result).toMatch(/WHERE interface_type_name = 'RSIS'/);
       expect(result).toMatch(/WHERE interface_type_name = 'NOTIFY'/);
       expect(result).toMatch(/WHERE interface_type_name = 'TARS'/);

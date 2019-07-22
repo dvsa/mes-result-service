@@ -1,7 +1,7 @@
 import {
   successfullyProcessedQuery,
   updateErrorsToRetryQueryTemplate,
-  errorsToAbortQueryTemplate,
+  updateErrorsToAbortQueryTemplate as abortTestsExceedingRetryQueryTemplate,
   supportInterventionQuery,
   getQueueRowsToDeleteQuery,
   getDeleteQueueRowsQuery,
@@ -35,17 +35,18 @@ export const buildUpdateErrorsToRetryQuery = (
 );
 
 /**
- * Builds query to retrieve errors to abort. Will be run once per interace typee (TARS, RSIS and NOTIFY)
+ * Builds query to update TEST_RESULT record to ERROR where there are interfaces that exceeded
+ * the retry limit on any interface.
  * @param rsisRetryCount
  * @param notifyRetryCount
  * @param tarsRetryCount
  */
-export const buildErrorsToAbortQuery = (
+export const buildAbortTestsExceeingRetryQuery = (
   rsisRetryCount: number,
   notifyRetryCount: number,
   tarsRetryCount: number,
 ) => mysql.format(
-  errorsToAbortQueryTemplate,
+  abortTestsExceedingRetryQueryTemplate,
   [rsisRetryCount, notifyRetryCount, tarsRetryCount],
 );
 
