@@ -57,20 +57,32 @@ BEGIN
       AppRef,
       '1',
       ResultDate,
-      1, -- Notify
-      (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = NotifyStatus),
-      NotifyRetryCount,
-      NULL
-    ),
-    (
-      AppRef,
-      '1',
-      ResultDate,
       2, -- RSIS
       (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = RsisStatus),
       RsisRetryCount,
       NULL
     );
+  -- Notify may not have an UPLOAD_QUEUE record if it's a terminated test
+  IF NotifyStatus IS NOT NULL THEN
+    INSERT INTO UPLOAD_QUEUE(
+      application_reference,
+      staff_number,
+      timestamp,
+      interface,
+      upload_status,
+      retry_count,
+      error_message
+    ) VALUES
+      (
+        AppRef,
+        '1',
+        ResultDate,
+        1, -- Notify
+        (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = NotifyStatus),
+        NotifyRetryCount,
+        NULL
+      );
+  END IF;
 END//
 
 DELIMITER ;

@@ -23,8 +23,9 @@ describe('RetryProcessor database test', () => {
     it('should move TEST_RESULTs with all successful UPLOAD_QUEUE records to PROCESSED', async () => {
       const changedRowCount = await retryProcessor.processSuccessful();
       const acceptedTestAppRefs = await getTestResultAppRefsForResultStatus('PROCESSED');
-      expect(changedRowCount).toBe(1);
+      expect(changedRowCount).toBe(2);
       expect(acceptedTestAppRefs).toContain(9);
+      expect(acceptedTestAppRefs).toContain(10);
     });
 
     it('should mark UPLOAD_QUEUE for reprocessing when they failed but not exceeded the retry limit', async () => {
@@ -33,20 +34,20 @@ describe('RetryProcessor database test', () => {
 
       expect(changedRowCount).toBe(12);
       // TARS
-      expect(appRefInterfaces).toContain({ application_reference: 10, interface: 0 });
-      expect(appRefInterfaces).toContain({ application_reference: 13, interface: 0 });
+      expect(appRefInterfaces).toContain({ application_reference: 11, interface: 0 });
       expect(appRefInterfaces).toContain({ application_reference: 14, interface: 0 });
-      expect(appRefInterfaces).toContain({ application_reference: 16, interface: 0 });
+      expect(appRefInterfaces).toContain({ application_reference: 15, interface: 0 });
+      expect(appRefInterfaces).toContain({ application_reference: 17, interface: 0 });
       // NOTIFY
-      expect(appRefInterfaces).toContain({ application_reference: 12, interface: 1 });
-      expect(appRefInterfaces).toContain({ application_reference: 14, interface: 1 });
+      expect(appRefInterfaces).toContain({ application_reference: 13, interface: 1 });
       expect(appRefInterfaces).toContain({ application_reference: 15, interface: 1 });
       expect(appRefInterfaces).toContain({ application_reference: 16, interface: 1 });
+      expect(appRefInterfaces).toContain({ application_reference: 17, interface: 1 });
       // RSIS
-      expect(appRefInterfaces).toContain({ application_reference: 11, interface: 2 });
-      expect(appRefInterfaces).toContain({ application_reference: 13, interface: 2 });
-      expect(appRefInterfaces).toContain({ application_reference: 15, interface: 2 });
+      expect(appRefInterfaces).toContain({ application_reference: 12, interface: 2 });
+      expect(appRefInterfaces).toContain({ application_reference: 14, interface: 2 });
       expect(appRefInterfaces).toContain({ application_reference: 16, interface: 2 });
+      expect(appRefInterfaces).toContain({ application_reference: 17, interface: 2 });
     });
 
     it('should abort TEST_RESULT records that have exceeded the retry count for any interface', async () => {
@@ -54,13 +55,13 @@ describe('RetryProcessor database test', () => {
       const erroredTestAppRefs = await getErroredTestAppRefs();
 
       expect(changedRowCount).toBe(7);
-      expect(erroredTestAppRefs).toContain(24); // Failed TARS
-      expect(erroredTestAppRefs).toContain(25); // Failed RSIS
-      expect(erroredTestAppRefs).toContain(26); // Failed Notify
-      expect(erroredTestAppRefs).toContain(27); // Failed TARS+RSIS
-      expect(erroredTestAppRefs).toContain(28); // Failed TARS+Notify
-      expect(erroredTestAppRefs).toContain(29); // Failed RSIS+Notify
-      expect(erroredTestAppRefs).toContain(30); // Failed TARS+RSIS+Notify
+      expect(erroredTestAppRefs).toContain(25); // Failed TARS
+      expect(erroredTestAppRefs).toContain(26); // Failed RSIS
+      expect(erroredTestAppRefs).toContain(27); // Failed Notify
+      expect(erroredTestAppRefs).toContain(28); // Failed TARS+RSIS
+      expect(erroredTestAppRefs).toContain(29); // Failed TARS+Notify
+      expect(erroredTestAppRefs).toContain(30); // Failed RSIS+Notify
+      expect(erroredTestAppRefs).toContain(31); // Failed TARS+RSIS+Notify
     });
 
     it('should update TEST_RESULT and UPLOAD_QUEUE to make them ready for reprocessing post intervention', async () => {
@@ -70,26 +71,26 @@ describe('RetryProcessor database test', () => {
 
       expect(changedRowCount).toBe(19);
       // TEST_RESULT test_status PENDING -> PROCESSING
-      expect(processingAppRefs).toContain(38);
       expect(processingAppRefs).toContain(39);
       expect(processingAppRefs).toContain(40);
       expect(processingAppRefs).toContain(41);
       expect(processingAppRefs).toContain(42);
       expect(processingAppRefs).toContain(43);
       expect(processingAppRefs).toContain(44);
+      expect(processingAppRefs).toContain(45);
       // UPLOAD_QUEUE upload_status ERROR -> PROCESSING
-      expect(unretriedUploadQueueRecords).toContain({ application_reference: 38, interface: 0 });
-      expect(unretriedUploadQueueRecords).toContain({ application_reference: 39, interface: 2 });
-      expect(unretriedUploadQueueRecords).toContain({ application_reference: 40, interface: 1 });
-      expect(unretriedUploadQueueRecords).toContain({ application_reference: 41, interface: 0 });
-      expect(unretriedUploadQueueRecords).toContain({ application_reference: 41, interface: 2 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 39, interface: 0 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 40, interface: 2 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 41, interface: 1 });
       expect(unretriedUploadQueueRecords).toContain({ application_reference: 42, interface: 0 });
-      expect(unretriedUploadQueueRecords).toContain({ application_reference: 42, interface: 1 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 42, interface: 2 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 43, interface: 0 });
       expect(unretriedUploadQueueRecords).toContain({ application_reference: 43, interface: 1 });
-      expect(unretriedUploadQueueRecords).toContain({ application_reference: 43, interface: 2 });
-      expect(unretriedUploadQueueRecords).toContain({ application_reference: 44, interface: 0 });
       expect(unretriedUploadQueueRecords).toContain({ application_reference: 44, interface: 1 });
       expect(unretriedUploadQueueRecords).toContain({ application_reference: 44, interface: 2 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 45, interface: 0 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 45, interface: 1 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 45, interface: 2 });
     });
 
     it('should clean out old UPLOAD_QUEUE records', async () => {
@@ -97,7 +98,7 @@ describe('RetryProcessor database test', () => {
       const allUploadQueueRecords = await getAllUploadQueueRecords();
 
       expect(deletedRowCount).toBe(3);
-      expect(allUploadQueueRecords.some(record => record.application_reference === 52)).toBe(false);
+      expect(allUploadQueueRecords.some(record => record.application_reference === 53)).toBe(false);
     });
   });
 
