@@ -102,7 +102,7 @@ export class RetryProcessor implements IRetryProcessor {
       customMetric(
         'UploadQueueCleanupRowsChanged',
         'The number of UPLOAD_QUEUE records deleted due to being successful and older than the threshold',
-        rows.changedRows,
+        rows.affectedRows,
       );
       await this.connection.promise().commit();
     } catch (err) {
