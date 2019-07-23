@@ -16,16 +16,18 @@ export class RetryProcessor implements IRetryProcessor {
     this.connection = connection;
   }
 
-  async processSuccessful(): Promise<void> {
+  async processSuccessful(): Promise<number> {
     try {
       await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().query(buildMarkTestProcessedQuery());
+      const changedRowCount = rows.changedRows;
       customMetric(
         'ResultsSuccessfullyProcessedRowsChanged',
         'The amount of TEST_RESULT records updated to SUCCESSFUL status',
-        rows.changedRows,
+        changedRowCount,
       );
       await this.connection.promise().commit();
+      return changedRowCount;
     } catch (err) {
       this.connection.rollback();
       warn('Error caught marking test results as successfully submitted', err.messsage);
@@ -35,7 +37,7 @@ export class RetryProcessor implements IRetryProcessor {
     rsisRetryCount: number,
     notifyRetryCount: number,
     tarsRetryCount: number,
-  ): Promise<void> {
+  ): Promise<number> {
     try {
       await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().
@@ -44,12 +46,14 @@ export class RetryProcessor implements IRetryProcessor {
           notifyRetryCount,
           tarsRetryCount,
         ));
+      const changedRowCount = rows.changedRows;
       customMetric(
         'InterfacesQueuedForRetryRowsChanged',
         'The amount of UPLOAD_QUEUE records updated back to PROCESSING status for retry',
-        rows.changedRows,
+        changedRowCount,
       );
       await this.connection.promise().commit();
+      return changedRowCount;
     } catch (err) {
       this.connection.rollback();
       warn('Error caught marking interfaces as ready for retry', err.message);

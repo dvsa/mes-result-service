@@ -1,12 +1,12 @@
 
 export interface IRetryProcessor {
-  processSuccessful(): Promise<void>;
+  processSuccessful(): Promise<number>;
 
   processErrorsToRetry(
     rsisRetryCount: number,
     notifyRetryCount: number,
     tarsRetryCount: number,
-  ): Promise<void>;
+  ): Promise<number>;
 
   processErrorsToAbort(
     rsisRetryCount: number,
