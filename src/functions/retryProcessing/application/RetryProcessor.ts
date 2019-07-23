@@ -7,7 +7,7 @@ import {
   buildDeleteAcceptedQueueRowsQuery,
 } from '../framework/database/query-builder';
 import { IRetryProcessor } from './IRetryProcessor';
-import { warn } from '@dvsa/mes-microservice-common/application/utils/logger';
+import { warn, customMetric } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 export class RetryProcessor implements IRetryProcessor {
   private connection: mysql.Connection;
@@ -20,6 +20,11 @@ export class RetryProcessor implements IRetryProcessor {
     try {
       await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().query(buildMarkTestProcessedQuery());
+      customMetric(
+        'ResultsSuccessfullyProcessedRowsChanged',
+        'The amount of TEST_RESULT records updated to SUCCESSFUL status',
+        rows.changedRows,
+      );
       await this.connection.promise().commit();
     } catch (err) {
       this.connection.rollback();
@@ -39,6 +44,11 @@ export class RetryProcessor implements IRetryProcessor {
           notifyRetryCount,
           tarsRetryCount,
         ));
+      customMetric(
+        'InterfacesQueuedForRetryRowsChanged',
+        'The amount of UPLOAD_QUEUE records updated back to PROCESSING status for retry',
+        rows.changedRows,
+      );
       await this.connection.promise().commit();
     } catch (err) {
       this.connection.rollback();
@@ -57,6 +67,11 @@ export class RetryProcessor implements IRetryProcessor {
         notifyRetryCount,
         tarsRetryCount,
       ));
+      customMetric(
+        'ResultsAbortedRowsChanged',
+        'The amount of TEST_RESULT records moved to the ERROR status',
+        rows.changedRows,
+      );
       await this.connection.promise().commit();
     } catch (err) {
       this.connection.rollback();
@@ -68,6 +83,11 @@ export class RetryProcessor implements IRetryProcessor {
     try {
       await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().query(buildManualInterventionUpdateQuery());
+      customMetric(
+        'InterventionRequeueRowsChanged',
+        'The number of TEST_RESULT+UPLOAD_QUEUE records updated as part of reprocessing manual intervention',
+        rows.changedRows,
+      );
       await this.connection.promise().commit();
     } catch (err) {
       this.connection.rollback();
@@ -79,6 +99,11 @@ export class RetryProcessor implements IRetryProcessor {
     try {
       await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().query(buildDeleteAcceptedQueueRowsQuery(cutOffPointInDays));
+      customMetric(
+        'UploadQueueCleanupRowsChanged',
+        'The number of UPLOAD_QUEUE records deleted due to being successful and older than the threshold',
+        rows.changedRows,
+      );
       await this.connection.promise().commit();
     } catch (err) {
       this.connection.rollback();
