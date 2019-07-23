@@ -54,13 +54,13 @@ describe('RetryProcessor database test', () => {
       const erroredTestAppRefs = await getErroredTestAppRefs();
 
       expect(changedRowCount).toBe(7);
-      expect(erroredTestAppRefs).toContain(24);
-      expect(erroredTestAppRefs).toContain(25);
-      expect(erroredTestAppRefs).toContain(26);
-      expect(erroredTestAppRefs).toContain(27);
-      expect(erroredTestAppRefs).toContain(28);
-      expect(erroredTestAppRefs).toContain(29);
-      expect(erroredTestAppRefs).toContain(30);
+      expect(erroredTestAppRefs).toContain(24); // Failed TARS
+      expect(erroredTestAppRefs).toContain(25); // Failed RSIS
+      expect(erroredTestAppRefs).toContain(26); // Failed Notify
+      expect(erroredTestAppRefs).toContain(27); // Failed TARS+RSIS
+      expect(erroredTestAppRefs).toContain(28); // Failed TARS+Notify
+      expect(erroredTestAppRefs).toContain(29); // Failed RSIS+Notify
+      expect(erroredTestAppRefs).toContain(30); // Failed TARS+RSIS+Notify
     });
 
     it('should update TEST_RESULT and UPLOAD_QUEUE to make them ready for reprocessing', async () => {
