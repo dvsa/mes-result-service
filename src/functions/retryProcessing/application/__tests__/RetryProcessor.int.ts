@@ -63,7 +63,33 @@ describe('RetryProcessor database test', () => {
       expect(erroredTestAppRefs).toContain(30); // Failed TARS+RSIS+Notify
     });
 
-    it('should update TEST_RESULT and UPLOAD_QUEUE to make them ready for reprocessing', async () => {
+    it('should update TEST_RESULT and UPLOAD_QUEUE to make them ready for reprocessing post intervention', async () => {
+      const changedRowCount = await retryProcessor.processSupportInterventions();
+      const processingAppRefs = await getTestResultAppRefsForResultStatus('PROCESSING');
+      const unretriedUploadQueueRecords = await getUnretriedProcessingUploadQueueRecords();
+
+      expect(changedRowCount).toBe(19);
+      // TEST_RESULT test_status PENDING -> PROCESSING
+      expect(processingAppRefs).toContain(38);
+      expect(processingAppRefs).toContain(39);
+      expect(processingAppRefs).toContain(40);
+      expect(processingAppRefs).toContain(41);
+      expect(processingAppRefs).toContain(42);
+      expect(processingAppRefs).toContain(43);
+      expect(processingAppRefs).toContain(44);
+      // UPLOAD_QUEUE upload_status ERROR -> PROCESSING
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 38, interface: 0 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 39, interface: 2 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 40, interface: 1 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 41, interface: 0 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 41, interface: 2 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 42, interface: 0 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 42, interface: 1 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 43, interface: 1 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 43, interface: 2 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 44, interface: 0 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 44, interface: 1 });
+      expect(unretriedUploadQueueRecords).toContain({ application_reference: 44, interface: 2 });
     });
 
     it('should clean out old UPLOAD_QUEUE records', async () => {
@@ -128,6 +154,26 @@ describe('RetryProcessor database test', () => {
             reject(err);
           }
           resolve(results.map(row => row.application_reference));
+        });
+    });
+  };
+
+  const getUnretriedProcessingUploadQueueRecords = (): Promise<AppRefInterface[]> => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `
+        SELECT application_reference, interface FROM UPLOAD_QUEUE
+        WHERE
+          upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'PROCESSING')
+          AND retry_count = 0
+          AND error_message IS NULL
+        `,
+        [],
+        (err, results, fields) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(results.map(row => ({ application_reference: row.application_reference, interface: row.interface })));
         });
     });
   };

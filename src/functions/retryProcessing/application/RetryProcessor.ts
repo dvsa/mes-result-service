@@ -85,16 +85,18 @@ export class RetryProcessor implements IRetryProcessor {
     }
   }
 
-  async processSupportInterventions(): Promise<void> {
+  async processSupportInterventions(): Promise<number> {
     try {
       await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().query(buildManualInterventionUpdateQuery());
+      const changedRowCount = rows.changedRows;
       customMetric(
         'InterventionRequeueRowsChanged',
         'The number of TEST_RESULT+UPLOAD_QUEUE records updated as part of reprocessing manual intervention',
-        rows.changedRows,
+        changedRowCount,
       );
       await this.connection.promise().commit();
+      return changedRowCount;
     } catch (err) {
       this.connection.rollback();
       warn('Error caught updating records marked for reprocess by manual intervention', err.message);

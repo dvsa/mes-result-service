@@ -14,7 +14,7 @@ export interface IRetryProcessor {
     tarsRetryCount: number,
   ): Promise<number>;
 
-  processSupportInterventions(): Promise<void>;
+  processSupportInterventions(): Promise<number>;
 
   processOldEntryCleanup(cutOffPointInDays: number): Promise<void>;
 }
