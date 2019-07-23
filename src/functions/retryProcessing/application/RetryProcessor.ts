@@ -103,16 +103,18 @@ export class RetryProcessor implements IRetryProcessor {
     }
   }
 
-  async processOldEntryCleanup(cutOffPointInDays: number): Promise<void> {
+  async processOldEntryCleanup(cutOffPointInDays: number): Promise<number> {
     try {
       await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().query(buildDeleteAcceptedQueueRowsQuery(cutOffPointInDays));
+      const deletedRowCount = rows.affectedRows;
       customMetric(
         'UploadQueueCleanupRowsChanged',
         'The number of UPLOAD_QUEUE records deleted due to being successful and older than the threshold',
-        rows.affectedRows,
+        deletedRowCount,
       );
       await this.connection.promise().commit();
+      return deletedRowCount;
     } catch (err) {
       this.connection.rollback();
       warn('Error caught processing old upload queue record cleanup', err.message);

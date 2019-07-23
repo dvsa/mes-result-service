@@ -53,4 +53,4 @@ CALL sp_create_retry_process_scenario(48,'PROCESSING',NOW(),'PROCESSING',0,'PROC
 CALL sp_create_retry_process_scenario(49,'PROCESSING',NOW(),'PROCESSING',0,'ACCEPTED',2,'PROCESSING',0);
 CALL sp_create_retry_process_scenario(50,'PROCESSING',NOW(),'ACCEPTED',2,'PROCESSING',0,'PROCESSING',0);
 CALL sp_create_retry_process_scenario(51,'PROCESSING',NOW(),'PROCESSING',0,'PROCESSING',0,'PROCESSING',0);
-CALL sp_create_retry_process_scenario(52,'PROCESSED',NOW(),'ACCEPTED',2,'ACCEPTED',2,'ACCEPTED',2);
+CALL sp_create_retry_process_scenario(52,'PROCESSED',NOW() - INTERVAL 30 DAY,'ACCEPTED',2,'ACCEPTED',2,'ACCEPTED',2);

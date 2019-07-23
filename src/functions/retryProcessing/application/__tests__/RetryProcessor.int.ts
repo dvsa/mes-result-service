@@ -93,6 +93,11 @@ describe('RetryProcessor database test', () => {
     });
 
     it('should clean out old UPLOAD_QUEUE records', async () => {
+      const deletedRowCount = await retryProcessor.processOldEntryCleanup(30);
+      const allUploadQueueRecords = await getAllUploadQueueRecords();
+
+      expect(deletedRowCount).toBe(3);
+      expect(allUploadQueueRecords.some(record => record.application_reference === 52)).toBe(false);
     });
   });
 
@@ -167,6 +172,22 @@ describe('RetryProcessor database test', () => {
           upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'PROCESSING')
           AND retry_count = 0
           AND error_message IS NULL
+        `,
+        [],
+        (err, results, fields) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(results.map(row => ({ application_reference: row.application_reference, interface: row.interface })));
+        });
+    });
+  };
+
+  const getAllUploadQueueRecords = (): Promise<AppRefInterface[]> => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        `
+        SELECT application_reference, interface FROM UPLOAD_QUEUE
         `,
         [],
         (err, results, fields) => {
