@@ -12,7 +12,7 @@ export interface IRetryProcessor {
     rsisRetryCount: number,
     notifyRetryCount: number,
     tarsRetryCount: number,
-  ): Promise<void>;
+  ): Promise<number>;
 
   processSupportInterventions(): Promise<void>;
 

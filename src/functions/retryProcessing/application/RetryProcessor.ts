@@ -63,7 +63,7 @@ export class RetryProcessor implements IRetryProcessor {
     rsisRetryCount: number,
     notifyRetryCount: number,
     tarsRetryCount: number,
-  ): Promise<void> {
+  ): Promise<number> {
     try {
       await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().query(buildAbortTestsExceeingRetryQuery(
@@ -71,12 +71,14 @@ export class RetryProcessor implements IRetryProcessor {
         notifyRetryCount,
         tarsRetryCount,
       ));
+      const changedRowCount = rows.changedRows;
       customMetric(
         'ResultsAbortedRowsChanged',
         'The amount of TEST_RESULT records moved to the ERROR status',
-        rows.changedRows,
+        changedRowCount,
       );
       await this.connection.promise().commit();
+      return changedRowCount;
     } catch (err) {
       this.connection.rollback();
       warn('Error caught marking interfaces as aborted', err.message);
