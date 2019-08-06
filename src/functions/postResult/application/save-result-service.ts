@@ -7,12 +7,15 @@ import { buildTestResultInsert, buildUploadQueueInsert } from '../framework/data
 export const saveTestResult = async (
   testResult: StandardCarTestCATBSchema,
   hasValidationError: boolean = false,
+  isPartialTestResult: boolean,
 ): Promise<void> => {
   const connection: mysql.Connection = getConnection();
-
   try {
-    await connection.promise().query(buildTestResultInsert(testResult, hasValidationError));
-    await trySaveUploadQueueRecords(connection, testResult, hasValidationError);
+    connection.query(`SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE;`);
+    connection.beginTransaction();
+    await connection.promise().query(buildTestResultInsert(testResult, hasValidationError, isPartialTestResult));
+    await trySaveUploadQueueRecords(connection, testResult, hasValidationError, isPartialTestResult);
+    connection.commit();
   } catch (err) {
     connection.rollback();
     throw err;
@@ -25,10 +28,13 @@ const trySaveUploadQueueRecords = async (
   connection: mysql.Connection,
   testResult: StandardCarTestCATBSchema,
   hasValidationError: boolean,
+  isPartialTestResult: boolean,
 ): Promise<void> => {
   if (!hasValidationError) {
     await connection.promise().query(buildUploadQueueInsert(testResult, IntegrationType.TARS));
     await connection.promise().query(buildUploadQueueInsert(testResult, IntegrationType.NOTIFY));
-    await connection.promise().query(buildUploadQueueInsert(testResult, IntegrationType.RSIS));
+    if (!isPartialTestResult) {
+      await connection.promise().query(buildUploadQueueInsert(testResult, IntegrationType.RSIS));
+    }
   }
 };
