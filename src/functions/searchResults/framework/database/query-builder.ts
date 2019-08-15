@@ -25,6 +25,11 @@ export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryPar
 
   if (queryParameters.applicationReference) {
     if (queryParameters.applicationReference.toString().length === 8) {
+      /*
+        Finds appRefs based on 8 digits provided
+        Uses range query to find appRefs between those numbers
+        Most performant way of implementing the 8 digit app ref search
+      */
       queries.push('application_reference >= ? AND application_reference <= ?');
       parameterArray.push(`${queryParameters.applicationReference.toString()}000`);
       parameterArray.push(`${queryParameters.applicationReference.toString()}999`);

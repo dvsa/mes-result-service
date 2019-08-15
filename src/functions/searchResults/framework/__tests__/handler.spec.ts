@@ -95,11 +95,11 @@ describe('searchResults handler', () => {
       dummyApigwEvent.requestContext.authorizer = {
         examinerRole: UserRole.LDTM,
       };
-      dummyApigwEvent.queryStringParameters['startDate'] = queryParameter.startDate;
-      dummyApigwEvent.queryStringParameters['endDate'] = queryParameter.endDate;
-      dummyApigwEvent.queryStringParameters['driverNumber'] = queryParameter.driverNumber;
-      dummyApigwEvent.queryStringParameters['dtcCode'] = queryParameter.dtcCode;
-      dummyApigwEvent.queryStringParameters['staffNumber'] = queryParameter.staffNumber;
+      dummyApigwEvent.queryStringParameters['startDate'] = queryParameterWith8DigitAppRef.startDate;
+      dummyApigwEvent.queryStringParameters['endDate'] = queryParameterWith8DigitAppRef.endDate;
+      dummyApigwEvent.queryStringParameters['driverNumber'] = queryParameterWith8DigitAppRef.driverNumber;
+      dummyApigwEvent.queryStringParameters['dtcCode'] = queryParameterWith8DigitAppRef.dtcCode;
+      dummyApigwEvent.queryStringParameters['staffNumber'] = queryParameterWith8DigitAppRef.staffNumber;
       dummyApigwEvent.queryStringParameters['applicationReference'] = queryParameterWith8DigitAppRef
         .applicationReference;
       moqSearchResults.setup(x => x(It.isAny())).returns(() => Promise.resolve(testResult));
