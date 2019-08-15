@@ -44,6 +44,10 @@ describe('Joi schema validation service', () => {
 
   it('should not return a validation error if \'testSlotAttributes.start\' is valid', () => {
     const invalidSchema = {
+      changeMarker: false,
+      examinerBooked: 1234567,
+      examinerConducted: 1234567,
+      examinerKeyed: 1234567,
       activityCode: '1',
       category: 'B',
       journalData: {
