@@ -39,6 +39,10 @@ VUQ4QJMUSisGQ9wSBR7GgFuPvKrdIzvi-2dZLcaCazThAsA9XxV1FetdMtFHcX0XiW-FEDfEYZhJoMhj
 sKbh_w';
 
 export const sampleTest_12345678: StandardCarTestCATBSchema = {
+  changeMarker: false,
+  examinerBooked: 1234567,
+  examinerConducted: 1234567,
+  examinerKeyed: 1234567,
   category: null,
   journalData: {
     applicationReference: null,
@@ -54,6 +58,10 @@ export const sampleTest_12345678: StandardCarTestCATBSchema = {
 };
 
 export const sampleTest_87654321: StandardCarTestCATBSchema = {
+  changeMarker: false,
+  examinerBooked: 1234567,
+  examinerConducted: 1234567,
+  examinerKeyed: 1234567,
   category: null,
   journalData: {
     applicationReference: null,
@@ -69,6 +77,10 @@ export const sampleTest_87654321: StandardCarTestCATBSchema = {
 };
 
 export const sampleTest_empty: StandardCarTestCATBSchema = {
+  changeMarker: false,
+  examinerBooked: 1234567,
+  examinerConducted: 1234567,
+  examinerKeyed: 1234567,
   category: null,
   journalData: {
     applicationReference: null,

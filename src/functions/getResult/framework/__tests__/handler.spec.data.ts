@@ -45,6 +45,10 @@ export const noTestResults: TestResultRecord[] = [];
 export const testResult: TestResultRecord[] =
   [{
     test_result: {
+      changeMarker: false,
+      examinerBooked: 1234567,
+      examinerConducted: 1234567,
+      examinerKeyed: 1234567,
       category: 'B',
       testData: {
         ETA: {}, eco: {},
