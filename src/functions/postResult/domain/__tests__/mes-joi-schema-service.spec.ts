@@ -36,6 +36,10 @@ describe('Joi schema validation service', () => {
         },
       },
       rekey: false,
+      changeMarker: false,
+      examinerBooked: 12345678,
+      examinerConducted: 12345678,
+      examinerKeyed: 12345678,
     };
     const validationResult = validateMESJoiSchema(invalidSchema);
     expect(validationResult.error.message).toEqual(startValidationErrorMessage);
@@ -68,6 +72,10 @@ describe('Joi schema validation service', () => {
         },
       },
       rekey: false,
+      changeMarker: false,
+      examinerBooked: 12345678,
+      examinerConducted: 12345678,
+      examinerKeyed: 12345678,
     };
     const validationResult = validateMESJoiSchema(invalidSchema);
     expect(validationResult.error).toBeNull();
@@ -95,6 +103,10 @@ describe('Joi schema validation service', () => {
         // missing required property 'applicationReference'
       },
       rekey: false,
+      changeMarker: false,
+      examinerBooked: 12345678,
+      examinerConducted: 12345678,
+      examinerKeyed: 12345678,
     };
 
     const validationResult = validateMESJoiSchema(invalidSchema);
