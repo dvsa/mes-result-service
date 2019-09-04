@@ -3,6 +3,7 @@ import * as mysql from 'mysql2';
 import { IntegrationType } from '../domain/result-integration';
 import { getConnection } from '../../../common/framework/mysql/database';
 import { buildTestResultInsert, buildUploadQueueInsert } from '../framework/database/query-builder';
+import * as logger from '../../../common/application/utils/logger';
 
 export const saveTestResult = async (
   testResult: StandardCarTestCATBSchema,
@@ -11,13 +12,14 @@ export const saveTestResult = async (
 ): Promise<void> => {
   const connection: mysql.Connection = getConnection();
   try {
-    connection.query(`SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE;`);
+    await connection.promise().query(`SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE;`);
     connection.beginTransaction();
     await connection.promise().query(buildTestResultInsert(testResult, hasValidationError, isPartialTestResult));
     await trySaveUploadQueueRecords(connection, testResult, hasValidationError, isPartialTestResult);
     connection.commit();
   } catch (err) {
     connection.rollback();
+    logger.error(`Error saving result: ${err}`);
     throw err;
   } finally {
     connection.end();

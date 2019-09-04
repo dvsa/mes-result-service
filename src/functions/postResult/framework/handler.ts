@@ -17,7 +17,7 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
 
   let isPartialTestResult = false;
   if (event.queryStringParameters && event.queryStringParameters['partial']
-    && event.queryStringParameters['partial'] === 'true') {
+    && event.queryStringParameters['partial'].toLowerCase() === 'true') {
     isPartialTestResult = true;
   }
 
