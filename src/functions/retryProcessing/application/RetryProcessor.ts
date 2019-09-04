@@ -4,14 +4,16 @@ import {
   buildUpdateErrorsToRetryQuery,
   buildAbortTestsExceeingRetryQuery,
   buildDeleteAcceptedQueueRowsQuery,
+  buildSelectTestsExceedingRetryQuery,
 } from '../framework/database/query-builder';
 import { IRetryProcessor } from './IRetryProcessor';
-import { warn, customMetric } from '@dvsa/mes-microservice-common/application/utils/logger';
+import { warn, customMetric, error } from '@dvsa/mes-microservice-common/application/utils/logger';
 import {
   manualInterventionReprocessUploadQueueQuery,
   manualInterventionUploadQueueReplacementQuery,
   manualInterventionReprocessTestResultQuery,
 } from '../framework/database/query-templates';
+import { FailedUploadQueueResult } from '../domain/query-results-types';
 
 export class RetryProcessor implements IRetryProcessor {
   private connection: mysql.Connection;
@@ -61,6 +63,35 @@ export class RetryProcessor implements IRetryProcessor {
     } catch (err) {
       this.connection.rollback();
       warn('Error caught marking interfaces as ready for retry', err.message);
+    }
+  }
+  async processErrorsToLog(
+    rsisRetryCount: number,
+    notifyRetryCount: number,
+    tarsRetryCount: number,
+  ): Promise<void> {
+    try {
+      const [rows, fields]: [FailedUploadQueueResult[], any] =
+        await this.connection.promise().query(
+          buildSelectTestsExceedingRetryQuery(rsisRetryCount, notifyRetryCount, tarsRetryCount),
+        );
+
+      rows.forEach((row) => {
+        error('A result has reached maximum number of retries', {
+          application_reference: row.application_reference,
+          staff_number: row.staff_number,
+          interface: row.interface,
+          error_message: row.error_message,
+        });
+
+        customMetric(
+          'ResultsNeedingManualIntervention',
+          'The amount of newly processed results which require a manual intervention',
+          rows.length,
+        );
+      });
+    } catch (err) {
+      warn('Error caught selecting which failed upload queue rows to log', err.message);
     }
   }
   async processErrorsToAbort(
