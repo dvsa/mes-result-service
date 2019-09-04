@@ -20,6 +20,7 @@ export const markTestProcessedQuery = `
     ON tr.application_reference = all_uploads_completed.application_reference
     AND tr.staff_number = all_uploads_completed.staff_number
   SET tr.result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'PROCESSED')
+  WHERE tr.autosave != 1
 `;
 
 export const updateErrorsToRetryQueryTemplate = `

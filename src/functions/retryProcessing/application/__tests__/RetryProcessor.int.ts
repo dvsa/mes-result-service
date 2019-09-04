@@ -53,7 +53,7 @@ describe('RetryProcessor database test', () => {
 
     it('should abort TEST_RESULT records that have exceeded the retry count for any interface', async () => {
       const changedRowCount = await retryProcessor.processErrorsToAbort(3, 3, 3);
-      const erroredTestAppRefs = await getErroredTestAppRefs();
+      const erroredTestAppRefs = await getErroredTestAppRefs(db);
 
       expect(changedRowCount).toBe(7);
       expect(erroredTestAppRefs).toContain(25); // Failed TARS
@@ -149,26 +149,6 @@ describe('RetryProcessor database test', () => {
     });
   };
 
-  const getErroredTestAppRefs = (): Promise<number[]> => {
-    return new Promise((resolve, reject) => {
-      db.query(
-        `
-        SELECT DISTINCT tr.application_reference
-        FROM TEST_RESULT tr
-        JOIN UPLOAD_QUEUE uq
-          ON tr.application_reference = uq.application_reference
-          AND result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'ERROR')
-        `,
-        [],
-        (err, results, fields) => {
-          if (err) {
-            reject(err);
-          }
-          resolve(results.map(row => row.application_reference));
-        });
-    });
-  };
-
   const getProcessingUploadQueueRecords = (): Promise<AppRefInterface[]> => {
     return new Promise((resolve, reject) => {
       db.query(
@@ -204,3 +184,23 @@ describe('RetryProcessor database test', () => {
   };
 
 });
+
+export const getErroredTestAppRefs = (db: mysql.Connection): Promise<number[]> => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `
+      SELECT DISTINCT tr.application_reference
+      FROM TEST_RESULT tr
+      JOIN UPLOAD_QUEUE uq
+        ON tr.application_reference = uq.application_reference
+        AND result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'ERROR')
+      `,
+      [],
+      (err, results, fields) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(results.map(row => row.application_reference));
+      });
+  });
+};
