@@ -14,6 +14,7 @@ import {
   manualInterventionReprocessTestResultQuery,
 } from '../framework/database/query-templates';
 import { FailedUploadQueueResult } from '../domain/query-results-types';
+import { convertInterfaceIdToInterfaceType } from '../domain/interface-types';
 
 export class RetryProcessor implements IRetryProcessor {
   private connection: mysql.Connection;
@@ -80,16 +81,17 @@ export class RetryProcessor implements IRetryProcessor {
         error('A result has reached maximum number of retries', {
           application_reference: row.application_reference,
           staff_number: row.staff_number,
-          interface: row.interface,
+          interface_id: row.interface,
+          interface_name: convertInterfaceIdToInterfaceType(row.interface),
           error_message: row.error_message,
         });
-
-        customMetric(
-          'ResultsNeedingManualIntervention',
-          'The amount of newly processed results which require a manual intervention',
-          rows.length,
-        );
       });
+
+      customMetric(
+        'ResultsNeedingManualIntervention',
+        'The amount of newly processed results which require a manual intervention',
+        rows.length,
+      );
     } catch (err) {
       warn('Error caught selecting which failed upload queue rows to log', err.message);
     }
