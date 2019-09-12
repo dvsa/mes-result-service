@@ -31,7 +31,7 @@ describe('RetryProcessor database test', () => {
     it('should move TEST_RESULTs with all successful UPLOAD_QUEUE records to PROCESSED', async () => {
       const changedRowCount = await retryProcessor.processSuccessful();
       const acceptedTestAppRefs = await getTestResultAppRefsForResultStatus('PROCESSED', db);
-      expect(changedRowCount).toBe(3);
+      expect(changedRowCount).toBe(1);
       expect(acceptedTestAppRefs).toContain(9);
     });
 

@@ -23,7 +23,7 @@ describe('Autosave processing operations', () => {
       user: 'results_user',
       database: 'results',
       password: 'Pa55word1',
-      port: 1234,
+      port: 3306,
     });
     retryProcessor = new RetryProcessor(db);
   });
