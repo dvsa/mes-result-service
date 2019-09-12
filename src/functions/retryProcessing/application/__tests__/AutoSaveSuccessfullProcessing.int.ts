@@ -88,7 +88,7 @@ describe('Autosave processing operations', () => {
       await updateTestResultAutosaveFlag(db, 56, 59);
 
       const changedRowCount = await retryProcessor.processSuccessful();
-      const acceptedTestAppRefs = await getTestResultAppRefsForResultStatus('PROCESSED', db);
+      const acceptedTestAppRefs = await getTestResultAppRefsForResultStatus(db, 'PROCESSED');
 
       expect(changedRowCount).toBe(1);
 

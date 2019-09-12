@@ -35,6 +35,18 @@ const processingRecord = (appRef: TestCases, interf: Interface) => {
   };
 };
 
+const testCasesArray: TestCases[] = [
+  TestCases.AutosaveNoUploadRecords,
+  TestCases.FullSubNoUploadRecords,
+  TestCases.FullSubTarsProcRsisFailNotifyProc,
+  TestCases.FullSubTarsAcceptRsisFailNotifyFail,
+  TestCases.FullSubAllThreeFail,
+  TestCases.FullSubTarsAcceptRsisFailNotifyAccept,
+  TestCases.AutosaveTarsFailNotifyProc,
+  TestCases.AutosaveTarsFailNotifyFail,
+  TestCases.AutosaveTarsFailNotifyAccept,
+];
+
 describe('SupportIntervention', () => {
   let db: mysql.Connection;
   let retryProcessor: IRetryProcessor;
@@ -56,8 +68,8 @@ describe('SupportIntervention', () => {
   });
 
   afterEach(async () => {
-    await deleteAutosaveTestResultData(db, 'TEST_RESULT', [77, 78, 79, 80, 81, 82, 83, 84, 85]);
-    await deleteAutosaveTestResultData(db, 'UPLOAD_QUEUE', [77, 78, 79, 80, 81, 82, 83, 84, 85]);
+    await deleteAutosaveTestResultData(db, 'TEST_RESULT', testCasesArray);
+    await deleteAutosaveTestResultData(db, 'UPLOAD_QUEUE', testCasesArray);
   });
 
   describe('AUTOSAVE - FAILED VALIDATION (NO RECORDS CREATED', () => {
@@ -66,7 +78,7 @@ describe('SupportIntervention', () => {
 
       await retryProcessor.processSupportInterventions();
       const autosaveRecords = await getAutosaveQueueRecords(db);
-      const processingResults = await getTestResultAppRefsForResultStatus('PROCESSING', db);
+      const processingResults = await getTestResultAppRefsForResultStatus(db, 'PROCESSING');
 
       expect(autosaveRecords).toContain(
         autosaveRecord(TestCases.AutosaveNoUploadRecords, Interface.TARS, UploadStatus.PROCESSING));
@@ -86,7 +98,7 @@ describe('SupportIntervention', () => {
 
       await retryProcessor.processSupportInterventions();
       const processingUploadQueueRecords = await getProcessingUploadQueueRecords(db);
-      const processingResults = await getTestResultAppRefsForResultStatus('PROCESSING', db);
+      const processingResults = await getTestResultAppRefsForResultStatus(db, 'PROCESSING');
 
       expect(processingUploadQueueRecords).toContain(
         processingRecord(TestCases.FullSubNoUploadRecords, Interface.TARS));
@@ -104,7 +116,7 @@ describe('SupportIntervention', () => {
 
       await retryProcessor.processSupportInterventions();
       const processingUploadQueueRecords = await getProcessingUploadQueueRecords(db);
-      const processingResults = await getTestResultAppRefsForResultStatus('PROCESSING', db);
+      const processingResults = await getTestResultAppRefsForResultStatus(db, 'PROCESSING');
 
       expect(processingUploadQueueRecords).toContain(
         processingRecord(TestCases.FullSubTarsProcRsisFailNotifyProc, Interface.RSIS));
@@ -136,7 +148,7 @@ describe('SupportIntervention', () => {
 
       await retryProcessor.processSupportInterventions();
       const autosaveRecords = await getAutosaveQueueRecords(db);
-      const processingResults = await getTestResultAppRefsForResultStatus('PROCESSING', db);
+      const processingResults = await getTestResultAppRefsForResultStatus(db, 'PROCESSING');
 
       expect(autosaveRecords).toContain(
         autosaveRecord(TestCases.AutosaveTarsFailNotifyProc, Interface.TARS, UploadStatus.PROCESSING));
