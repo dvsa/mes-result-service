@@ -171,4 +171,12 @@ export class RetryProcessor implements IRetryProcessor {
     }
   }
 
+  async setSerializableIsolationLevel(): Promise<void> {
+    try {
+      await this.connection.promise().query(`SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE;`);
+    } catch (err) {
+      warn('Error caught setting Transaction Isolation Level to SERIALIZABLE', err.message);
+    }
+  }
+
 }

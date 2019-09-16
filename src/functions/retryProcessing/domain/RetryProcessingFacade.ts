@@ -12,6 +12,7 @@ export class RetryProcessingFacade implements IRetryProcessingFacade {
   async processRetries(): Promise<void> {
     await getRetryConfig();
 
+    await this.retryProcessingRepository.setSerializableIsolationLevel();
     await this.retryProcessingRepository.processSuccessful();
     await this.retryProcessingRepository.processErrorsToRetry(
       retryConfig().rsisRetryCount,
