@@ -15,7 +15,7 @@ export async function handler(event: ScheduledEvent, fnCtx: Context): Promise<Re
   await bootstrapConfig();
 
   const connection = getConnection();
-  await connection.promise.query(setIsolationLevelSerializable);
+  await connection.promise().query(setIsolationLevelSerializable);
   const retryProcessor: IRetryProcessor = new RetryProcessor(connection);
   const retryProcessingFacade: IRetryProcessingFacade = new RetryProcessingFacade(retryProcessor);
 
