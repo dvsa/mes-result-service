@@ -9,11 +9,13 @@ import { error } from '@dvsa/mes-microservice-common/application/utils/logger';
 import { IRetryProcessingFacade } from '../domain/IRetryProcessingFacade';
 import { RetryProcessingFacade } from '../domain/RetryProcessingFacade';
 import { getConnection } from '../../../common/framework/mysql/database';
+import { setIsolationLevelSerializable } from './database/query-templates';
 
 export async function handler(event: ScheduledEvent, fnCtx: Context): Promise<Response> {
   await bootstrapConfig();
 
   const connection = getConnection();
+  await connection.promise.query(setIsolationLevelSerializable);
   const retryProcessor: IRetryProcessor = new RetryProcessor(connection);
   const retryProcessingFacade: IRetryProcessingFacade = new RetryProcessingFacade(retryProcessor);
 

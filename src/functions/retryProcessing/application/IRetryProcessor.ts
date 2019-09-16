@@ -23,6 +23,4 @@ export interface IRetryProcessor {
   processSupportInterventions(): Promise<number>;
 
   processOldEntryCleanup(cutOffPointInDays: number): Promise<number>;
-
-  setSerializableIsolationLevel(): Promise<void>;
 }
