@@ -15,17 +15,17 @@ export async function handler(event: ScheduledEvent, fnCtx: Context): Promise<Re
   await bootstrapConfig();
 
   const connection = getConnection();
-  await connection.promise().query(setIsolationLevelSerializable);
   const retryProcessor: IRetryProcessor = new RetryProcessor(connection);
   const retryProcessingFacade: IRetryProcessingFacade = new RetryProcessingFacade(retryProcessor);
 
   try {
+    await connection.promise().query(setIsolationLevelSerializable);
     await retryProcessingFacade.processRetries();
   } catch (err) {
     error('Uncaught error in handler', err);
     return createResponse(err, HttpStatus.INTERNAL_SERVER_ERROR);
   } finally {
-    connection.end();
+    if (connection) connection.end();
   }
   return createResponse({}, HttpStatus.OK);
 }
