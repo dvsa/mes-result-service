@@ -31,8 +31,9 @@ export const getTestCategory = (testResult: TestResultSchemasUnion): string => t
 /**
  * Function to return the desired schema to validate against
  * @param {string} category
+ * @return {Object}
  */
-export const getCategorySpecificSchema = (category: string) => {
+export const getCategorySpecificSchema = (category: string): Object => {
   switch (category) {
     case 'B':
       return catBSchema;
