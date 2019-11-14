@@ -15,7 +15,7 @@ export const buildTarsNextBatchQuery = (batchSize: number, interfaceType: string
     AND
     TEST_RESULT.staff_number = UPLOAD_QUEUE.staff_number
   WHERE
-  AND UPLOAD_QUEUE.interface = (SELECT id FROM INTERFACE_TYPE WHERE interface_type_name = ?)
+  UPLOAD_QUEUE.interface = (SELECT id FROM INTERFACE_TYPE WHERE interface_type_name = ?)
   AND UPLOAD_QUEUE.upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'PROCESSING')
   ORDER BY UPLOAD_QUEUE.timestamp ASC
   LIMIT ?;
