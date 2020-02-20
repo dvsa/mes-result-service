@@ -7,13 +7,14 @@ import { isNullOrBlank } from '../../../functions/postResult/framework/handler';
 import { updateUpload } from '../application/update-upload-service';
 import { error, warn, bootstrapLogging } from '@dvsa/mes-microservice-common/application/utils/logger';
 import { InconsistentUpdateError } from '../domain/InconsistentUpdateError';
+import { SubmissionOutcome } from '../domain/SubmissionOutcome';
 
 export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Promise<Response> {
 
   bootstrapLogging('update-upload-status', event);
   await bootstrapConfig();
 
-  let body: string;
+  let body: SubmissionOutcome;
   let appRef: number;
   const appRefPathParam = event.pathParameters['app-ref'];
 
@@ -38,15 +39,27 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
     await updateUpload(appRef, body);
   } catch (err) {
     if (err instanceof InconsistentUpdateError) {
-      warn('InconsistentUpdateError', err);
+      warn('InconsistentUpdateError', ...enrichError(err, appRef, body));
       return createResponse(
         { message: `Failed to update a single record for application reference ${appRef}` },
         HttpStatus.NOT_FOUND,
       );
     }
-    error(err);
+    error('Error while updating upload status - ' , ...enrichError(err, appRef, body));
     return createResponse(
       { message: `Error updating the status in UUS of Reference Number: ${appRef}` }, HttpStatus.INTERNAL_SERVER_ERROR);
   }
   return createResponse({}, HttpStatus.CREATED);
+}
+
+function enrichError(err: any, applicationReference: number, body: SubmissionOutcome) {
+  return {
+    ...err,
+    applicationReference,
+    uploadStatus: body.state,
+    retryCount: body.retry_count,
+    errorMessage: body.error_message,
+    staffNumber: body.staff_number,
+    uploadInterface: body.interface,
+  };
 }
