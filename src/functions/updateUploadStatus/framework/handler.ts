@@ -39,7 +39,7 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
     await updateUpload(appRef, body);
   } catch (err) {
     if (err instanceof InconsistentUpdateError) {
-      warn('InconsistentUpdateError', ...enrichError(err, appRef, body));
+      warn('InconsistentUpdateError - ', ...enrichError(err, appRef, body));
       return createResponse(
         { message: `Failed to update a single record for application reference ${appRef}` },
         HttpStatus.NOT_FOUND,
