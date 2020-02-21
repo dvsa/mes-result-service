@@ -1,4 +1,5 @@
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
+import { get } from 'lodash';
 import Response from '../../../common/application/api/Response';
 import createResponse from '../../../common/application/utils/createResponse';
 import { HttpStatus } from '../../../common/application/api/HttpStatus';
@@ -45,7 +46,7 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
         HttpStatus.NOT_FOUND,
       );
     }
-    error('Error while updating upload status - ' , ...enrichError(err, appRef, body));
+    error('Error while updating upload status - ' , ...enrichError(err, appRef, null));
     return createResponse(
       { message: `Error updating the status in UUS of Reference Number: ${appRef}` }, HttpStatus.INTERNAL_SERVER_ERROR);
   }
@@ -56,10 +57,10 @@ function enrichError(err: any, applicationReference: number, body: SubmissionOut
   return {
     ...err,
     applicationReference,
-    uploadStatus: body.state,
-    retryCount: body.retry_count,
-    errorMessage: body.error_message,
-    staffNumber: body.staff_number,
-    uploadInterface: body.interface,
+    uploadStatus: get(body, 'state'),
+    retryCount: get(body, 'retry_count'),
+    errorMessage: get(body, 'error_message'),
+    staffNumber: get(body, 'staff_number'),
+    uploadInterface: get(body, 'interface'),
   };
 }
