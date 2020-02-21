@@ -42,7 +42,7 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
     ];
     return createResponse(nextBatchData, HttpStatus.CREATED);
   } catch (err) {
-    error('Unable to retrive a batch of results - ', enrichError(err, interfaceType, batchSize));
+    error(`ERROR - ${err.message} - `, enrichError(err, interfaceType, batchSize));
     return createResponse(
       { message: `Error trying retrive a batch of ${ batchSize } results for ${ interfaceType }` },
       HttpStatus.INTERNAL_SERVER_ERROR,
