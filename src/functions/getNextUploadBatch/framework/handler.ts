@@ -32,23 +32,22 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
     return createResponse(validationResult.error, HttpStatus.BAD_REQUEST);
   }
 
-  await bootstrapConfig();
-  const batchPromise = getNextUploadBatch(batchSize, interfaceType);
-  await batchPromise.then((response) => {
-    // compress response
+  try {
+    await bootstrapConfig();
+    const response = await getNextUploadBatch(batchSize, interfaceType);
     nextBatchData = [
       ...response.map(((row) => {
         return gzipSync(JSON.stringify(row.test_result)).toString('base64');
       })),
     ];
-  }).catch((err) => {
+    return createResponse(nextBatchData, HttpStatus.CREATED);
+  } catch (err) {
     error('Unable to retrive a batch of results - ', enrichError(err, interfaceType, batchSize));
     return createResponse(
       { message: `Error trying retrive a batch of ${ batchSize } results for ${ interfaceType }` },
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
-  });
-  return createResponse(nextBatchData, HttpStatus.CREATED);
+  }
 }
 
 export function convertToInterfaceType(interfaceType: string) {
