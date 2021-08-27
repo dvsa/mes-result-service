@@ -1,12 +1,6 @@
 import * as database from '../../../../common/framework/mysql/database';
 import { Mock } from 'typemoq';
 import { deleteTestResult } from '../delete-testResult-service';
-import { SubmissionOutcome } from '../../domain/SubmissionOutcome';
-
-const mockSubmissionOutcome: SubmissionOutcome = {
-  error_message: null,
-  retry_count: 0,
-};
 
 describe('DeleteTestResultService', () => {
   const moqGetConnection = Mock.ofInstance(database.getConnection);
@@ -26,15 +20,15 @@ describe('DeleteTestResultService', () => {
   });
 
   it('should return successfully when a single record is deleted', async () => {
-    connectionPromiseStub.query.and.returnValue(Promise.resolve([{ changedRows: 1 }]));
-    await deleteTestResult(mockSubmissionOutcome);
+    connectionPromiseStub.query.and.returnValue(Promise.resolve([{ affectedRows: 1 }]));
+    await deleteTestResult();
   });
 
   it('should throw a warning when no records are deleted', async () => {
-    connectionPromiseStub.query.and.returnValue(Promise.resolve([{ changedRows: 0 }]));
+    connectionPromiseStub.query.and.returnValue(Promise.resolve([{ affectedRows: 0 }]));
 
     try {
-      await deleteTestResult(mockSubmissionOutcome);
+      await deleteTestResult();
     } catch (err) {
       expect(connectionStub.rollback).toHaveBeenCalled();
       return;

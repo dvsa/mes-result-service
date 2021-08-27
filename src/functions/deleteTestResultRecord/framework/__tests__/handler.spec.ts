@@ -23,40 +23,8 @@ describe('deleteTestResult handler', () => {
     spyOn(deleteTestResultSvc, 'deleteTestResult').and.callFake(moqDeleteTestResultSvc.object);
   });
 
-  it('should respond with a CREATED response if provided a valid body', async () => {
-    moqDeleteTestResultSvc.setup(x => x(It.isAny())).returns(() => Promise.resolve());
-
-    dummyApigwEvent.body = JSON.stringify({
-      retry_count: 12,
-      error_message: null,
-    });
-
-    const res = await handler(dummyApigwEvent, dummyContext);
-    expect(res.statusCode).toEqual(201);
-  });
-
-  it('should send a BAD_REQUEST response if the request body is blank', async () => {
-    dummyApigwEvent.body = '';
-
-    const res = await handler(dummyApigwEvent, dummyContext);
-    expect(res.statusCode).toEqual(400);
-    expect(JSON.parse(res.body).message).toBe('Empty request body');
-  });
-
-  it('should send a BAD_REQUEST response when the body isnt in JSON', async () => {
-    dummyApigwEvent.body = 'this is not json 1234';
-
-    const res = await handler(dummyApigwEvent, dummyContext);
-    expect(res.statusCode).toEqual(400);
-    expect(JSON.parse(res.body).message).toBe('Error parsing request body into JSON');
-  });
-
   it('should send NOT_FOUND when delete testRecord service throws NoDeleteWarning', async () => {
-    moqDeleteTestResultSvc.setup(x => x(It.isAny())).throws(new NoDeleteWarning());
-    dummyApigwEvent.body = JSON.stringify({
-      retry_count: 12,
-      error_message: null,
-    });
+    moqDeleteTestResultSvc.setup(x => x()).throws(new NoDeleteWarning());
 
     const res = await handler(dummyApigwEvent, dummyContext);
 
