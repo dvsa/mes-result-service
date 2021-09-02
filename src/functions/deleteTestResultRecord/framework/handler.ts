@@ -25,7 +25,6 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
     }
     error('Error while deleting Test History - ');
     return createResponse(
-            // tslint:disable-next-line:max-line-length
             { message: `Error deleting Test History:` }, HttpStatus.INTERNAL_SERVER_ERROR);
   }
   return createResponse({}, HttpStatus.CREATED);
