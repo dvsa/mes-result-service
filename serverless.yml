@@ -47,6 +47,13 @@ functions:
           path: test-result/retry
           method: get
 
+  deleteTestResultRecord:
+    handler: src/functions/deleteTestResultRecord/framework/handler.handler
+    events:
+      - http:
+          path: test-result/delete
+          method: put
+
 custom:
   dynamodb:
     start:
