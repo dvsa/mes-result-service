@@ -57,7 +57,7 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
       endDate: joi.string().regex(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/).optional()
         .label('Please provide a valid date with the format \'YYYY-MM-DD\''),
       driverId: joi.string().alphanum().max(16).optional(),
-      staffNumber: joi.number().optional(),
+      staffNumber: joi.string().alphanum().optional(),
       dtcCode: joi.string().alphanum().optional(),
       appRef: joi.number().max(1000000000000).optional(),
       excludeAutoSavedTests: joi.string().optional(),
@@ -96,20 +96,14 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
     const searchingForOwnTest = isSearchingForOwnTests(queryParameters, staffNumber);
 
     // This is to be safe, incase new parameters are added for DE only in the future
-    if (isLDTM || searchingForOwnTest) {
+    if (isDLG || isLDTM || searchingForOwnTest) {
       for (const key in queryParameters) {
         if (!ldtmPermittedQueries.includes(key)) {
           const role = isLDTM ? 'LDTM' : 'User searching for own test';
           return createResponse(`${role} is not permitted to use the parameter ${key}`, HttpStatus.BAD_REQUEST);
         }
       }
-    } else if (isDLG) {
-      for (const key in queryParameters) {
-        if (!dlgPermittedQueries.includes(key)) {
-          return createResponse(`DLG is not permitted to use the parameter ${key}`, HttpStatus.BAD_REQUEST);
-        }
-      }
-    } else if (!isLDTM && !isDLG) {
+    }  else if (!isLDTM && !isDLG) {
       for (const key in queryParameters) {
         if (!dePermittedQueries.includes(key)) {
           return createResponse(`DE is not permitted to use the parameter ${key}`, HttpStatus.BAD_REQUEST);
