@@ -3,7 +3,7 @@ import Response from '../../../common/application/api/Response';
 import createResponse from '../../../common/application/utils/createResponse';
 import { HttpStatus } from '../../../common/application/api/HttpStatus';
 import { bootstrapConfig } from '../../../common/framework/config/config';
-import { deleteTestResult } from '../application/delete-testResult-service';
+import { deleteTestResult } from '../application/delete-test-result-service';
 
 import { error, warn, debug, bootstrapLogging } from '@dvsa/mes-microservice-common/application/utils/logger';
 import { NoDeleteWarning } from '../domain/NoDeleteWarning';
