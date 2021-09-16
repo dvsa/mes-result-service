@@ -3,7 +3,7 @@ import { handler } from '../handler';
 const lambdaTestUtils = require('aws-lambda-test-utils');
 import { Mock, It } from 'typemoq';
 import * as configSvc from '../../../../common/framework/config/config';
-import * as deleteTestResultSvc from '../../application/delete-testResult-service';
+import * as deleteTestResultSvc from '../../application/delete-test-result-service';
 import { NoDeleteWarning } from '../../domain/NoDeleteWarning';
 
 describe('deleteTestResult handler', () => {

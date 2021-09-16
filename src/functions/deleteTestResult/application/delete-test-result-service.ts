@@ -1,8 +1,8 @@
 import * as mysql from 'mysql2';
 import { getConnection } from '../../../common/framework/mysql/database';
-import { deleteTestResultRecord } from '../framework/database/query-builder';
 import { NoDeleteWarning } from '../domain/NoDeleteWarning';
 import { info } from '@dvsa/mes-microservice-common/application/utils/logger';
+import { deleteTestResultRecord} from '../framework/database/query-builder';
 
 export const deleteTestResult = async (): Promise<void> => {
   const connection: mysql.Connection = getConnection();

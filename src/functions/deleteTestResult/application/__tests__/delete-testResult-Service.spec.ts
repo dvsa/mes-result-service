@@ -1,6 +1,6 @@
 import * as database from '../../../../common/framework/mysql/database';
 import { Mock } from 'typemoq';
-import { deleteTestResult } from '../delete-testResult-service';
+import { deleteTestResult } from '../delete-test-result-service';
 
 describe('DeleteTestResultService', () => {
   const moqGetConnection = Mock.ofInstance(database.getConnection);
