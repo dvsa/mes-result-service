@@ -25,4 +25,3 @@ export const deleteTestResult = async (): Promise<void> => {
     connection.end();
   }
 };
-
