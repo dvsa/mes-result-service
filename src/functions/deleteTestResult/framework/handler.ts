@@ -12,12 +12,11 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
 
   bootstrapLogging('delete-test-history', event);
   await bootstrapConfig();
-
   try {
     await deleteTestResult();
   } catch (err) {
     if (err instanceof NoDeleteWarning) {
-      warn('No Records Deleted Warning - ');
+      warn('No Test Result Records Deleted Warning - ');
       return createResponse(
                 { message: `Failed to delete Test Result Records` },
                 HttpStatus.NOT_FOUND,
