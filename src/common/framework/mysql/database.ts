@@ -1,9 +1,11 @@
 import * as mysql from 'mysql2';
 import { config } from '../config/config';
 import { certificate } from '../../certs/ssl_profiles';
+import { warn } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 export const getConnection = (): mysql.Connection => {
   const configuration = config();
+  warn('config', configuration);
   const connection: mysql.Connection = mysql.createConnection({
     host: configuration.mesDatabaseHostname,
     database: configuration.mesDatabaseName,
