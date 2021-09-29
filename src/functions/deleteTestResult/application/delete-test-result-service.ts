@@ -4,6 +4,7 @@ import { NoDeleteWarning } from '../domain/NoDeleteWarning';
 import { info } from '@dvsa/mes-microservice-common/application/utils/logger';
 import { deleteTestResultRecord, deleteUploadQueueRecord } from '../framework/database/query-builder';
 
+
 export const deleteTestResult = async (): Promise<void> => {
   const connection: mysql.Connection = getConnection();
   try {
