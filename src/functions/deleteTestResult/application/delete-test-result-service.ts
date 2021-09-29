@@ -9,10 +9,8 @@ export const deleteTestResult = async (): Promise<void> => {
   try {
     const [testResultDeleted] = await connection.promise().query(deleteTestResultRecord());
     info('No of TEST_RESULT records Deleted: ',  testResultDeleted.affectedRows);
-    info(testResultDeleted);
     const [uploadQueueDeleted] = await connection.promise().query(deleteUploadQueueRecord());
     info('No of UPLOAD_QUEUE records Deleted: ',  uploadQueueDeleted.affectedRows);
-    info(uploadQueueDeleted);
     if (testResultDeleted.affectedRows === 0
          || uploadQueueDeleted.affectedRows === 0
   ) {
