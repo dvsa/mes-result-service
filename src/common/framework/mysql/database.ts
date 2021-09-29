@@ -2,6 +2,7 @@ import * as mysql from 'mysql2';
 import { config } from '../config/config';
 import { certificate } from '../../certs/ssl_profiles';
 
+
 export const getConnection = (): mysql.Connection => {
   const configuration = config();
   const connection: mysql.Connection = mysql.createConnection({
