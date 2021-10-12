@@ -1,6 +1,7 @@
 import { decompressTestResult } from '../decompression-service';
 import { decompressionServiceTestData } from './data/decompression-service.spec.data';
 import { TestResultDecompressionError } from '../../domain/errors/test-result-decompression-error';
+import { TestSummary } from '@dvsa/mes-test-schema/categories/common';
 
 describe('DecompressionService', () => {
   describe('decompressTestResult', () => {
@@ -8,7 +9,8 @@ describe('DecompressionService', () => {
       const { test1 } = decompressionServiceTestData;
       const result = decompressTestResult(test1.compressed);
       expect(result.journalData.candidate.candidateId).toBe(test1.uncompressed.journalData.candidate.candidateId);
-      expect(result.testSummary.candidateDescription).toBe(test1.uncompressed.testSummary.candidateDescription);
+      expect((result.testSummary as TestSummary).candidateDescription)
+          .toBe(test1.uncompressed.testSummary.candidateDescription);
     });
     it('should throw a TestResultDecompressionError for a non-gzip string', () => {
       const { nonGzip } = decompressionServiceTestData;

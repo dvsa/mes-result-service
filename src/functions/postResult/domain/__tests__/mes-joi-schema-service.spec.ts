@@ -21,6 +21,15 @@ import * as catADI2Schema from '@dvsa/mes-test-schema/categories/ADI2/index.json
 import * as catCPCSchema from '@dvsa/mes-test-schema/categories/CPC/index.json';
 import { TestCategory } from '@dvsa/mes-test-schema/category-definitions/common/test-category';
 
+import * as catCMSchema from '@dvsa/mes-test-schema/categories/CM/index.json';
+import * as catC1MSchema from '@dvsa/mes-test-schema/categories/C1M/index.json';
+import * as catCEMSchema from '@dvsa/mes-test-schema/categories/CEM/index.json';
+import * as catC1EMSchema from '@dvsa/mes-test-schema/categories/C1EM/index.json';
+import * as catDMSchema from '@dvsa/mes-test-schema/categories/DM/index.json';
+import * as catD1MSchema from '@dvsa/mes-test-schema/categories/D1M/index.json';
+import * as catDEMSchema from '@dvsa/mes-test-schema/categories/DEM/index.json';
+import * as catD1EMSchema from '@dvsa/mes-test-schema/categories/D1EM/index.json';
+
 const expectedSchema = [
     { category: TestCategory.B, schema: catBSchema },
     { category: TestCategory.BE, schema: catBESchema },
@@ -47,6 +56,14 @@ const expectedSchema = [
     { category: TestCategory.ADI2, schema: catADI2Schema },
     { category: TestCategory.CCPC, schema: catCPCSchema },
     { category: TestCategory.DCPC, schema: catCPCSchema },
+    { category: TestCategory.CM, schema: catCMSchema },
+    { category: TestCategory.C1M, schema: catC1MSchema },
+    { category: TestCategory.CEM, schema: catCEMSchema },
+    { category: TestCategory.C1EM, schema: catC1EMSchema },
+    { category: TestCategory.DM, schema: catDMSchema },
+    { category: TestCategory.D1M, schema: catD1MSchema },
+    { category: TestCategory.DEM, schema: catDEMSchema },
+    { category: TestCategory.D1EM, schema: catD1EMSchema },
 ];
 
 describe('Joi schema validation service', () => {
