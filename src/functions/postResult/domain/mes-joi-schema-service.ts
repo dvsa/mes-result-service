@@ -22,6 +22,15 @@ import * as catADI2Schema from '@dvsa/mes-test-schema/categories/ADI2/index.json
 
 import * as catCPCSchema from '@dvsa/mes-test-schema/categories/CPC/index.json';
 
+import * as catCMSchema from '@dvsa/mes-test-schema/categories/CM/index.json';
+import * as catC1MSchema from '@dvsa/mes-test-schema/categories/C1M/index.json';
+import * as catCEMSchema from '@dvsa/mes-test-schema/categories/CEM/index.json';
+import * as catC1EMSchema from '@dvsa/mes-test-schema/categories/C1EM/index.json';
+import * as catDMSchema from '@dvsa/mes-test-schema/categories/DM/index.json';
+import * as catD1MSchema from '@dvsa/mes-test-schema/categories/D1M/index.json';
+import * as catDEMSchema from '@dvsa/mes-test-schema/categories/DEM/index.json';
+import * as catD1EMSchema from '@dvsa/mes-test-schema/categories/D1EM/index.json';
+
 import joi, { ValidationResult } from '@hapi/joi';
 import enjoi from 'enjoi';
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
@@ -99,6 +108,22 @@ export const getCategorySpecificSchema = (category: string): Object => {
     case TestCategory.CCPC:
     case TestCategory.DCPC:
       return catCPCSchema;
+    case TestCategory.CM:
+      return catCMSchema;
+    case TestCategory.C1M:
+      return catC1MSchema;
+    case TestCategory.CEM:
+      return catCEMSchema;
+    case TestCategory.C1EM:
+      return catC1EMSchema;
+    case TestCategory.DM:
+      return catDMSchema;
+    case TestCategory.D1M:
+      return catD1MSchema;
+    case TestCategory.DEM:
+      return catDEMSchema;
+    case TestCategory.D1EM:
+      return catD1EMSchema;
     default:
       return catBSchema;
   }
