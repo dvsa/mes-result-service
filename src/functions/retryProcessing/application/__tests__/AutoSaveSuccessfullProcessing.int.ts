@@ -155,7 +155,7 @@ describe('Autosave processing operations', () => {
         db,
         SuccessfulTestCases.TarsProcessingNotifyProcessing,
         SuccessfulTestCases.TarsAcceptedNotifyAccepted,
-        );
+      );
 
       const changedRowCount = await retryProcessor.processSuccessful();
       const acceptedTestAppRefs = await getTestResultAppRefsForResultStatus(db, 'PROCESSED');

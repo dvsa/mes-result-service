@@ -5,7 +5,7 @@ import Response from '../../../common/application/api/Response';
 import { getResult } from './repositories/get-result-repository';
 import { HttpStatus } from '../../../common/application/api/HttpStatus';
 import createResponse from '../../../common/application/utils/createResponse';
-import joi from '@hapi/joi';
+import * as joi from 'joi';
 import { TestResultRecord } from '../../../common/domain/test-results';
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
 import { gzipSync } from 'zlib';
@@ -21,11 +21,10 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
       appRef: joi.number().max(1000000000000),
     });
 
-    const validationResult =
-      joi.validate({
-        staffNumber: staffNumberParam,
-        appRef: appRefPathParam,
-      },           parametersSchema);
+    const validationResult = parametersSchema.validate({
+      staffNumber: staffNumberParam,
+      appRef: appRefPathParam,
+    });
 
     if (validationResult.error) {
       return createResponse(validationResult.error, HttpStatus.BAD_REQUEST);

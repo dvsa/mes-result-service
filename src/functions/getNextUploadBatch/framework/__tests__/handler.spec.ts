@@ -4,15 +4,12 @@ import { InterfaceTypes } from '../../domain/interface-types';
 const lambdaTestUtils = require('aws-lambda-test-utils');
 
 describe('getNextUploadBatch handler', () => {
-  let dummyApigwEvent: APIGatewayEvent;
-  let dummyContext: Context;
-
-  dummyApigwEvent = lambdaTestUtils.mockEventCreator.createAPIGatewayEvent({
+  const dummyContext: Context = lambdaTestUtils.mockContextCreator(() => null);
+  const dummyApigwEvent: APIGatewayEvent = lambdaTestUtils.mockEventCreator.createAPIGatewayEvent({
     pathParameters: {
       interface: 'TARS',
     },
   });
-  dummyContext = lambdaTestUtils.mockContextCreator(() => null);
   describe('convertToInterfaceType function', () => {
     it('should return TARS', () => {
       const response = convertToInterfaceType('TARS');

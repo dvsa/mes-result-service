@@ -1,5 +1,6 @@
 import { validateMESJoiSchema, getTestCategory, getCategorySpecificSchema } from '../mes-joi-schema-service';
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
+import { ValidationResult } from 'joi';
 
 import * as catBSchema from '@dvsa/mes-test-schema/categories/B/index.json';
 import * as catBESchema from '@dvsa/mes-test-schema/categories/BE/index.json';
@@ -31,48 +32,46 @@ import * as catDEMSchema from '@dvsa/mes-test-schema/categories/DEM/index.json';
 import * as catD1EMSchema from '@dvsa/mes-test-schema/categories/D1EM/index.json';
 
 const expectedSchema = [
-    { category: TestCategory.B, schema: catBSchema },
-    { category: TestCategory.BE, schema: catBESchema },
-    { category: TestCategory.C, schema: catCSchema },
-    { category: TestCategory.CE, schema: catCESchema },
-    { category: TestCategory.C1E, schema: catC1ESchema },
-    { category: TestCategory.C1, schema: catC1Schema },
-    { category: TestCategory.EUA1M1, schema: catAM1Schema },
-    { category: TestCategory.EUAMM1, schema: catAM1Schema },
-    { category: TestCategory.EUAM1, schema: catAM1Schema },
-    { category: TestCategory.EUA2M1, schema: catAM1Schema },
-    { category: TestCategory.EUA1M2, schema: catAM2Schema },
-    { category: TestCategory.EUAMM2, schema: catAM2Schema },
-    { category: TestCategory.EUAM2, schema: catAM2Schema },
-    { category: TestCategory.EUA2M2, schema: catAM2Schema },
-    { category: TestCategory.D, schema: catDSchema },
-    { category: TestCategory.DE, schema: catDESchema },
-    { category: TestCategory.D1, schema: catD1Schema },
-    { category: TestCategory.D1E, schema: catD1ESchema },
-    { category: TestCategory.F, schema: catFSchema },
-    { category: TestCategory.G, schema: catGSchema },
-    { category: TestCategory.H, schema: catHSchema },
-    { category: TestCategory.K, schema: catKSchema },
-    { category: TestCategory.ADI2, schema: catADI2Schema },
-    { category: TestCategory.CCPC, schema: catCPCSchema },
-    { category: TestCategory.DCPC, schema: catCPCSchema },
-    { category: TestCategory.CM, schema: catCMSchema },
-    { category: TestCategory.C1M, schema: catC1MSchema },
-    { category: TestCategory.CEM, schema: catCEMSchema },
-    { category: TestCategory.C1EM, schema: catC1EMSchema },
-    { category: TestCategory.DM, schema: catDMSchema },
-    { category: TestCategory.D1M, schema: catD1MSchema },
-    { category: TestCategory.DEM, schema: catDEMSchema },
-    { category: TestCategory.D1EM, schema: catD1EMSchema },
+  { category: TestCategory.B, schema: catBSchema },
+  { category: TestCategory.BE, schema: catBESchema },
+  { category: TestCategory.C, schema: catCSchema },
+  { category: TestCategory.CE, schema: catCESchema },
+  { category: TestCategory.C1E, schema: catC1ESchema },
+  { category: TestCategory.C1, schema: catC1Schema },
+  { category: TestCategory.EUA1M1, schema: catAM1Schema },
+  { category: TestCategory.EUAMM1, schema: catAM1Schema },
+  { category: TestCategory.EUAM1, schema: catAM1Schema },
+  { category: TestCategory.EUA2M1, schema: catAM1Schema },
+  { category: TestCategory.EUA1M2, schema: catAM2Schema },
+  { category: TestCategory.EUAMM2, schema: catAM2Schema },
+  { category: TestCategory.EUAM2, schema: catAM2Schema },
+  { category: TestCategory.EUA2M2, schema: catAM2Schema },
+  { category: TestCategory.D, schema: catDSchema },
+  { category: TestCategory.DE, schema: catDESchema },
+  { category: TestCategory.D1, schema: catD1Schema },
+  { category: TestCategory.D1E, schema: catD1ESchema },
+  { category: TestCategory.F, schema: catFSchema },
+  { category: TestCategory.G, schema: catGSchema },
+  { category: TestCategory.H, schema: catHSchema },
+  { category: TestCategory.K, schema: catKSchema },
+  { category: TestCategory.ADI2, schema: catADI2Schema },
+  { category: TestCategory.CCPC, schema: catCPCSchema },
+  { category: TestCategory.DCPC, schema: catCPCSchema },
+  { category: TestCategory.CM, schema: catCMSchema },
+  { category: TestCategory.C1M, schema: catC1MSchema },
+  { category: TestCategory.CEM, schema: catCEMSchema },
+  { category: TestCategory.C1EM, schema: catC1EMSchema },
+  { category: TestCategory.DM, schema: catDMSchema },
+  { category: TestCategory.D1M, schema: catD1MSchema },
+  { category: TestCategory.DEM, schema: catDEMSchema },
+  { category: TestCategory.D1EM, schema: catD1EMSchema },
 ];
 
 describe('Joi schema validation service', () => {
   const validationErrorName = 'ValidationError';
-  const startValidationErrorMessage = 'child "journalData" fails because' +
-    ' [child "testSlotAttributes" fails because [child "start" fails because ["start" length' +
-    ' must be less than or equal to 19 characters long]]]';
-  const requiredFieldMissingErrorMessage = 'child "journalData" fails because ' +
-    '[child "applicationReference" fails because ["applicationReference" is required]]';
+  const startValidationErrorMessage =
+    '"journalData.testSlotAttributes.start" length must be less than or equal to 19 characters long';
+  const requiredFieldMissingErrorMessage = '"journalData.applicationReference" is required';
 
   it('should return a validation error if \'testSlotAttributes.start\' schema validation fails', () => {
     const invalidSchema = {
@@ -144,7 +143,7 @@ describe('Joi schema validation service', () => {
       examinerKeyed: 12345678,
     };
     const validationResult = validateMESJoiSchema(invalidSchema);
-    expect(validationResult.error).toBeNull();
+    expect(validationResult.error).toBeUndefined();
   });
 
   it('should return a validation error if required property is missing from schema', () => {
@@ -222,7 +221,7 @@ describe('getCategorySpecificSchema', () => {
       expect(schema).toEqual(cat.schema);
     });
   });
-  it(`should return Category B schema if null category passed in`, () => {
+  it('should return Category B schema if null category passed in', () => {
     const schema = getCategorySpecificSchema(null);
     expect(schema).toEqual(catBSchema);
   });

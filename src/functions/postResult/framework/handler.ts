@@ -25,7 +25,7 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
 
   try {
     if (isNullOrBlank(event.body)) {
-      return createResponse({ message: `Error: Null or blank request body` }, HttpStatus.BAD_REQUEST);
+      return createResponse({ message: 'Error: Null or blank request body' }, HttpStatus.BAD_REQUEST);
     }
     testResult = decompressTestResult(event.body as string);
   } catch (err) {

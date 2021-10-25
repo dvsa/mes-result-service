@@ -5,7 +5,7 @@ import { HttpStatus } from '../../../common/application/api/HttpStatus';
 import Response from '../../../common/application/api/Response';
 import { InterfaceTypes } from '../domain/interface-types';
 import { gzipSync } from 'zlib';
-import joi from '@hapi/joi';
+import * as joi from 'joi';
 import { bootstrapConfig } from '../../../common/framework/config/config';
 import { bootstrapLogging, customMetric, error } from '@dvsa/mes-microservice-common/application/utils/logger';
 
@@ -25,8 +25,10 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
     batchSizeParam: joi.number().positive().required(),
   });
 
-  const validationResult =
-    joi.validate({ interfaceTypeParam: interfaceType.toString(), batchSizeParam: batchSize }, batchSizeSchema);
+  const validationResult = batchSizeSchema.validate({
+    interfaceTypeParam: interfaceType.toString(),
+    batchSizeParam: batchSize,
+  });
 
   if (validationResult.error) {
     return createResponse(validationResult.error, HttpStatus.BAD_REQUEST);
@@ -44,7 +46,7 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
   } catch (err) {
     error(`ERROR - ${err.message} - `, enrichError(err, interfaceType, batchSize));
     return createResponse(
-      { message: `Error trying retrive a batch of ${ batchSize } results for ${ interfaceType }` },
+      { message: `Error trying retrive a batch of ${batchSize} results for ${interfaceType}` },
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
@@ -52,10 +54,10 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
 
 export function convertToInterfaceType(interfaceType: string) {
   switch (interfaceType.toLowerCase()) {
-    case 'tars': return InterfaceTypes.TARS;
-    case 'rsis': return InterfaceTypes.RSIS;
-    case 'notify': return InterfaceTypes.NOTIFY;
-    default: return InterfaceTypes.NO_MATCH_FOUND;
+  case 'tars': return InterfaceTypes.TARS;
+  case 'rsis': return InterfaceTypes.RSIS;
+  case 'notify': return InterfaceTypes.NOTIFY;
+  default: return InterfaceTypes.NO_MATCH_FOUND;
   }
 }
 

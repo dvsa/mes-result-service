@@ -41,10 +41,10 @@ export const buildSelectTestsExceedingRetryQuery = (
   rsisRetryCount: number,
   notifyRetryCount: number,
   tarsRetryCount: number,
-  ) => mysql.format(
-    selectErrorsWhichWillBeAbortedTemplate,
-    [rsisRetryCount, notifyRetryCount, tarsRetryCount],
-  );
+) => mysql.format(
+  selectErrorsWhichWillBeAbortedTemplate,
+  [rsisRetryCount, notifyRetryCount, tarsRetryCount],
+);
 
 /**
  * Builds query to update TEST_RESULT record to ERROR where there are interfaces that exceeded

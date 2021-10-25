@@ -112,12 +112,12 @@ export const getTestResultAutosaveFlag =
   (db: mysql.Connection, appRef: number): Promise<number> => {
     return new Promise((resolve, reject) => {
       const formattedQuery = db.format(
-       `
+        `
        SELECT CONVERT(tr.autosave, signed) autosave
        FROM TEST_RESULT tr
        WHERE tr.application_reference = ?
        `,
-       [appRef]);
+        [appRef]);
 
       db.query(
         formattedQuery,
@@ -136,13 +136,13 @@ export const getQueueCount =
   (db: mysql.Connection, appRef: number, interfaceId): Promise<number> => {
     return new Promise((resolve, reject) => {
       const formattedQuery = db.format(
-       `
+        `
        SELECT COUNT(1) uqcount
        FROM UPLOAD_QUEUE uq
        WHERE uq.application_reference = ?
        AND   uq.interface = ?
        `,
-       [appRef, interfaceId]);
+        [appRef, interfaceId]);
 
       db.query(
         formattedQuery,

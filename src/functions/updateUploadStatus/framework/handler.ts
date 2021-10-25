@@ -16,14 +16,13 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
   await bootstrapConfig();
 
   let body: SubmissionOutcome;
-  let appRef: number;
   const appRefPathParam = event.pathParameters['app-ref'];
 
   if (isNullOrBlank(event.body) || isNullOrBlank(appRefPathParam)) {
     return createResponse({ message: 'Empty path app-ref or request body' }, HttpStatus.BAD_REQUEST);
   }
 
-  appRef = parseInt(appRefPathParam, 10);
+  const appRef: number = parseInt(appRefPathParam, 10);
   if (isNaN(appRef)) {
     return createResponse(
       { message: `Error application reference is NaN: ${appRefPathParam}` }, HttpStatus.BAD_REQUEST);

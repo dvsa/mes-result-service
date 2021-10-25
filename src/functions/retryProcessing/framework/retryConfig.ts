@@ -1,6 +1,6 @@
 import {
-    defaultIfNotPresent,
-  } from '../../../common/framework/config/config-helpers';
+  defaultIfNotPresent,
+} from '../../../common/framework/config/config-helpers';
 
 export type Config = {
   retryCutOffPointDays: number;

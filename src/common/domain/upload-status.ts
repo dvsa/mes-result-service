@@ -1,5 +1,5 @@
 export enum UploadStatus {
-    PROCESSING = 0,
-    ACCEPTED = 1,
-    FAILED = 2,
-  }
+  PROCESSING = 0,
+  ACCEPTED = 1,
+  FAILED = 2,
+}
