@@ -3,6 +3,7 @@ import { Mock } from 'typemoq';
 import { deleteTestResult } from '../delete-test-result-service';
 import { deleteTestResultRecord } from '../../framework/database/query-builder';
 import { NoDeleteWarning } from '../../domain/NoDeleteWarning';
+import * as mysql from 'mysql2';
 
 describe('DeleteTestResultService', () => {
   const moqGetConnection = Mock.ofInstance(database.getConnection);
@@ -16,7 +17,7 @@ describe('DeleteTestResultService', () => {
   beforeEach(() => {
     moqGetConnection.reset();
 
-    moqGetConnection.setup(x => x()).returns(() => connectionStub);
+    moqGetConnection.setup(x => x()).returns(() => connectionStub as unknown as mysql.Connection);
 
     spyOn(database, 'getConnection').and.callFake(moqGetConnection.object);
 

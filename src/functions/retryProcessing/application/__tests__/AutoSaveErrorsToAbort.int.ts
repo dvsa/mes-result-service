@@ -60,112 +60,112 @@ describe('AutoSaveErrorsToAbort', () => {
 
     // Tests that correct result records are set to ERROR state if ERROR TARS/Notify Record
     expect(await getErroredTestAppRef(db, ErrorsToAbortTestCases.TarsFailedNotifyFailed))
-    .toContain(ErrorsToAbortTestCases.TarsFailedNotifyFailed);
+      .toContain(ErrorsToAbortTestCases.TarsFailedNotifyFailed);
     expect(await getErroredTestAppRef(db, ErrorsToAbortTestCases.TarsFailedNotifyProcessing))
-    .toContain(ErrorsToAbortTestCases.TarsFailedNotifyProcessing);
+      .toContain(ErrorsToAbortTestCases.TarsFailedNotifyProcessing);
     expect(await getErroredTestAppRef(db, ErrorsToAbortTestCases.TarsFailedNotifyAccepted))
-    .toContain(ErrorsToAbortTestCases.TarsFailedNotifyAccepted);
+      .toContain(ErrorsToAbortTestCases.TarsFailedNotifyAccepted);
     expect(await getErroredTestAppRef(db, ErrorsToAbortTestCases.TarsProcessingNotifyFailed))
-    .toContain(ErrorsToAbortTestCases.TarsProcessingNotifyFailed);
+      .toContain(ErrorsToAbortTestCases.TarsProcessingNotifyFailed);
     expect(await getErroredTestAppRef(db, ErrorsToAbortTestCases.TarsAcceptedNotifyFailed))
-    .toContain(ErrorsToAbortTestCases.TarsAcceptedNotifyFailed);
+      .toContain(ErrorsToAbortTestCases.TarsAcceptedNotifyFailed);
     expect(await getErroredTestAppRef(db, ErrorsToAbortTestCases.TarsAcceptedNotifyAccepted))
-    .not.toContain(ErrorsToAbortTestCases.TarsAcceptedNotifyAccepted);
+      .not.toContain(ErrorsToAbortTestCases.TarsAcceptedNotifyAccepted);
     expect(await getErroredTestAppRef(db, ErrorsToAbortTestCases.TarsProcessingNotifyProcessing))
-    .not.toContain(ErrorsToAbortTestCases.TarsProcessingNotifyProcessing);
+      .not.toContain(ErrorsToAbortTestCases.TarsProcessingNotifyProcessing);
 
     // Tests that upload records remain unchanged after processing
     expect(await getAutosaveQueueRecord(db, InterfaceIds.TARS, ErrorsToAbortTestCases.TarsFailedNotifyFailed))
-    .toContain(
-      { application_reference: ErrorsToAbortTestCases.TarsFailedNotifyFailed,
-        interface: InterfaceIds.TARS,
-        upload_status: ProcessingStatus.FAILED,
-      });
+      .toContain(
+        { application_reference: ErrorsToAbortTestCases.TarsFailedNotifyFailed,
+          interface: InterfaceIds.TARS,
+          upload_status: ProcessingStatus.FAILED,
+        });
 
     expect(await getAutosaveQueueRecord(db, InterfaceIds.NOTIFY, ErrorsToAbortTestCases.TarsFailedNotifyFailed))
-    .toContain(
-      { application_reference: ErrorsToAbortTestCases.TarsFailedNotifyFailed,
-        interface: InterfaceIds.NOTIFY,
-        upload_status: ProcessingStatus.FAILED,
-      });
+      .toContain(
+        { application_reference: ErrorsToAbortTestCases.TarsFailedNotifyFailed,
+          interface: InterfaceIds.NOTIFY,
+          upload_status: ProcessingStatus.FAILED,
+        });
 
     expect(await getAutosaveQueueRecord(db, InterfaceIds.TARS, ErrorsToAbortTestCases.TarsFailedNotifyProcessing))
-    .toContain(
-      { application_reference: ErrorsToAbortTestCases.TarsFailedNotifyProcessing,
-        interface: InterfaceIds.TARS,
-        upload_status: ProcessingStatus.FAILED,
-      });
+      .toContain(
+        { application_reference: ErrorsToAbortTestCases.TarsFailedNotifyProcessing,
+          interface: InterfaceIds.TARS,
+          upload_status: ProcessingStatus.FAILED,
+        });
     expect(await getAutosaveQueueRecord(db, InterfaceIds.NOTIFY, ErrorsToAbortTestCases.TarsFailedNotifyProcessing))
       .toContain(
-      { application_reference: ErrorsToAbortTestCases.TarsFailedNotifyProcessing,
-        interface: InterfaceIds.NOTIFY,
-        upload_status: ProcessingStatus.PROCESSING,
-      });
+        { application_reference: ErrorsToAbortTestCases.TarsFailedNotifyProcessing,
+          interface: InterfaceIds.NOTIFY,
+          upload_status: ProcessingStatus.PROCESSING,
+        });
 
     expect(await getAutosaveQueueRecord(db, InterfaceIds.TARS, ErrorsToAbortTestCases.TarsFailedNotifyAccepted))
       .toContain(
-      { application_reference: ErrorsToAbortTestCases.TarsFailedNotifyAccepted,
-        interface: InterfaceIds.TARS,
-        upload_status: ProcessingStatus.FAILED,
-      });
+        { application_reference: ErrorsToAbortTestCases.TarsFailedNotifyAccepted,
+          interface: InterfaceIds.TARS,
+          upload_status: ProcessingStatus.FAILED,
+        });
     expect(await getAutosaveQueueRecord(db, InterfaceIds.NOTIFY, ErrorsToAbortTestCases.TarsFailedNotifyAccepted))
       .toContain(
-      { application_reference: ErrorsToAbortTestCases.TarsFailedNotifyAccepted,
-        interface: InterfaceIds.NOTIFY,
-        upload_status: ProcessingStatus.ACCEPTED,
-      });
+        { application_reference: ErrorsToAbortTestCases.TarsFailedNotifyAccepted,
+          interface: InterfaceIds.NOTIFY,
+          upload_status: ProcessingStatus.ACCEPTED,
+        });
 
     expect(await getAutosaveQueueRecord(db, InterfaceIds.TARS, ErrorsToAbortTestCases.TarsProcessingNotifyFailed))
       .toContain(
-      { application_reference: ErrorsToAbortTestCases.TarsProcessingNotifyFailed,
-        interface: InterfaceIds.TARS,
-        upload_status: ProcessingStatus.PROCESSING });
+        { application_reference: ErrorsToAbortTestCases.TarsProcessingNotifyFailed,
+          interface: InterfaceIds.TARS,
+          upload_status: ProcessingStatus.PROCESSING });
     expect(await getAutosaveQueueRecord(db, InterfaceIds.NOTIFY, ErrorsToAbortTestCases.TarsProcessingNotifyFailed))
-        .toContain(
-      { application_reference: ErrorsToAbortTestCases.TarsProcessingNotifyFailed,
-        interface: InterfaceIds.NOTIFY,
-        upload_status: ProcessingStatus.FAILED,
-      });
+      .toContain(
+        { application_reference: ErrorsToAbortTestCases.TarsProcessingNotifyFailed,
+          interface: InterfaceIds.NOTIFY,
+          upload_status: ProcessingStatus.FAILED,
+        });
 
     expect(await getAutosaveQueueRecord(db, InterfaceIds.TARS, ErrorsToAbortTestCases.TarsAcceptedNotifyFailed))
       .toContain(
-      { application_reference: ErrorsToAbortTestCases.TarsAcceptedNotifyFailed,
-        interface: InterfaceIds.TARS,
-        upload_status: ProcessingStatus.ACCEPTED,
-      });
+        { application_reference: ErrorsToAbortTestCases.TarsAcceptedNotifyFailed,
+          interface: InterfaceIds.TARS,
+          upload_status: ProcessingStatus.ACCEPTED,
+        });
     expect(await getAutosaveQueueRecord(db, InterfaceIds.NOTIFY, ErrorsToAbortTestCases.TarsAcceptedNotifyFailed))
       .toContain(
-      { application_reference: ErrorsToAbortTestCases.TarsAcceptedNotifyFailed,
-        interface: InterfaceIds.NOTIFY,
-        upload_status: ProcessingStatus.FAILED,
-      });
+        { application_reference: ErrorsToAbortTestCases.TarsAcceptedNotifyFailed,
+          interface: InterfaceIds.NOTIFY,
+          upload_status: ProcessingStatus.FAILED,
+        });
 
     expect(await getAutosaveQueueRecord(db, InterfaceIds.TARS, ErrorsToAbortTestCases.TarsAcceptedNotifyAccepted))
       .toContain(
-      { application_reference: ErrorsToAbortTestCases.TarsAcceptedNotifyAccepted,
-        interface: InterfaceIds.TARS,
-        upload_status: ProcessingStatus.ACCEPTED,
-      });
+        { application_reference: ErrorsToAbortTestCases.TarsAcceptedNotifyAccepted,
+          interface: InterfaceIds.TARS,
+          upload_status: ProcessingStatus.ACCEPTED,
+        });
     expect(await getAutosaveQueueRecord(db, InterfaceIds.NOTIFY, ErrorsToAbortTestCases.TarsAcceptedNotifyAccepted))
       .toContain(
-      { application_reference: ErrorsToAbortTestCases.TarsAcceptedNotifyAccepted,
-        interface: InterfaceIds.NOTIFY,
-        upload_status: ProcessingStatus.ACCEPTED,
-      });
+        { application_reference: ErrorsToAbortTestCases.TarsAcceptedNotifyAccepted,
+          interface: InterfaceIds.NOTIFY,
+          upload_status: ProcessingStatus.ACCEPTED,
+        });
 
     expect(await getAutosaveQueueRecord(db, InterfaceIds.TARS, ErrorsToAbortTestCases.TarsProcessingNotifyProcessing))
       .toContain(
-      { application_reference: ErrorsToAbortTestCases.TarsProcessingNotifyProcessing,
-        interface: InterfaceIds.TARS,
-        upload_status: ProcessingStatus.PROCESSING,
-      });
+        { application_reference: ErrorsToAbortTestCases.TarsProcessingNotifyProcessing,
+          interface: InterfaceIds.TARS,
+          upload_status: ProcessingStatus.PROCESSING,
+        });
     expect(
-        await getAutosaveQueueRecord(db, InterfaceIds.NOTIFY, ErrorsToAbortTestCases.TarsProcessingNotifyProcessing))
+      await getAutosaveQueueRecord(db, InterfaceIds.NOTIFY, ErrorsToAbortTestCases.TarsProcessingNotifyProcessing))
       .toContain(
-      { application_reference: ErrorsToAbortTestCases.TarsProcessingNotifyProcessing,
-        interface: InterfaceIds.NOTIFY,
-        upload_status: ProcessingStatus.PROCESSING,
-      });
+        { application_reference: ErrorsToAbortTestCases.TarsProcessingNotifyProcessing,
+          interface: InterfaceIds.NOTIFY,
+          upload_status: ProcessingStatus.PROCESSING,
+        });
 
     // ensure autosave flag is still set
     expect(await getTestResultAutosaveFlag(db, ErrorsToAbortTestCases.TarsFailedNotifyFailed)).toBe(1);
@@ -176,7 +176,7 @@ describe('AutoSaveErrorsToAbort', () => {
     expect(await getTestResultAutosaveFlag(db, ErrorsToAbortTestCases.TarsAcceptedNotifyAccepted)).toBe(1);
     expect(await getTestResultAutosaveFlag(db, ErrorsToAbortTestCases.TarsProcessingNotifyProcessing)).toBe(1);
 
-      // ensure no RSIS entries created
+    // ensure no RSIS entries created
     expect(await getQueueCount(db,
                                ErrorsToAbortTestCases.TarsFailedNotifyFailed,
                                InterfaceIds.RSIS)).toBe(0);

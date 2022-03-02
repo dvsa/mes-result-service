@@ -4,7 +4,7 @@ import { HttpStatus } from '../../../common/application/api/HttpStatus';
 import Response from '../../../common/application/api/Response';
 import { getConciseSearchResults } from './repositories/search-repository';
 import { bootstrapConfig } from '../../../common/framework/config/config';
-import joi from '@hapi/joi';
+import * as joi from 'joi';
 import { QueryParameters } from '../domain/query_parameters';
 import { SearchResultTestSchema } from '@dvsa/mes-search-schema/index';
 import { getEmployeeIdFromRequestContext } from '../../../common/application/utils/getEmployeeId';
@@ -63,16 +63,15 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
       excludeAutoSavedTests: joi.string().optional(),
     });
 
-    const validationResult =
-      joi.validate({
-        driverId: queryParameters.driverNumber,
-        staffNumber: queryParameters.staffNumber,
-        dtcCode: queryParameters.dtcCode,
-        appRef: queryParameters.applicationReference,
-        startDate: queryParameters.startDate,
-        endDate: queryParameters.endDate,
-        excludeAutoSavedTests: queryParameters.excludeAutoSavedTests,
-      },           parametersSchema);
+    const validationResult = parametersSchema.validate({
+      driverId: queryParameters.driverNumber,
+      staffNumber: queryParameters.staffNumber,
+      dtcCode: queryParameters.dtcCode,
+      appRef: queryParameters.applicationReference,
+      startDate: queryParameters.startDate,
+      endDate: queryParameters.endDate,
+      excludeAutoSavedTests: queryParameters.excludeAutoSavedTests,
+    });
 
     if (validationResult.error) {
       return createResponse(validationResult.error, HttpStatus.BAD_REQUEST);
@@ -103,7 +102,7 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
           return createResponse(`${role} is not permitted to use the parameter ${key}`, HttpStatus.BAD_REQUEST);
         }
       }
-    }  else if (!isLDTM && !isDLG) {
+    } else if (!isLDTM && !isDLG) {
       for (const key in queryParameters) {
         if (!dePermittedQueries.includes(key)) {
           return createResponse(`DE is not permitted to use the parameter ${key}`, HttpStatus.BAD_REQUEST);

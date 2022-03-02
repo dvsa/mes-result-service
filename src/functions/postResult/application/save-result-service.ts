@@ -12,7 +12,7 @@ export const saveTestResult = async (
 ): Promise<void> => {
   const connection: mysql.Connection = getConnection();
   try {
-    await connection.promise().query(`SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE;`);
+    await connection.promise().query('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE;');
     connection.beginTransaction();
     await connection.promise().query(buildTestResultInsert(testResult, hasValidationError, isPartialTestResult));
     await trySaveUploadQueueRecords(connection, testResult, hasValidationError, isPartialTestResult);

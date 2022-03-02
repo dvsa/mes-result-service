@@ -147,7 +147,7 @@ export const updateTestResultAutosaveFlag = (
   db: mysql.Connection,
   startingAppRef: number,
   finishingAppRef: number,
-  ): Promise<boolean> => {
+): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     db.query(
       `

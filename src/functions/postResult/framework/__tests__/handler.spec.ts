@@ -9,7 +9,7 @@ import * as saveResultSvc from '../../application/save-result-service';
 import * as configSvc from '../../../../common/framework/config/config';
 import * as joiValidationSvc from '../../domain/mes-joi-schema-service';
 import * as jwtVerificationSvc from '../../application/jwt-verification-service';
-import { ValidationResult, ValidationError } from '@hapi/joi';
+import { ValidationResult, ValidationError } from 'joi';
 import { sampleToken_12345678, sampleTest_12345678, sampleTest_empty } from '../__tests__/handler.spec.data';
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
 
@@ -88,7 +88,7 @@ describe('postResult handler', () => {
       process.env.EMPLOYEE_ID_VERIFICATION_DISABLED = 'true';
       dummyApigwEvent.body = 'avalidcompressedresult';
       const fakeTestResult = Mock.ofType<TestResultSchemasUnion>();
-      const validationResult = Mock.ofType<ValidationResult<any>>();
+      const validationResult = Mock.ofType<ValidationResult>();
 
       moqDecompressionSvc.setup(x => x(It.isAny())).returns(() => fakeTestResult.object);
       moqJoiValidationSvc.setup(x => x(It.isAny())).returns(() => validationResult.object.value);
@@ -103,7 +103,7 @@ describe('postResult handler', () => {
     it('should pass decompressed test result to saveTestResult', async () => {
       dummyApigwEvent.body = 'avalidcompressedresult';
       const fakeTestResult = Mock.ofType<TestResultSchemasUnion>();
-      const validationResult = Mock.ofType<ValidationResult<any>>();
+      const validationResult = Mock.ofType<ValidationResult>();
 
       moqDecompressionSvc.setup(x => x(It.isAny())).returns(() => fakeTestResult.object);
       moqJoiValidationSvc.setup(x => x(It.isAny())).returns(() => validationResult.object.value);
@@ -152,7 +152,7 @@ describe('postResult handler', () => {
       dummyApigwEvent.queryStringParameters = { partial: 'true' };
       dummyApigwEvent.body = 'avalidcompressedresult';
       const fakeTestResult = Mock.ofType<TestResultSchemasUnion>();
-      const validationResult = Mock.ofType<ValidationResult<any>>();
+      const validationResult = Mock.ofType<ValidationResult>();
 
       moqDecompressionSvc.setup(x => x(It.isAny())).returns(() => fakeTestResult.object);
       moqJoiValidationSvc.setup(x => x(It.isAny())).returns(() => validationResult.object.value);
@@ -167,7 +167,7 @@ describe('postResult handler', () => {
     it('should pass isPartialTest as false to saveTestResult', async () => {
       dummyApigwEvent.body = 'avalidcompressedresult';
       const fakeTestResult = Mock.ofType<TestResultSchemasUnion>();
-      const validationResult = Mock.ofType<ValidationResult<any>>();
+      const validationResult = Mock.ofType<ValidationResult>();
 
       moqDecompressionSvc.setup(x => x(It.isAny())).returns(() => fakeTestResult.object);
       moqJoiValidationSvc.setup(x => x(It.isAny())).returns(() => validationResult.object.value);

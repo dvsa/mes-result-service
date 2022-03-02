@@ -5,8 +5,8 @@ import { getConciseSearchResultsFromSearchQuery } from '../database/query-builde
 import { QueryParameters } from '../../domain/query_parameters';
 
 export const getConciseSearchResults = async (
-    queryParameters : QueryParameters,
-  ): Promise<TestResultRecord[]> => {
+  queryParameters : QueryParameters,
+): Promise<TestResultRecord[]> => {
   const connection: mysql.Connection = getConnection();
   let batch;
   try {

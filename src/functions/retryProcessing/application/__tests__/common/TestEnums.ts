@@ -2,7 +2,7 @@ export enum InterfaceIds {
   TARS,
   NOTIFY,
   RSIS,
-  }
+}
 
 export enum RetryTestCases {
   UploadedNotProcessed = 1,

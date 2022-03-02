@@ -52,7 +52,7 @@ describe('Clean up operations', () => {
          const autosaveQueueRecords = await getAutosaveQueueRecords(db);
 
          expect(changedRowCount).toBe(3);
-        // assert UPLOAD_QUEUE records have been deleted for app-ref 56 and 57
+         // assert UPLOAD_QUEUE records have been deleted for app-ref 56 and 57
          expect(autosaveQueueRecords).not.toContain(
            {
              application_reference: RetryUploadCleanUpTestCases.TarsAcceptedNotifyAcceptedRsisAccepted,
@@ -72,7 +72,7 @@ describe('Clean up operations', () => {
              upload_status: ProcessingStatus.ACCEPTED,
            });
 
-        // assert UPLOAD_QUEUE records have been retained for app-ref 58
+         // assert UPLOAD_QUEUE records have been retained for app-ref 58
          expect(autosaveQueueRecords).toContain(
            {
              application_reference: RetryUploadCleanUpTestCases.TarsAcceptedNotifyAcceptedRsisProcessing,

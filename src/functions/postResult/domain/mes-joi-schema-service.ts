@@ -31,7 +31,7 @@ import * as catD1MSchema from '@dvsa/mes-test-schema/categories/D1M/index.json';
 import * as catDEMSchema from '@dvsa/mes-test-schema/categories/DEM/index.json';
 import * as catD1EMSchema from '@dvsa/mes-test-schema/categories/D1EM/index.json';
 
-import joi, { ValidationResult } from '@hapi/joi';
+import { ValidationResult } from 'joi';
 import enjoi from 'enjoi';
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
 import { TestCategory } from '@dvsa/mes-test-schema/category-definitions/common/test-category';
@@ -43,12 +43,12 @@ import { TestCategory } from '@dvsa/mes-test-schema/category-definitions/common/
  *
  * @param testResult: any
  */
-export function validateMESJoiSchema(testResult: any): ValidationResult<any> {
+export function validateMESJoiSchema(testResult: any): ValidationResult {
   const testResultCategory: string = getTestCategory(testResult);
   const categorySpecificSchema = getCategorySpecificSchema(testResultCategory);
   const joiSchema = enjoi.schema(categorySpecificSchema);
 
-  return joi.validate(testResult, joiSchema);
+  return joiSchema.validate(testResult);
 }
 
 /**
@@ -65,66 +65,66 @@ export const getTestCategory = (testResult: TestResultSchemasUnion): string => t
  */
 export const getCategorySpecificSchema = (category: string): Object => {
   switch (category) {
-    case TestCategory.B:
-      return catBSchema;
-    case TestCategory.BE:
-      return catBESchema;
-    case TestCategory.C:
-      return catCSchema;
-    case TestCategory.C1:
-      return catC1Schema;
-    case TestCategory.CE:
-      return catCESchema;
-    case TestCategory.C1E:
-      return catC1ESchema;
-    case TestCategory.D:
-      return catDSchema;
-    case TestCategory.D1:
-      return catD1Schema;
-    case TestCategory.DE:
-      return catDESchema;
-    case TestCategory.D1E:
-      return catD1ESchema;
-    case TestCategory.F:
-      return catFSchema;
-    case TestCategory.G:
-      return catGSchema;
-    case TestCategory.H:
-      return catHSchema;
-    case TestCategory.K:
-      return catKSchema;
-    case TestCategory.EUA1M1:
-    case TestCategory.EUAMM1:
-    case TestCategory.EUAM1:
-    case TestCategory.EUA2M1:
-      return catAM1Schema;
-    case TestCategory.EUA1M2:
-    case TestCategory.EUAMM2:
-    case TestCategory.EUAM2:
-    case TestCategory.EUA2M2:
-      return catAM2Schema;
-    case TestCategory.ADI2:
-      return catADI2Schema;
-    case TestCategory.CCPC:
-    case TestCategory.DCPC:
-      return catCPCSchema;
-    case TestCategory.CM:
-      return catCMSchema;
-    case TestCategory.C1M:
-      return catC1MSchema;
-    case TestCategory.CEM:
-      return catCEMSchema;
-    case TestCategory.C1EM:
-      return catC1EMSchema;
-    case TestCategory.DM:
-      return catDMSchema;
-    case TestCategory.D1M:
-      return catD1MSchema;
-    case TestCategory.DEM:
-      return catDEMSchema;
-    case TestCategory.D1EM:
-      return catD1EMSchema;
-    default:
-      return catBSchema;
+  case TestCategory.B:
+    return catBSchema;
+  case TestCategory.BE:
+    return catBESchema;
+  case TestCategory.C:
+    return catCSchema;
+  case TestCategory.C1:
+    return catC1Schema;
+  case TestCategory.CE:
+    return catCESchema;
+  case TestCategory.C1E:
+    return catC1ESchema;
+  case TestCategory.D:
+    return catDSchema;
+  case TestCategory.D1:
+    return catD1Schema;
+  case TestCategory.DE:
+    return catDESchema;
+  case TestCategory.D1E:
+    return catD1ESchema;
+  case TestCategory.F:
+    return catFSchema;
+  case TestCategory.G:
+    return catGSchema;
+  case TestCategory.H:
+    return catHSchema;
+  case TestCategory.K:
+    return catKSchema;
+  case TestCategory.EUA1M1:
+  case TestCategory.EUAMM1:
+  case TestCategory.EUAM1:
+  case TestCategory.EUA2M1:
+    return catAM1Schema;
+  case TestCategory.EUA1M2:
+  case TestCategory.EUAMM2:
+  case TestCategory.EUAM2:
+  case TestCategory.EUA2M2:
+    return catAM2Schema;
+  case TestCategory.ADI2:
+    return catADI2Schema;
+  case TestCategory.CCPC:
+  case TestCategory.DCPC:
+    return catCPCSchema;
+  case TestCategory.CM:
+    return catCMSchema;
+  case TestCategory.C1M:
+    return catC1MSchema;
+  case TestCategory.CEM:
+    return catCEMSchema;
+  case TestCategory.C1EM:
+    return catC1EMSchema;
+  case TestCategory.DM:
+    return catDMSchema;
+  case TestCategory.D1M:
+    return catD1MSchema;
+  case TestCategory.DEM:
+    return catDEMSchema;
+  case TestCategory.D1EM:
+    return catD1EMSchema;
+  default:
+    return catBSchema;
   }
 };

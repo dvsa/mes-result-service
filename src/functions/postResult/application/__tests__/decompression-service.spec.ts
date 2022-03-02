@@ -10,7 +10,7 @@ describe('DecompressionService', () => {
       const result = decompressTestResult(test1.compressed);
       expect(result.journalData.candidate.candidateId).toBe(test1.uncompressed.journalData.candidate.candidateId);
       expect((result.testSummary as TestSummary).candidateDescription)
-          .toBe(test1.uncompressed.testSummary.candidateDescription);
+        .toBe(test1.uncompressed.testSummary.candidateDescription);
     });
     it('should throw a TestResultDecompressionError for a non-gzip string', () => {
       const { nonGzip } = decompressionServiceTestData;

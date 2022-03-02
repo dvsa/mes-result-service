@@ -147,7 +147,7 @@ export const deleteAccepetedUploadsQuery = `
     AND uq.interface = to_delete.interface
 `;
 
-export const setIsolationLevelSerializable: string = `set session transaction isolation level serializable;`;
+export const setIsolationLevelSerializable: string = 'set session transaction isolation level serializable;';
 
 export const processStalledTestResultsQuery = `
   INSERT INTO UPLOAD_QUEUE
