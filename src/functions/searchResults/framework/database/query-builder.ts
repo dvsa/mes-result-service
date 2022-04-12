@@ -2,7 +2,7 @@ import * as mysql from 'mysql2';
 import { QueryParameters } from '../../domain/query_parameters';
 
 export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryParameters): string => {
-  const parameterArray: string[] = [];
+  const parameterArray: any[] = [];
   let queries: string[] = [];
   let queryString: string = '';
 
@@ -48,22 +48,29 @@ export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryPar
   }
 
   if (queryParameters.activityCode) {
-    jsonQueries.push(`test_result like '%"activityCode": "1"%'`);
+    jsonQueries.push('JSON_EXTRACT(test_result, "$.activityCode") = ?');
+    parameterArray.push(queryParameters.activityCode);
   }
 
   if (queryParameters.category) {
-    jsonQueries.push(`test_result like '%"category": "C"%'`);
+    jsonQueries.push('JSON_EXTRACT(test_result, "$.category") = ?');
+    parameterArray.push(queryParameters.category);
   }
 
   // Add AND between all statements
   queries = [...queries].map((e, i) => i < queries.length - 1 ? [e, 'AND'] : [e])
     .reduce((a, b) => a.concat(b));
-  jsonQueries = [...jsonQueries].map((e, i) => i < jsonQueries.length - 1 ? [e, 'AND'] : [e])
-    .reduce((a, b) => a.concat(b));
+
 
   const nonFieldQuery: boolean = jsonQueries.length > 0;
 
+  console.log('1');
+
   if (nonFieldQuery) {
+    jsonQueries = [...jsonQueries].map((e, i) => i < jsonQueries.length - 1 ? [e, 'AND'] : [e])
+      .reduce((a, b) => a.concat(b));
+
+    console.log('jsonQ', jsonQueries);
     queryString = queryString.concat('SELECT * FROM (');
     queryString = queryString.concat('SELECT test_result, test_date FROM TEST_RESULT WHERE ');
   } else {
@@ -83,6 +90,8 @@ export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryPar
   }
 
   queryString = queryString.concat('ORDER BY test_date DESC LIMIT 200;');
+
+  console.log('queryString', queryString);
 
   return mysql.format(queryString, parameterArray);
 };
