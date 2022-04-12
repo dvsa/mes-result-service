@@ -61,7 +61,6 @@ export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryPar
   queries = [...queries].map((e, i) => i < queries.length - 1 ? [e, 'AND'] : [e])
     .reduce((a, b) => a.concat(b));
 
-
   const nonFieldQuery: boolean = jsonQueries.length > 0;
 
   console.log('1');
