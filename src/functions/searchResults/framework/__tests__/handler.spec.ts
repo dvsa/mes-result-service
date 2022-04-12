@@ -83,6 +83,8 @@ describe('searchResults handler', () => {
       dummyApigwEvent.queryStringParameters['staffNumber'] = queryParameter.staffNumber;
       dummyApigwEvent.queryStringParameters['applicationReference'] = queryParameter.applicationReference;
       dummyApigwEvent.queryStringParameters['excludeAutoSavedTests'] = queryParameter.excludeAutoSavedTests;
+      dummyApigwEvent.queryStringParameters['activityCode'] = queryParameter.activityCode;
+      dummyApigwEvent.queryStringParameters['category'] = queryParameter.category;
       moqSearchResults.setup(x => x(It.isAny())).returns(() => Promise.resolve(testResult));
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(200);
@@ -105,6 +107,8 @@ describe('searchResults handler', () => {
         queryParameterWith8DigitAppRef.excludeAutoSavedTests;
       dummyApigwEvent.queryStringParameters['applicationReference'] = queryParameterWith8DigitAppRef
         .applicationReference;
+      dummyApigwEvent.queryStringParameters['activityCode'] = queryParameterWith8DigitAppRef.activityCode;
+      dummyApigwEvent.queryStringParameters['category'] = queryParameterWith8DigitAppRef.category;
       moqSearchResults.setup(x => x(It.isAny())).returns(() => Promise.resolve(testResult));
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(200);
