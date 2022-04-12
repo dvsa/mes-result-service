@@ -1,5 +1,6 @@
 const path = require('path');
 const YAML = require('yamljs');
+const webpack = require('webpack');
 
 const allEntries = Object.keys(YAML.load('serverless.yml').functions)
   .reduce((entryObj, functionName) => {
@@ -23,6 +24,12 @@ module.exports = env => ({
       },
     ],
   },
+  plugins: [
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^cardinal$/,
+      contextRegExp: /./,
+    }),
+  ],
   resolve: {
     extensions: ['.ts', '.js', '.jsx', '.json']
   },
