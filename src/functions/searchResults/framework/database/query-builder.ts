@@ -63,15 +63,11 @@ export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryPar
 
   const nonFieldQuery: boolean = jsonQueries.length > 0;
 
-  console.log('1');
-
   if (nonFieldQuery) {
     jsonQueries = [...jsonQueries].map((e, i) => i < jsonQueries.length - 1 ? [e, 'AND'] : [e])
       .reduce((a, b) => a.concat(b));
 
-    console.log('jsonQ', jsonQueries);
-    queryString = queryString.concat('SELECT * FROM (');
-    queryString = queryString.concat('SELECT test_result, test_date FROM TEST_RESULT WHERE ');
+    queryString = queryString.concat('SELECT * FROM (SELECT test_result, test_date FROM TEST_RESULT WHERE ');
   } else {
     // Stringify the array, leaving spaces between
     queryString = queryString.concat('SELECT test_result FROM TEST_RESULT WHERE ');
@@ -89,8 +85,6 @@ export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryPar
   }
 
   queryString = queryString.concat('ORDER BY test_date DESC LIMIT 200;');
-
-  console.log('queryString', queryString);
 
   return mysql.format(queryString, parameterArray);
 };
