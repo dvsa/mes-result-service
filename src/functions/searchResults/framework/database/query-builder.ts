@@ -2,7 +2,7 @@ import * as mysql from 'mysql2';
 import { QueryParameters } from '../../domain/query_parameters';
 
 export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryParameters): string => {
-  const parameterArray: any[] = [];
+  const parameterArray: string[] = [];
   let queries: string[] = [];
   let queryString: string = '';
 
