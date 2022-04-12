@@ -68,6 +68,7 @@ export const testResultResponse = [
     category: 'B',
     activityCode: '2',
     candidateName: 'candidatename',
+    passCertificateNumber: 'A123456X',
   },
 ];
 
@@ -150,5 +151,6 @@ export const testResult: TestResultRecord[] = [{
       updatedEmail: 'jane.doe@example.com',
       communicationMethod: 'Email',
     },
+    passCompletion: { passCertificateNumber: 'A123456X' },
   },
 }];
