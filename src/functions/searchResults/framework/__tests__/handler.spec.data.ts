@@ -47,6 +47,8 @@ export const queryParameter: QueryParameters = {
   applicationReference: '1234570231',
   dtcCode: 'EXTC1',
   excludeAutoSavedTests: 'false',
+  category: 'C',
+  activityCode: '2',
 };
 
 export const queryParameterWith8DigitAppRef: QueryParameters = {
@@ -57,6 +59,8 @@ export const queryParameterWith8DigitAppRef: QueryParameters = {
   applicationReference: '12345702',
   dtcCode: 'EXTC1',
   excludeAutoSavedTests: 'false',
+  category: 'C',
+  activityCode: '2',
 };
 
 export const testResultResponse = [

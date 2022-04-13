@@ -7,4 +7,6 @@ export class QueryParameters {
   dtcCode: string;
   applicationReference: string;
   excludeAutoSavedTests: string;
+  activityCode: string;
+  category: string;
 }
