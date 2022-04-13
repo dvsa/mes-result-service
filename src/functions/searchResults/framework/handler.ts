@@ -96,8 +96,6 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
 
     const dePermittedQueries = ['driverNumber', 'applicationReference', 'excludeAutoSavedTests'];
 
-    const dlgPermittedQueries = ['driverNumber', 'applicationReference', 'excludeAutoSavedTests'];
-
     const isLDTM = event.requestContext.authorizer.examinerRole === UserRole.LDTM;
 
     const isDLG = event.requestContext.authorizer.examinerRole === UserRole.DLG;
