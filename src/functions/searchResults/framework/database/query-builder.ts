@@ -54,7 +54,7 @@ export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryPar
 
   if (queryParameters.category) {
     jsonQueries.push('JSON_EXTRACT(test_result, "$.category") = ?');
-    parameterArray.push(queryParameters.category.replace(' ', '+'));
+    parameterArray.push(decodeURIComponent(queryParameters.category));
   }
 
   // Add AND between all statements
