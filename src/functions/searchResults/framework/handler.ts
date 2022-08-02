@@ -138,6 +138,7 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
           category: testResultRow.category,
           activityCode: testResultRow.activityCode,
           passCertificateNumber: get(testResultRow, 'passCompletion.passCertificateNumber', null),
+          grade: get(testResultRow, 'testData.review.grade', null),
         },
       );
     }
