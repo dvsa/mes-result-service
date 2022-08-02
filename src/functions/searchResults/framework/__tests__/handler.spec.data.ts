@@ -73,7 +73,7 @@ export const testResultResponse = [
     activityCode: '2',
     candidateName: 'candidatename',
     passCertificateNumber: 'A123456X',
-    grade: null
+    grade: null,
   },
 ];
 
