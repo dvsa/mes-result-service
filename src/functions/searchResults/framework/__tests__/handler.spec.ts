@@ -8,7 +8,7 @@ import {
   queryParameterWith8DigitAppRef,
   sampleToken_12345678, testResult,
   testResultResponse,
-} from '../__tests__/handler.spec.data';
+} from './handler.spec.data';
 import * as searchResultsSvc from '../repositories/search-repository';
 import { UserRole } from '../../../../common/domain/user-role';
 
@@ -85,6 +85,7 @@ describe('searchResults handler', () => {
       dummyApigwEvent.queryStringParameters['excludeAutoSavedTests'] = queryParameter.excludeAutoSavedTests;
       dummyApigwEvent.queryStringParameters['activityCode'] = queryParameter.activityCode;
       dummyApigwEvent.queryStringParameters['category'] = queryParameter.category;
+      dummyApigwEvent.queryStringParameters['passCertificateNumber'] = queryParameter.passCertificateNumber;
       moqSearchResults.setup(x => x(It.isAny())).returns(() => Promise.resolve(testResult));
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(200);
@@ -109,6 +110,7 @@ describe('searchResults handler', () => {
         .applicationReference;
       dummyApigwEvent.queryStringParameters['activityCode'] = queryParameterWith8DigitAppRef.activityCode;
       dummyApigwEvent.queryStringParameters['category'] = queryParameterWith8DigitAppRef.category;
+      dummyApigwEvent.queryStringParameters['passCertificateNumber'] = queryParameter.passCertificateNumber;
       moqSearchResults.setup(x => x(It.isAny())).returns(() => Promise.resolve(testResult));
       const resp = await handler(dummyApigwEvent, dummyContext);
       expect(resp.statusCode).toBe(200);
