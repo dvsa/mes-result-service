@@ -19,10 +19,13 @@ export const buildTestResultInsert = (
     tc_cc,
     driver_number,
     driver_surname,
+    activity_code,
+    category,
+    pass_certificate_number,
     result_status,
     autosave
   )
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON DUPLICATE KEY UPDATE
     test_result = ?,
     autosave = false
@@ -37,6 +40,9 @@ export const buildTestResultInsert = (
   const testCentreCostCode = journalData.testCentre.costCode;
   const { driverNumber } = journalData.candidate;
   const driverSurname = journalData.candidate.candidateName.lastName;
+  const activityCode = test.activityCode;
+  const category = test.category;
+  const passCertificateNumber = test?.passCompletion?.passCertificateNumber;
 
   const args = [
     applicationReference,
@@ -47,6 +53,9 @@ export const buildTestResultInsert = (
     testCentreCostCode,
     driverNumber,
     driverSurname,
+    activityCode,
+    category,
+    passCertificateNumber,
     isError ? ResultStatus.ERROR : ResultStatus.PROCESSING,
     isPartialTest,
     testResult,
