@@ -49,7 +49,6 @@ export const queryParameter: QueryParameters = {
   excludeAutoSavedTests: 'false',
   category: 'C',
   activityCode: '2',
-  passCertificateNumber: 'A123456X',
 };
 
 export const queryParameterWith8DigitAppRef: QueryParameters = {
@@ -62,7 +61,6 @@ export const queryParameterWith8DigitAppRef: QueryParameters = {
   excludeAutoSavedTests: 'false',
   category: 'C',
   activityCode: '2',
-  passCertificateNumber: 'A123456X',
 };
 
 export const testResultResponse = [
