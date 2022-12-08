@@ -54,10 +54,6 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
       queryParameters.category = event.queryStringParameters.category;
     }
 
-    if (event.queryStringParameters.passCertificateNumber) {
-      queryParameters.passCertificateNumber = event.queryStringParameters.passCertificateNumber;
-    }
-
     if (Object.keys(queryParameters).length === 0) {
       return createResponse('Query parameters have to be supplied', HttpStatus.BAD_REQUEST);
     }
@@ -74,7 +70,6 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
       excludeAutoSavedTests: joi.string().optional(),
       activityCode: joi.string().alphanum().optional(),
       category: joi.string().optional(),
-      passCertificateNumber: joi.string().optional(),
     });
 
     const validationResult = parametersSchema.validate({
@@ -87,7 +82,6 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
       excludeAutoSavedTests: queryParameters.excludeAutoSavedTests,
       activityCode: queryParameters.activityCode,
       category: queryParameters.category,
-      passCertificateNumber: queryParameters.passCertificateNumber,
     });
 
     if (validationResult.error) {
@@ -97,7 +91,7 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
     const ldtmPermittedQueries = [
       'startDate', 'staffNumber', 'endDate', 'driverNumber',
       'dtcCode', 'applicationReference', 'excludeAutoSavedTests',
-      'activityCode', 'category', 'passCertificateNumber',
+      'activityCode', 'category',
     ];
 
     const dePermittedQueries = ['driverNumber', 'applicationReference', 'excludeAutoSavedTests'];
