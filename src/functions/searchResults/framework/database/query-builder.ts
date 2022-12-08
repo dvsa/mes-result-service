@@ -6,6 +6,9 @@ export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryPar
   let queries: string[] = [];
   let queryString: string = '';
 
+  // query params that do not correspond to fields but can be found in the JSON test_result
+  let jsonQueries: string[] = [];
+
   if (queryParameters.startDate && queryParameters.endDate) {
     queries.push('test_date >= ? AND test_date <= ?');
     parameterArray.push(queryParameters.startDate);
@@ -45,29 +48,41 @@ export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryPar
   }
 
   if (queryParameters.activityCode) {
-    queries.push('activity_code = ?');
+    jsonQueries.push('JSON_EXTRACT(test_result, "$.activityCode") = ?');
     parameterArray.push(queryParameters.activityCode);
   }
 
   if (queryParameters.category) {
-    queries.push('category = ?');
-    parameterArray.push(queryParameters.category);
-  }
-
-  if (queryParameters.passCertificateNumber) {
-    queries.push('pass_certificate_number = ?');
-    parameterArray.push(queryParameters.passCertificateNumber);
+    jsonQueries.push('JSON_EXTRACT(test_result, "$.category") = ?');
+    parameterArray.push(decodeURIComponent(queryParameters.category));
   }
 
   // Add AND between all statements
   queries = [...queries].map((e, i) => i < queries.length - 1 ? [e, 'AND'] : [e])
     .reduce((a, b) => a.concat(b));
 
-  queryString = queryString.concat('SELECT test_result FROM TEST_RESULT WHERE ');
+  const nonFieldQuery: boolean = jsonQueries.length > 0;
+
+  if (nonFieldQuery) {
+    jsonQueries = [...jsonQueries].map((e, i) => i < jsonQueries.length - 1 ? [e, 'AND'] : [e])
+      .reduce((a, b) => a.concat(b));
+
+    queryString = queryString.concat('SELECT * FROM (SELECT test_result, test_date FROM TEST_RESULT WHERE ');
+  } else {
+    // Stringify the array, leaving spaces between
+    queryString = queryString.concat('SELECT test_result FROM TEST_RESULT WHERE ');
+  }
 
   queries.forEach((query) => {
     queryString = queryString.concat(`${query} `);
   });
+
+  if (nonFieldQuery) {
+    queryString = queryString.concat(') as subQuery WHERE ');
+    jsonQueries.forEach((query) => {
+      queryString = queryString.concat(`${query} `);
+    });
+  }
 
   queryString = queryString.concat('ORDER BY test_date DESC LIMIT 200;');
 
