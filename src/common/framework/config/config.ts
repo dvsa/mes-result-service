@@ -13,23 +13,10 @@ export type Config = {
 let configuration: Config;
 export const bootstrapConfig = async (): Promise<void> => {
   configuration = {
-    mesDatabaseHostname: throwIfNotPresent(
-      process.env.MES_DB_HOST_NAME,
-      'mesDatabaseHostname',
-    ),
-    mesDatabaseName: throwIfNotPresent(
-      process.env.MES_DB_NAME,
-      'tarsReplicaDatabaseName',
-    ),
-    mesDatabaseUsername: throwIfNotPresent(
-      process.env.MES_DB_USERNAME,
-      'tarsReplicaDatabaseUsername',
-    ),
-    mesDatabasePassword: await tryFetchRdsAccessToken(
-      process.env.MES_DB_ENDPOINT || '',
-      process.env.MES_DB_USERNAME || '',
-      'SECRET_DB_PASSWORD_KEY',
-    ),
+    mesDatabaseHostname: 'training-db-1.cs4v7hzcozof.eu-west-1.rds.amazonaws.com',
+    mesDatabaseName: 'training',
+    mesDatabaseUsername: 'admin',
+    mesDatabasePassword: 'pOEPrKE2X3qJImnoKySP',
   };
 };
 

@@ -2,7 +2,7 @@ service: mes-result-service
 
 provider:
   name: aws
-  runtime: nodejs14
+  runtime: nodejs16.x
 
 functions:
   postResult:
@@ -23,7 +23,7 @@ functions:
     handler: src/functions/updateUploadStatus/framework/handler.handler
     events:
       - http:
-          path: test-result/{app-ref}/upload
+          path: test-result/{appref}/upload
           method: put
 
   searchResults:
@@ -37,7 +37,7 @@ functions:
     handler: src/functions/getResult/framework/handler.handler
     events:
       - http:
-          path: test-result/{app-ref}/{staff-number}
+          path: test-result/{appref}/{staffnumber}
           method: get
 
   retryProcessing:
@@ -54,6 +54,12 @@ functions:
           path: test-result/delete
           method: put
 
+  missingCertificates:
+    handler: src/functions/missingCertificates/framework/handler.handler
+    events:
+      - http:
+          path: missingCertificates
+          method: put
 custom:
   dynamodb:
     start:
