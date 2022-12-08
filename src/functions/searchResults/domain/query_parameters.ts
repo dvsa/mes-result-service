@@ -9,5 +9,4 @@ export class QueryParameters {
   excludeAutoSavedTests: string;
   activityCode: string;
   category: string;
-  passCertificateNumber: string;
 }
