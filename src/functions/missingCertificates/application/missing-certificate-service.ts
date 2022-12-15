@@ -1,13 +1,13 @@
 import * as mysql from 'mysql2';
 import { getConnection } from '../../../common/framework/mysql/database';
-// import { info } from '@dvsa/mes-microservice-common/application/utils/logger';
-// import { deleteTestResultRecord, deleteUploadQueueRecord } from '../framework/database/query-builder';
+import { countCertificates } from '../framework/database/query-builder';
+import { info } from '@dvsa/mes-microservice-common/application/utils/logger';
 
 export const duplicateCertificates = async (): Promise<void> => {
   const connection: mysql.Connection = getConnection();
   try {
-    // const [testResultDeleted] = await connection.promise().query(deleteTestResultRecord());
-    // info('No of TEST_RESULT records Deleted: ', testResultDeleted.affectedRows);
+    const [missingCertificatesStep1] = await connection.promise().query(countCertificates());
+    info('info message goes here');
     //
     // const [uploadQueueDeleted] = await connection.promise().query(deleteUploadQueueRecord());
     // info('No of UPLOAD_QUEUE records Deleted: ', uploadQueueDeleted.affectedRows);
