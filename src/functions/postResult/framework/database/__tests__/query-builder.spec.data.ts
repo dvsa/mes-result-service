@@ -3,6 +3,7 @@ import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
 export const dummyTestResult: TestResultSchemasUnion = {
   version: '0.0.1',
   category: 'B',
+  appVersion: '0.0.0.1',
   journalData: {
     examiner: {
       staffNumber: '999',
