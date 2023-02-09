@@ -31,13 +31,25 @@ describe('QueryBuilder', () => {
       const result = buildTestResultInsert(dummyTestResult, false, false);
       expect(result).toMatch(/0/);
     });
-    it('should have autosave as the last field in the INSERT', () => {
+    it('should have version  in the INSERT', () => {
       const result = buildTestResultInsert(dummyTestResult, false, false);
-      expect(result).toMatch(/false\)/);
+      expect(result).toMatch(/0.0.1/);
     });
-    it('should have autosave=true in the query when passed isPartialTest=true', () => {
-      const result = buildTestResultInsert(dummyTestResult, false, true);
-      expect(result).toMatch(/true\)/);
+    it('should have app_version  in the INSERT', () => {
+      const result = buildTestResultInsert(dummyTestResult, false, false);
+      expect(result).toMatch(/0.0.0.1/);
+    });
+    it('should have Category in the INSERT', () => {
+      const result = buildTestResultInsert(dummyTestResult, false, false);
+      expect(result).toMatch(/B/);
+    });
+    it('should have Activity Code in the INSERT', () => {
+      const result = buildTestResultInsert(dummyTestResult, false, false);
+      expect(result).toMatch(/51/);
+    });
+    it('should have pass certificate number in the INSERT', () => {
+      const result = buildTestResultInsert(dummyTestResult, false, false);
+      expect(result).toMatch(/abc123/);
     });
   });
 });
