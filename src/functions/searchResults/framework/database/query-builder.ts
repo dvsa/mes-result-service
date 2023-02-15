@@ -51,12 +51,12 @@ export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryPar
 
   if (queryParameters.category) {
     queries.push('category = ?');
-    parameterArray.push(queryParameters.category);
+    parameterArray.push(decodeURIComponent(queryParameters.category));
   }
 
   if (queryParameters.passCertificateNumber) {
     queries.push('pass_certificate_number = ?');
-    parameterArray.push(queryParameters.passCertificateNumber);
+    parameterArray.push(decodeURIComponent(queryParameters.passCertificateNumber));
   }
 
   // Add AND between all statements
