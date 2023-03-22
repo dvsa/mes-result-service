@@ -1,2 +1,3 @@
 .npmrc
+docker/*
 spec/infra/*.sql
