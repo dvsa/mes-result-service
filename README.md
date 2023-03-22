@@ -13,10 +13,28 @@ As per the principles of Hexagonal Architecture, each function has the following
 * `application` - contains all Inbound and Outbound Ports, doesn't use any external/proprietary APIs - depends upon...
 * `domain` - contains all domain objects (Aggregates, Objects, Value classes etc) with all "business logic" (not just anaemic data holders), doesn't use any external/proprietary APIs.
 
-## Run locally
+## Run Locally
 
-Use the following script to spin up the microservice locally
+To allow development to take place locally without re-deploying new versions to AWS for every code change a local mysql database can be created
+and a local env file used to connect serverless to it.
 
+This will docker to be installed and service running locally.  (For mac suggest docker desktop)
+
+Data can be added amended to the apropreate sql files under /docker/results_database
+
+### mySql (via docker)
+In new terminal:
+```shell
+cd docker
+docker compose up
+```
+When finished to clean up after yourself:
+```shell
+docker compose down
+```
+
+### Serverless
+To run serverless locally run the following command which will allow services to be accessed via a tool such as postman.
 ```shell
 npm start
 ```
