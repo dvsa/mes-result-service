@@ -107,6 +107,7 @@ export const getCategorySpecificSchema = (category: string): Object => {
   case TestCategory.ADI2:
     return catADI2Schema;
   case TestCategory.ADI3:
+  case TestCategory.SC:
     return catADI3Schema;
   case TestCategory.CCPC:
   case TestCategory.DCPC:
