@@ -2,7 +2,7 @@ service: mes-result-service
 
 provider:
   name: aws
-  runtime: nodejs14
+  runtime: nodejs14.x
 
 functions:
   postResult:
