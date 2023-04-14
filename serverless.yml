@@ -2,7 +2,7 @@ service: mes-result-service
 
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs16.x
 
 functions:
   postResult:
@@ -23,7 +23,7 @@ functions:
     handler: src/functions/updateUploadStatus/framework/handler.handler
     events:
       - http:
-          path: test-result/{app-ref}/upload
+          path: test-result/{appRef}/upload
           method: put
 
   searchResults:
@@ -37,7 +37,14 @@ functions:
     handler: src/functions/getResult/framework/handler.handler
     events:
       - http:
-          path: test-result/{app-ref}/{staff-number}
+          path: test-result/{appRef}/{staffNumber}
+          method: get
+
+  getRegeneratedEmails:
+    handler: src/functions/getRegeneratedEmails/framework/handler.handler
+    events:
+      - http:
+          path: regeneratedemails/{appRef}
           method: get
 
   retryProcessing:
@@ -64,5 +71,6 @@ custom:
     webpackConfig: 'webpack-sls-offline.config.js'
 
 plugins:
+  - serverless-dotenv-plugin
   - serverless-webpack
   - serverless-offline

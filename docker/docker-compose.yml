@@ -1,7 +1,8 @@
 version: '3.9'
 services:
   des-result-service-result-db:
-    image: mysql:8.0.32
+    platform: linux/x86_64
+    image: mysql:5.7
     environment:
       MYSQL_DATABASE: results
       MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
@@ -10,5 +11,6 @@ services:
     volumes:
       - './results_database/010-database_creation.sql:/docker-entrypoint-initdb.d/010-database_creation.sql'
       - './results_database/020-test_results_table_test-data.sql:/docker-entrypoint-initdb.d/020-test_results_table_test-data.sql'
+      - './results_database/030_audit_email_regen_test_date.sql:/docker-entrypoint-initdb.d/030_audit_email_regen_test_date.sql'
     ports:
       - '3306:3306'
