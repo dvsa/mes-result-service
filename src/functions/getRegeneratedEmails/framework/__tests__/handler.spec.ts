@@ -13,7 +13,7 @@ import * as getRegeneratedEmailService from '../repositories/get-regenerated-ema
 import { gunzipSync } from 'zlib';
 import { RegeneratedEmailsRecord } from '../../../../common/domain/regenerated-emails';
 
-fdescribe('getRegeneratedEmails handler', () => {
+describe('getRegeneratedEmails handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
   let dummyContext: Context;
   const moqGetRegeneratedEmails = Mock.ofInstance(getRegeneratedEmailService.getRegeneratedEmails);
