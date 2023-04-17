@@ -8,9 +8,9 @@ describe('QueryBuilder', () => {
       expect(result).toContain('SELECT application_reference as appRef,');
       expect(result).toContain('JSON_ARRAYAGG(');
       expect(result).toContain('JSON_OBJECT(');
-      expect(result).toContain('\'new_email\', new_email,');
-      expect(result).toContain('\'regenerated_date\', regenerated_date,');
-      expect(result).toContain('\'new_language\', new_language');
+      expect(result).toContain('\'newEmail\', new_email,');
+      expect(result).toContain('\'regeneratedDate\', regenerated_date,');
+      expect(result).toContain('\'newLanguage\', new_language');
       expect(result).toContain(') as emailRegenerationDetails');
       expect(result).toContain('FROM AUDIT_EMAIL_REGEN where application_reference');
     });

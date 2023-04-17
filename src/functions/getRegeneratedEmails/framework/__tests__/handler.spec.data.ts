@@ -36,9 +36,9 @@ export const normalResultSinglar: RegeneratedEmailsRecord[] =
       appRef: 1234570231,
       emailRegenerationDetails: [
         {
-          new_email: 'new_email@test',
-          new_language: 'English',
-          regenerated_date: new Date('2023-04-05 11:00:58'),
+          newEmail: 'new_email@test',
+          newLanguage: 'English',
+          regeneratedDate: '2023-04-05 11:00:58',
         },
       ],
     },

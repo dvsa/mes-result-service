@@ -44,7 +44,7 @@ functions:
     handler: src/functions/getRegeneratedEmails/framework/handler.handler
     events:
       - http:
-          path: regeneratedemails/{appRef}
+          path: test-result/regeneratedemails/{appRef}
           method: get
 
   retryProcessing:

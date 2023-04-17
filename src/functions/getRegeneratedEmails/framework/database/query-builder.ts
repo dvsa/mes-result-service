@@ -5,9 +5,9 @@ export const buildGetRegeneratedEmailQuery = (appRef: number): string => {
     SELECT application_reference as appRef,
            JSON_ARRAYAGG(
                 JSON_OBJECT(
-                    'new_email', new_email,
-                    'regenerated_date', regenerated_date,
-                    'new_language', new_language
+                    'newEmail', new_email,
+                    'regeneratedDate', regenerated_date,
+                    'newLanguage', new_language
                 )
            ) as emailRegenerationDetails
     FROM AUDIT_EMAIL_REGEN where application_reference = ?;
