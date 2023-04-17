@@ -9,12 +9,16 @@ import * as joi from 'joi';
 import { TestResultRecord } from '../../../common/domain/test-results';
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
 import { gzipSync } from 'zlib';
+import {
+  getAppRefFromPathParameters,
+  getStaffNumberFromPathParameters,
+} from '../../../common/application/utils/getPathParms';
 
 export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<Response> {
   await bootstrapConfig();
   try {
-    const appRefPathParam = parseInt(event.pathParameters['app-ref'], 10);
-    const staffNumberParam = event.pathParameters['staff-number'];
+    const appRefPathParam = parseInt(getAppRefFromPathParameters(event), 10);
+    const staffNumberParam = getStaffNumberFromPathParameters(event);
 
     const parametersSchema = joi.object().keys({
       staffNumber: joi.string().alphanum(),

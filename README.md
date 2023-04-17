@@ -20,7 +20,7 @@ and a local env file used to connect serverless to it.
 
 This will docker to be installed and service running locally.  (For mac suggest docker desktop)
 
-Data can be added amended to the apropreate sql files under /docker/results_database
+Data can be added amended to the appropriate sql files under /docker/results_database
 
 ### mySql (via docker)
 In new terminal:
@@ -67,7 +67,7 @@ To run the unit tests, simply run:
 npm test
 ```
 
-### Integration tests
+### Integration tests (outdated)
 
 There are some integration tests, each of which can be found in the `__tests__` directory of the source tree with the `.int.ts` extension.
 

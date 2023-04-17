@@ -93,3 +93,15 @@ CREATE TABLE UPLOAD_QUEUE
     FOREIGN KEY (interface) REFERENCES INTERFACE_TYPE (id),
     FOREIGN KEY (upload_status) REFERENCES PROCESSING_STATUS (id)
 );
+
+CREATE TABLE AUDIT_EMAIL_REGEN
+(
+    application_reference BIGINT       NOT NULL,
+    regenerated_date      TIMESTAMP    NOT NULL,
+    previous_email        VARCHAR(200) NULL,
+    new_email             VARCHAR(200) NOT NULL,
+    previous_language     VARCHAR(10)  NULL,
+    new_language          VARCHAR(10)  NOT NULL,
+    user_name             VARCHAR(200) NOT NULL,
+    ticket_ref            VARCHAR(32)  NOT NULL
+);
