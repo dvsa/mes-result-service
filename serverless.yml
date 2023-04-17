@@ -9,56 +9,56 @@ functions:
     handler: src/functions/postResult/framework/handler.handler
     events:
       - http:
-          path: test-result
+          path: test-results
           method: post
 
   getNextUploadBatch:
     handler: src/functions/getNextUploadBatch/framework/handler.handler
     events:
       - http:
-          path: test-result/upload
+          path: test-results/upload
           method: get
 
   updateUploadStatus:
     handler: src/functions/updateUploadStatus/framework/handler.handler
     events:
       - http:
-          path: test-result/{appRef}/upload
+          path: test-results/{appRef}/upload
           method: put
 
   searchResults:
     handler: src/functions/searchResults/framework/handler.handler
     events:
       - http:
-          path: test-result
+          path: test-results
           method: get
 
   getResult:
     handler: src/functions/getResult/framework/handler.handler
     events:
       - http:
-          path: test-result/{appRef}/{staffNumber}
+          path: test-results/{appRef}/{staffNumber}
           method: get
 
   getRegeneratedEmails:
     handler: src/functions/getRegeneratedEmails/framework/handler.handler
     events:
       - http:
-          path: test-result/regeneratedemails/{appRef}
+          path: test-results/regeneratedemails/{appRef}
           method: get
 
   retryProcessing:
     handler: src/functions/retryProcessing/framework/handler.handler
     events:
       - http:
-          path: test-result/retry
+          path: test-results/retry
           method: get
 
   deleteTestResult:
     handler: src/functions/deleteTestResult/framework/handler.handler
     events:
       - http:
-          path: test-result/delete
+          path: test-results/delete
           method: put
 
 custom:

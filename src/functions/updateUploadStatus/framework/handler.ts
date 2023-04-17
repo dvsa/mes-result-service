@@ -9,6 +9,7 @@ import { updateUpload } from '../application/update-upload-service';
 import { error, warn, bootstrapLogging } from '@dvsa/mes-microservice-common/application/utils/logger';
 import { InconsistentUpdateError } from '../domain/InconsistentUpdateError';
 import { SubmissionOutcome } from '../domain/SubmissionOutcome';
+import { getAppRefFromPathParameters } from '../../../common/application/utils/getPathParms';
 
 export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Promise<Response> {
 
@@ -16,7 +17,7 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
   await bootstrapConfig();
 
   let body: SubmissionOutcome;
-  const appRefPathParam = event.pathParameters['app-ref'];
+  const appRefPathParam = getAppRefFromPathParameters(event);
 
   if (isNullOrBlank(event.body) || isNullOrBlank(appRefPathParam)) {
     return createResponse({ message: 'Empty path app-ref or request body' }, HttpStatus.BAD_REQUEST);

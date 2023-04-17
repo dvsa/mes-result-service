@@ -65,7 +65,7 @@ describe('getRegeneratedEmails handler', () => {
       dummyApigwEvent.pathParameters['appRef'] = applicationReference.toString();
       moqGetRegeneratedEmails.setup(x => x(It.isAny())).returns(() => noResults as any);
       const response = await handler(dummyApigwEvent, dummyContext);
-      expect(response.statusCode).toBe(400);
+      expect(response.statusCode).toBe(404);
       expect(JSON.parse(response.body)).toEqual('No records found matching criteria');
       moqGetRegeneratedEmails.verify(x => x(It.isValue(applicationReference)), Times.once());
     });
