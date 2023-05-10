@@ -1,6 +1,5 @@
 import * as mysql from 'mysql2';
 import { getConnection } from '../../../common/framework/mysql/database';
-import { NoDeleteWarning } from '../domain/NoDeleteWarning';
 import { info } from '@dvsa/mes-microservice-common/application/utils/logger';
 import { deleteTestResultRecord, deleteUploadQueueRecord } from '../framework/database/query-builder';
 
@@ -12,10 +11,6 @@ export const deleteTestResult = async (): Promise<void> => {
 
     const [uploadQueueDeleted] = await connection.promise().query(deleteUploadQueueRecord());
     info('No of UPLOAD_QUEUE records Deleted: ', uploadQueueDeleted.affectedRows);
-
-    if (testResultDeleted.affectedRows === 0 || uploadQueueDeleted.affectedRows === 0) {
-      throw new NoDeleteWarning();
-    }
   } catch (err) {
     connection.rollback();
     throw err;
