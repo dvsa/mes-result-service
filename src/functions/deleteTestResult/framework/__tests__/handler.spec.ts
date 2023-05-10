@@ -1,10 +1,10 @@
 import { APIGatewayEvent, Context } from 'aws-lambda';
 import { handler } from '../handler';
 const lambdaTestUtils = require('aws-lambda-test-utils');
-import { Mock, It } from 'typemoq';
+import { Mock } from 'typemoq';
 import * as configSvc from '../../../../common/framework/config/config';
 import * as deleteTestResultSvc from '../../application/delete-test-result-service';
-import { NoDeleteWarning } from '../../domain/NoDeleteWarning';
+import { HttpStatus } from '../../../../common/application/api/HttpStatus';
 
 describe('deleteTestResult handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
@@ -23,11 +23,17 @@ describe('deleteTestResult handler', () => {
     spyOn(deleteTestResultSvc, 'deleteTestResult').and.callFake(moqDeleteTestResultSvc.object);
   });
 
-  it('should send NOT_FOUND when delete testRecord service throws NoDeleteWarning', async () => {
-    moqDeleteTestResultSvc.setup(x => x()).throws(new NoDeleteWarning());
+  it('should resolve and complete with 200 when no error thrown from deleteTestResult', async () => {
+    moqDeleteTestResultSvc.setup(x => x()).returns(() => Promise.resolve());
+    const res = await handler(dummyApigwEvent);
+    expect(res.statusCode).toBe(HttpStatus.OK);
+  });
 
-    const res = await handler(dummyApigwEvent, dummyContext);
+  it('should resolve as internal server error when running through catch', async () => {
+    moqDeleteTestResultSvc.setup(x => x()).throws(new Error('err'));
 
-    expect(res.statusCode).toBe(404);
+    const res = await handler(dummyApigwEvent);
+
+    expect(res.statusCode).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 });

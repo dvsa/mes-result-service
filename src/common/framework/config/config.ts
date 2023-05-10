@@ -25,8 +25,9 @@ export const bootstrapConfig = async (): Promise<void> => {
       process.env.MES_DB_USERNAME,
       'tarsReplicaDatabaseUsername',
     ),
-    mesDatabasePassword: process.env.IS_OFFLINE === 'true' ?
-      process.env.MES_DB_PASSWORD : await tryFetchRdsAccessToken(
+    mesDatabasePassword: (process.env.IS_OFFLINE === 'true')
+      ? process.env.MES_DB_PASSWORD
+      : await tryFetchRdsAccessToken(
         process.env.MES_DB_ENDPOINT || '',
         process.env.MES_DB_USERNAME || '',
         'SECRET_DB_PASSWORD_KEY',
