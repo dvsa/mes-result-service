@@ -1,4 +1,4 @@
-import { APIGatewayEvent, Context } from 'aws-lambda';
+import { APIGatewayEvent } from 'aws-lambda';
 import {bootstrapLogging, debug, error, info} from '@dvsa/mes-microservice-common/application/utils/logger';
 import createResponse from '../../../common/application/utils/createResponse';
 import { HttpStatus } from '../../../common/application/api/HttpStatus';
@@ -162,7 +162,7 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
       );
     }
 
-    info('Number of test results returning', results.length);
+    info('Number of test results returning ', results.length);
     return createResponse(condensedTestResult, HttpStatus.OK);
   } catch (err) {
     error('Search results', err);
