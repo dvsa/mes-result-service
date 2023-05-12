@@ -14,7 +14,6 @@ import { UserRole } from '../../../../common/domain/user-role';
 
 describe('searchResults handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
-  let dummyContext: Context;
   const moqSearchResults = Mock.ofInstance(searchResultsSvc.getConciseSearchResults);
   const moqBootstrapConfig = Mock.ofInstance(configSvc.bootstrapConfig);
 
@@ -28,7 +27,6 @@ describe('searchResults handler', () => {
       },
     });
 
-    dummyContext = lambdaTestUtils.mockContextCreator(() => null);
     process.env.EMPLOYEE_ID_EXT_KEY = 'extn.employeeId';
 
     spyOn(searchResultsSvc, 'getConciseSearchResults').and.callFake(moqSearchResults.object);
@@ -37,7 +35,7 @@ describe('searchResults handler', () => {
 
   describe('configuration initialisation', () => {
     it('should always bootstrap the config', async () => {
-      await handler(dummyApigwEvent, dummyContext);
+      await handler(dummyApigwEvent);
       moqBootstrapConfig.verify(x => x(), Times.once());
     });
   });
@@ -45,7 +43,7 @@ describe('searchResults handler', () => {
   describe('handling of no parameters', () => {
     it('should fail with bad request and give an error message', async () => {
       dummyApigwEvent.queryStringParameters = null;
-      const resp = await handler(dummyApigwEvent, dummyContext);
+      const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(400);
       expect(JSON.parse(resp.body)).toBe('Query parameters have to be supplied');
     });
@@ -56,7 +54,7 @@ describe('searchResults handler', () => {
       dummyApigwEvent.requestContext.authorizer = {
         examinerRole: UserRole.LDTM,
       };
-      const resp = await handler(dummyApigwEvent, dummyContext);
+      const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(400);
       expect(JSON.parse(resp.body)).toBe('Query parameters have to be supplied');
     });
@@ -65,7 +63,7 @@ describe('searchResults handler', () => {
   describe('using invalid query parameters', () => {
     it('should fail with bad request and give an error message', async () => {
       dummyApigwEvent.queryStringParameters['whatever'] = 'randomvalue';
-      const resp = await handler(dummyApigwEvent, dummyContext);
+      const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(400);
       expect(JSON.parse(resp.body)).toBe('Query parameters have to be supplied');
     });
@@ -87,7 +85,7 @@ describe('searchResults handler', () => {
       dummyApigwEvent.queryStringParameters['category'] = queryParameter.category;
       dummyApigwEvent.queryStringParameters['passCertificateNumber'] = queryParameter.passCertificateNumber;
       moqSearchResults.setup(x => x(It.isAny())).returns(() => Promise.resolve(testResult));
-      const resp = await handler(dummyApigwEvent, dummyContext);
+      const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(200);
       expect(JSON.parse(resp.body)).toEqual(testResultResponse);
       moqSearchResults.verify(x => x(It.isObjectWith(queryParameter)), Times.once());
@@ -112,7 +110,7 @@ describe('searchResults handler', () => {
       dummyApigwEvent.queryStringParameters['category'] = queryParameterWith8DigitAppRef.category;
       dummyApigwEvent.queryStringParameters['passCertificateNumber'] = queryParameter.passCertificateNumber;
       moqSearchResults.setup(x => x(It.isAny())).returns(() => Promise.resolve(testResult));
-      const resp = await handler(dummyApigwEvent, dummyContext);
+      const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(200);
       expect(JSON.parse(resp.body)).toEqual(testResultResponse);
       moqSearchResults.verify(x => x(It.isObjectWith(queryParameterWith8DigitAppRef)), Times.once());
@@ -129,21 +127,21 @@ describe('searchResults handler', () => {
 
     it('should get relevant results when searching by correct staff number reference', async () => {
       dummyApigwEvent.queryStringParameters['staffNumber'] = queryParameter.staffNumber;
-      const resp = await handler(dummyApigwEvent, dummyContext);
+      const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(200);
       expect(JSON.parse(resp.body)).toEqual(testResultResponse);
     });
 
     it('should get relevant results when searching by correct application reference', async () => {
       dummyApigwEvent.queryStringParameters['applicationReference'] = queryParameter.applicationReference;
-      const resp = await handler(dummyApigwEvent, dummyContext);
+      const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(200);
       expect(JSON.parse(resp.body)).toEqual(testResultResponse);
     });
 
     it('should get relevant results when searching by correct driver number', async () => {
       dummyApigwEvent.queryStringParameters['driverNumber'] = queryParameter.driverNumber;
-      const resp = await handler(dummyApigwEvent, dummyContext);
+      const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(200);
       expect(JSON.parse(resp.body)).toEqual(testResultResponse);
     });

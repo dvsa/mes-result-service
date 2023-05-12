@@ -1,4 +1,5 @@
-import { APIGatewayEvent, Context } from 'aws-lambda';
+import { APIGatewayEvent } from 'aws-lambda';
+import {bootstrapLogging, debug, error, info} from '@dvsa/mes-microservice-common/application/utils/logger';
 import createResponse from '../../../common/application/utils/createResponse';
 import { HttpStatus } from '../../../common/application/api/HttpStatus';
 import Response from '../../../common/application/api/Response';
@@ -14,12 +15,16 @@ import { TestResultRecord } from '../../../common/domain/test-results';
 import { UserRole } from '../../../common/domain/user-role';
 import { formatApplicationReference } from '@dvsa/mes-microservice-common/domain/tars';
 
-export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<Response> {
-  await bootstrapConfig();
+export async function handler(event: APIGatewayEvent): Promise<Response> {
   try {
+    bootstrapLogging('search-test-results', event);
+
+    await bootstrapConfig();
+
     const queryParameters: QueryParameters = new QueryParameters();
 
     if (!event.queryStringParameters) {
+      error('No query params supplied');
       return createResponse('Query parameters have to be supplied', HttpStatus.BAD_REQUEST);
     }
 
@@ -59,6 +64,7 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
     }
 
     if (Object.keys(queryParameters).length === 0) {
+      error('No query params supplied');
       return createResponse('Query parameters have to be supplied', HttpStatus.BAD_REQUEST);
     }
 
@@ -91,6 +97,7 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
     });
 
     if (validationResult.error) {
+      error('Validation error', validationResult.error);
       return createResponse(validationResult.error, HttpStatus.BAD_REQUEST);
     }
 
@@ -110,17 +117,23 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
 
     const searchingForOwnTest = isSearchingForOwnTests(queryParameters, staffNumber);
 
+    debug('Searching using', queryParameters);
+
+    debug('Searching as', event.requestContext.authorizer.examinerRole);
+
     // This is to be safe, incase new parameters are added for DE only in the future
     if (isDLG || isLDTM || searchingForOwnTest) {
       for (const key in queryParameters) {
         if (!ldtmPermittedQueries.includes(key)) {
           const role = isLDTM ? 'LDTM' : 'User searching for own test';
+          error(`${role} is not permitted to use the parameter ${key}`);
           return createResponse(`${role} is not permitted to use the parameter ${key}`, HttpStatus.BAD_REQUEST);
         }
       }
     } else if (!isLDTM && !isDLG) {
       for (const key in queryParameters) {
         if (!dePermittedQueries.includes(key)) {
+          error(`DE is not permitted to use the parameter ${key}`);
           return createResponse(`DE is not permitted to use the parameter ${key}`, HttpStatus.BAD_REQUEST);
         }
       }
@@ -149,11 +162,12 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
       );
     }
 
+    info('Number of test results returning ', results.length);
     return createResponse(condensedTestResult, HttpStatus.OK);
   } catch (err) {
+    error('Search results', err);
     return createResponse(err, HttpStatus.BAD_REQUEST);
   }
-
 }
 
 const isSearchingForOwnTests = (queryParameters: QueryParameters, staffNumber: string): boolean => {
