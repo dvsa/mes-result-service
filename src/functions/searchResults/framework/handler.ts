@@ -45,7 +45,6 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
 
     if (event.queryStringParameters.rekey) {
       queryParameters.rekey = !!(event.queryStringParameters.rekey === 'true' && queryParameters.staffNumber);
-      console.log('queryParameters.rekey', queryParameters.rekey);
     }
     if (event.queryStringParameters.dtcCode) {
       queryParameters.dtcCode = event.queryStringParameters.dtcCode;

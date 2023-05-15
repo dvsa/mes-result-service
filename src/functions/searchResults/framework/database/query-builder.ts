@@ -75,8 +75,9 @@ export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryPar
   });
 
   // If rekeyFlag apply the filter for rekey first prior to restricting number of records
-  if (queryParameters.rekey) {queryString = queryString.concat(
-    ') as TR WHERE JSON_EXTRACT(TR.test_result, "$.rekey") = true ');}
+  if (queryParameters.rekey) {
+    queryString = queryString.concat(') as TR WHERE JSON_EXTRACT(TR.test_result, "$.rekey") = true ');
+  }
   queryString = queryString.concat(`ORDER BY ${queryParameters.rekey ? 'TR.' : ''}test_date DESC LIMIT 200;`);
 
   return mysql.format(queryString, parameterArray);
