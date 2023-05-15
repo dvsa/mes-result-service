@@ -1,4 +1,4 @@
-import { Context, ScheduledEvent } from 'aws-lambda';
+import { ScheduledEvent } from 'aws-lambda';
 import { handler } from '../handler';
 const lambdaTestUtils = require('aws-lambda-test-utils');
 import { Mock, Times } from 'typemoq';
@@ -8,7 +8,6 @@ import { HttpStatus } from '../../../../common/application/api/HttpStatus';
 
 describe('retryProcessing handler', () => {
   let dummyScheduledEvent: ScheduledEvent;
-  let dummyContext: Context;
 
   const moqBootstrapConfig = Mock.ofInstance(configSvc.bootstrapConfig);
   const moqGetConnection = Mock.ofInstance(database.getConnection);
@@ -17,24 +16,23 @@ describe('retryProcessing handler', () => {
     moqBootstrapConfig.reset();
 
     dummyScheduledEvent = lambdaTestUtils.mockEventCreator;
-    dummyContext = lambdaTestUtils.mockContextCreator(() => null);
 
     spyOn(configSvc, 'bootstrapConfig').and.callFake(moqBootstrapConfig.object);
     spyOn(database, 'getConnection').and.callFake(moqGetConnection.object);
   });
 
   it('should always bootstrap the config', async () => {
-    await handler(dummyScheduledEvent, dummyContext);
+    await handler(dummyScheduledEvent);
     moqBootstrapConfig.verify(x => x(), Times.once());
   });
 
   it('should call the getConnection function', async () => {
-    await handler(dummyScheduledEvent, dummyContext);
+    await handler(dummyScheduledEvent);
     expect(database.getConnection).toHaveBeenCalled();
   });
 
   it('should throw a 500 error if retry fails', async () => {
-    const resp = await handler(dummyScheduledEvent, dummyContext);
+    const resp = await handler(dummyScheduledEvent);
     expect(resp.statusCode).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 });

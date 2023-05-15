@@ -1,31 +1,42 @@
-import { Context, ScheduledEvent } from 'aws-lambda';
+import { ScheduledEvent } from 'aws-lambda';
+import * as mysql from 'mysql2';
 import createResponse from '../../../common/application/utils/createResponse';
 import { HttpStatus } from '../../../common/application/api/HttpStatus';
 import Response from '../../../common/application/api/Response';
 import { RetryProcessor } from '../application/RetryProcessor';
-import { bootstrapConfig } from '../../../../src/common/framework/config/config';
+import { bootstrapConfig } from '../../../common/framework/config/config';
 import { IRetryProcessor } from '../application/IRetryProcessor';
-import { error } from '@dvsa/mes-microservice-common/application/utils/logger';
+import { bootstrapLogging, error } from '@dvsa/mes-microservice-common/application/utils/logger';
 import { IRetryProcessingFacade } from '../domain/IRetryProcessingFacade';
 import { RetryProcessingFacade } from '../domain/RetryProcessingFacade';
 import { getConnection } from '../../../common/framework/mysql/database';
 import { setIsolationLevelSerializable } from './database/query-templates';
 
-export async function handler(event: ScheduledEvent, fnCtx: Context): Promise<Response> {
-  await bootstrapConfig();
-
-  const connection = getConnection();
-  const retryProcessor: IRetryProcessor = new RetryProcessor(connection);
-  const retryProcessingFacade: IRetryProcessingFacade = new RetryProcessingFacade(retryProcessor);
+export async function handler(event: ScheduledEvent): Promise<Response> {
+  let connection: mysql.Connection;
 
   try {
+    bootstrapLogging('retry-processor', event);
+
+    await bootstrapConfig();
+
+    connection = getConnection();
+
+    const retryProcessor: IRetryProcessor = new RetryProcessor(connection);
+
+    const retryProcessingFacade: IRetryProcessingFacade = new RetryProcessingFacade(retryProcessor);
+
     await connection.promise().query(setIsolationLevelSerializable);
+
     await retryProcessingFacade.processRetries();
+
+    return createResponse({}, HttpStatus.OK);
   } catch (err) {
     error('Uncaught error in handler', err);
     return createResponse(err, HttpStatus.INTERNAL_SERVER_ERROR);
   } finally {
-    if (connection) connection.end();
+    if (connection) {
+      connection.end();
+    }
   }
-  return createResponse({}, HttpStatus.OK);
 }
