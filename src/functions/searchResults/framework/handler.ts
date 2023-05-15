@@ -42,9 +42,10 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
       queryParameters.staffNumber = event.queryStringParameters.staffNumber;
     }
     // guard against filtering on rekey without providing a staff number
+
     if (event.queryStringParameters.rekey) {
-      queryParameters.rekey = (event.queryStringParameters.rekey === 'true' && queryParameters.staffNumber) ?
-        'true' : 'false';
+      queryParameters.rekey = !!(event.queryStringParameters.rekey === 'true' && queryParameters.staffNumber);
+      console.log('queryParameters.rekey', queryParameters.rekey);
     }
     if (event.queryStringParameters.dtcCode) {
       queryParameters.dtcCode = event.queryStringParameters.dtcCode;
@@ -78,7 +79,7 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
         .label('Please provide a valid date with the format \'YYYY-MM-DD\''),
       driverId: joi.string().alphanum().max(16).optional(),
       staffNumber: joi.string().alphanum().optional(),
-      rekey: joi.string().optional(),
+      rekey: joi.boolean().optional(),
       dtcCode: joi.string().alphanum().optional(),
       appRef: joi.number().max(1000000000000).optional(),
       excludeAutoSavedTests: joi.string().optional(),
