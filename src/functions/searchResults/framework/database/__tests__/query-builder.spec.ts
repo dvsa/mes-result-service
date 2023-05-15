@@ -1,5 +1,5 @@
 import { getConciseSearchResultsFromSearchQuery } from '../query-builder';
-import { queryParameter } from './query-builder.spec.data';
+import { queryParameter, queryParameterRekey, queryParameterRekeyWithoutStaffNumber } from './query-builder.spec.data';
 import { QueryParameters } from '../../../domain/query_parameters';
 
 describe('QueryBuilder', () => {
@@ -52,6 +52,16 @@ describe('QueryBuilder', () => {
     it('should have the correct passCertificateNumber in the SELECT', () => {
       const result = getConciseSearchResultsFromSearchQuery(queryParameter);
       expect(result).toMatch(new RegExp(queryParameter.passCertificateNumber, 'g'));
+    });
+
+    it('should change query to a sub query when rekey is provided', () => {
+      const result = getConciseSearchResultsFromSearchQuery(queryParameterRekey);
+      expect(result).toContain('SELECT TR.test_result from (SELECT * FROM TEST_RESULT WHERE');
+    });
+
+    it('should not change query to sub query when rekey without staff number', () => {
+      const result = getConciseSearchResultsFromSearchQuery(queryParameterRekeyWithoutStaffNumber);
+      expect(result).not.toContain('SELECT TR.test_result from (SELECT * FROM TEST_RESULT WHERE');
     });
 
   });

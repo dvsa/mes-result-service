@@ -29,7 +29,6 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
     }
 
     // Set the parameters from the event to the queryParameter holder object
-    // Todo move all IF statements to a common shared method
     if (event.queryStringParameters.startDate) {
       queryParameters.startDate = event.queryStringParameters.startDate;
     }
@@ -41,6 +40,11 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
     }
     if (event.queryStringParameters.staffNumber) {
       queryParameters.staffNumber = event.queryStringParameters.staffNumber;
+    }
+    // guard against filtering on rekey without providing a staff number
+    if (event.queryStringParameters.rekey) {
+      queryParameters.rekey = (event.queryStringParameters.rekey === 'true' && queryParameters.staffNumber) ?
+        'true' : 'false';
     }
     if (event.queryStringParameters.dtcCode) {
       queryParameters.dtcCode = event.queryStringParameters.dtcCode;
@@ -58,7 +62,6 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
     if (event.queryStringParameters.category) {
       queryParameters.category = event.queryStringParameters.category;
     }
-
     if (event.queryStringParameters.passCertificateNumber) {
       queryParameters.passCertificateNumber = event.queryStringParameters.passCertificateNumber;
     }
@@ -75,6 +78,7 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
         .label('Please provide a valid date with the format \'YYYY-MM-DD\''),
       driverId: joi.string().alphanum().max(16).optional(),
       staffNumber: joi.string().alphanum().optional(),
+      rekey: joi.string().optional(),
       dtcCode: joi.string().alphanum().optional(),
       appRef: joi.number().max(1000000000000).optional(),
       excludeAutoSavedTests: joi.string().optional(),
@@ -86,6 +90,7 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
     const validationResult = parametersSchema.validate({
       driverId: queryParameters.driverNumber,
       staffNumber: queryParameters.staffNumber,
+      rekey: queryParameters.rekey,
       dtcCode: queryParameters.dtcCode,
       appRef: queryParameters.applicationReference,
       startDate: queryParameters.startDate,
@@ -105,6 +110,7 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
       'startDate', 'staffNumber', 'endDate', 'driverNumber',
       'dtcCode', 'applicationReference', 'excludeAutoSavedTests',
       'activityCode', 'category', 'passCertificateNumber',
+      'rekey',
     ];
 
     const dePermittedQueries = ['driverNumber', 'applicationReference', 'excludeAutoSavedTests'];
