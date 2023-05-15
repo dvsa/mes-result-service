@@ -10,4 +10,5 @@ export class QueryParameters {
   activityCode: string;
   category: string;
   passCertificateNumber: string;
+  rekey: boolean;
 }

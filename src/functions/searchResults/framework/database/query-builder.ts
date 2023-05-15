@@ -63,13 +63,22 @@ export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryPar
   queries = [...queries].map((e, i) => i < queries.length - 1 ? [e, 'AND'] : [e])
     .reduce((a, b) => a.concat(b));
 
-  queryString = queryString.concat('SELECT test_result FROM TEST_RESULT WHERE ');
+  // If rekey is true then existing query becomes sub query, extracting only tests marked for rekey from the result
+  if (queryParameters.rekey) {
+    queryString = queryString.concat('SELECT TR.test_result from (SELECT * FROM TEST_RESULT WHERE ');
+  } else {
+    queryString = queryString.concat('SELECT test_result FROM TEST_RESULT WHERE ');
+  }
 
   queries.forEach((query) => {
     queryString = queryString.concat(`${query} `);
   });
 
-  queryString = queryString.concat('ORDER BY test_date DESC LIMIT 200;');
+  // If rekeyFlag apply the filter for rekey first prior to restricting number of records
+  if (queryParameters.rekey) {
+    queryString = queryString.concat(') as TR WHERE JSON_EXTRACT(TR.test_result, "$.rekey") = true ');
+  }
+  queryString = queryString.concat(`ORDER BY ${queryParameters.rekey ? 'TR.' : ''}test_date DESC LIMIT 200;`);
 
   return mysql.format(queryString, parameterArray);
 };

@@ -1,5 +1,5 @@
 import { getConciseSearchResultsFromSearchQuery } from '../query-builder';
-import { queryParameter } from './query-builder.spec.data';
+import { queryParameter, queryParameterRekey } from './query-builder.spec.data';
 import { QueryParameters } from '../../../domain/query_parameters';
 
 describe('QueryBuilder', () => {
@@ -54,5 +54,10 @@ describe('QueryBuilder', () => {
       expect(result).toMatch(new RegExp(queryParameter.passCertificateNumber, 'g'));
     });
 
+    it('should change query to a sub query when rekey is provided', () => {
+      const result = getConciseSearchResultsFromSearchQuery(queryParameterRekey);
+      expect(result).toContain('SELECT TR.test_result from (SELECT * FROM TEST_RESULT WHERE');
+      expect(result).toContain('WHERE JSON_EXTRACT(TR.test_result, "$.rekey") = true');
+    });
   });
 });

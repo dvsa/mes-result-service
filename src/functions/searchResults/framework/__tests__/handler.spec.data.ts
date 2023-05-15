@@ -50,6 +50,7 @@ export const queryParameter: QueryParameters = {
   category: 'C',
   activityCode: '2',
   passCertificateNumber: 'A123456X',
+  rekey: false,
 };
 
 export const queryParameterWith8DigitAppRef: QueryParameters = {
@@ -63,6 +64,7 @@ export const queryParameterWith8DigitAppRef: QueryParameters = {
   category: 'C',
   activityCode: '2',
   passCertificateNumber: 'A123456X',
+  rekey: false,
 };
 
 export const testResultResponse = [
