@@ -1,9 +1,9 @@
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
 import * as mysql from 'mysql2';
+import { error } from '@dvsa/mes-microservice-common/application/utils/logger';
 import { IntegrationType } from '../domain/result-integration';
 import { getConnection } from '../../../common/framework/mysql/database';
 import { buildTestResultInsert, buildUploadQueueInsert } from '../framework/database/query-builder';
-import * as logger from '../../../common/application/utils/logger';
 
 export const saveTestResult = async (
   testResult: TestResultSchemasUnion,
@@ -19,7 +19,7 @@ export const saveTestResult = async (
     connection.commit();
   } catch (err) {
     connection.rollback();
-    logger.error(`Error saving result: ${err}`);
+    error(`Error saving result: ${err}`);
     throw err;
   } finally {
     connection.end();

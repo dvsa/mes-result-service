@@ -1,5 +1,4 @@
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
-import { Test } from 'aws-sdk/clients/devicefarm';
 
 // tslint:disable: variable-name
 export const sampleToken_12345678 =

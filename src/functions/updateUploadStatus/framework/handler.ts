@@ -1,30 +1,38 @@
-import { APIGatewayProxyEvent, Context } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import { get } from 'lodash';
+import { bootstrapLogging, error, warn, info } from '@dvsa/mes-microservice-common/application/utils/logger';
 import Response from '../../../common/application/api/Response';
 import createResponse from '../../../common/application/utils/createResponse';
 import { HttpStatus } from '../../../common/application/api/HttpStatus';
 import { bootstrapConfig } from '../../../common/framework/config/config';
-import { isNullOrBlank } from '../../../functions/postResult/framework/handler';
+import { isNullOrBlank } from '../../postResult/framework/handler';
 import { updateUpload } from '../application/update-upload-service';
-import { error, warn, bootstrapLogging } from '@dvsa/mes-microservice-common/application/utils/logger';
 import { InconsistentUpdateError } from '../domain/InconsistentUpdateError';
 import { SubmissionOutcome } from '../domain/SubmissionOutcome';
 import { getAppRefFromPathParameters } from '../../../common/application/utils/getPathParms';
 
-export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Promise<Response> {
-
+export async function handler(event: APIGatewayProxyEvent): Promise<Response> {
   bootstrapLogging('update-upload-status', event);
-  await bootstrapConfig();
+
+  try {
+    await bootstrapConfig();
+  } catch (err) {
+    error('bootstrapConfig', err);
+    return createResponse(err, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 
   let body: SubmissionOutcome;
   const appRefPathParam = getAppRefFromPathParameters(event);
 
   if (isNullOrBlank(event.body) || isNullOrBlank(appRefPathParam)) {
+    error('Empty path app-ref or request body');
     return createResponse({ message: 'Empty path app-ref or request body' }, HttpStatus.BAD_REQUEST);
   }
 
   const appRef: number = parseInt(appRefPathParam, 10);
   if (isNaN(appRef)) {
+    error('application reference is NaN', appRefPathParam);
+
     return createResponse(
       { message: `Error application reference is NaN: ${appRefPathParam}` }, HttpStatus.BAD_REQUEST);
   }
@@ -38,6 +46,10 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
 
   try {
     await updateUpload(appRef, body);
+
+    info('Update upload successful');
+
+    return createResponse({}, HttpStatus.CREATED);
   } catch (err) {
     if (err instanceof InconsistentUpdateError) {
       warn('InconsistentUpdateError - ', ...enrichError(err, appRef, body));
@@ -46,11 +58,11 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
         HttpStatus.NOT_FOUND,
       );
     }
+
     error('Error while updating upload status - ' , ...enrichError(err, appRef, body));
     return createResponse(
       { message: `Error updating the status in UUS of Reference Number: ${appRef}` }, HttpStatus.INTERNAL_SERVER_ERROR);
   }
-  return createResponse({}, HttpStatus.CREATED);
 }
 
 function enrichError(err: any, applicationReference: number, body: SubmissionOutcome) {

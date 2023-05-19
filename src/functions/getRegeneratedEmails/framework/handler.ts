@@ -1,4 +1,4 @@
-import { APIGatewayEvent, Context } from 'aws-lambda';
+import { APIGatewayEvent } from 'aws-lambda';
 
 import { bootstrapConfig } from '../../../common/framework/config/config';
 import Response from '../../../common/application/api/Response';
@@ -11,10 +11,10 @@ import { RegeneratedEmailsRecord } from '../../../common/domain/regenerated-emai
 import { bootstrapLogging, info, error } from '@dvsa/mes-microservice-common/application/utils/logger';
 import { getAppRefFromPathParameters } from '../../../common/application/utils/getPathParms';
 
-export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<Response> {
-  bootstrapLogging('regenerated-emails-service', event);
-
+export async function handler(event: APIGatewayEvent): Promise<Response> {
   try {
+    bootstrapLogging('regenerated-emails-service', event);
+
     await bootstrapConfig();
 
     const appRefPathParam = parseInt(getAppRefFromPathParameters(event), 10);

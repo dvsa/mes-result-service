@@ -4,7 +4,6 @@ import { InterfaceTypes } from '../../domain/interface-types';
 const lambdaTestUtils = require('aws-lambda-test-utils');
 
 describe('getNextUploadBatch handler', () => {
-  const dummyContext: Context = lambdaTestUtils.mockContextCreator(() => null);
   const dummyApigwEvent: APIGatewayEvent = lambdaTestUtils.mockEventCreator.createAPIGatewayEvent({
     pathParameters: {
       interface: 'TARS',
@@ -32,13 +31,13 @@ describe('getNextUploadBatch handler', () => {
     it('should return a 400 if joi validation fails on batch size', async () => {
       dummyApigwEvent.queryStringParameters.interface = 'TARS';
       dummyApigwEvent.queryStringParameters.batch_size = '-1';
-      const response = await handler(dummyApigwEvent, dummyContext);
+      const response = await handler(dummyApigwEvent);
       expect(response.statusCode).toBe(400);
     });
     it('should return a 400 if joi validation fails on interface type', async () => {
       dummyApigwEvent.queryStringParameters.interface = 'TARS1';
       dummyApigwEvent.queryStringParameters.batch_size = '4';
-      const response = await handler(dummyApigwEvent, dummyContext);
+      const response = await handler(dummyApigwEvent);
       expect(response.statusCode).toBe(400);
     });
   });

@@ -10,14 +10,13 @@ import {
   staffNumber,
   noTestResults,
   moreThanOneTestResult,
-} from '../__tests__/handler.spec.data';
+} from './handler.spec.data';
 import * as getResultSvc from '../repositories/get-result-repository';
 import { gunzipSync } from 'zlib';
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
 
 describe('getResult handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
-  let dummyContext: Context;
   const moqGetResult = Mock.ofInstance(getResultSvc.getResult);
   const moqBootstrapConfig = Mock.ofInstance(configSvc.bootstrapConfig);
 
@@ -31,7 +30,6 @@ describe('getResult handler', () => {
       },
     });
 
-    dummyContext = lambdaTestUtils.mockContextCreator(() => null);
     process.env.EMPLOYEE_ID_EXT_KEY = 'extn.employeeId';
 
     spyOn(getResultSvc, 'getResult').and.callFake(moqGetResult.object);
@@ -40,7 +38,7 @@ describe('getResult handler', () => {
 
   describe('configuration initialisation', () => {
     it('should always bootstrap the config', async () => {
-      await handler(dummyApigwEvent, dummyContext);
+      await handler(dummyApigwEvent);
       moqBootstrapConfig.verify(x => x(), Times.once());
     });
   });
@@ -48,7 +46,7 @@ describe('getResult handler', () => {
   describe('handling of invalid application reference', () => {
     it('should fail with bad request', async () => {
       dummyApigwEvent.pathParameters['app-ref'] = '@invalidCharacter';
-      const resp = await handler(dummyApigwEvent, dummyContext);
+      const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(400);
     });
   });
@@ -56,7 +54,7 @@ describe('getResult handler', () => {
   describe('handling of invalid staffNumber reference', () => {
     it('should fail with bad request', async () => {
       dummyApigwEvent.pathParameters['staff-number'] = 'invalidStaffNumber';
-      const resp = await handler(dummyApigwEvent, dummyContext);
+      const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(400);
     });
   });
@@ -64,7 +62,7 @@ describe('getResult handler', () => {
   describe('handling of invalid staffNumber reference', () => {
     it('should fail with bad request', async () => {
       dummyApigwEvent.pathParameters['staff-number'] = '1234567890123';
-      const resp = await handler(dummyApigwEvent, dummyContext);
+      const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(400);
     });
   });
@@ -74,7 +72,7 @@ describe('getResult handler', () => {
       dummyApigwEvent.pathParameters['app-ref'] = applicationReference.toString();
       dummyApigwEvent.pathParameters['staff-number'] = staffNumber;
       moqGetResult.setup(x => x(It.isAny())).returns(() => Promise.resolve(noTestResults));
-      const resp = await handler(dummyApigwEvent, dummyContext);
+      const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(400);
       expect(JSON.parse(resp.body)).toEqual('No records found matching criteria');
       moqGetResult.verify(x => x(It.isValue(applicationReference)), Times.once());
@@ -88,7 +86,7 @@ describe('getResult handler', () => {
       dummyApigwEvent.pathParameters['app-ref'] = applicationReference.toString();
       dummyApigwEvent.pathParameters['staff-number'] = staffNumber;
       moqGetResult.setup(x => x(It.isAny())).returns(() => Promise.resolve(moreThanOneTestResult));
-      const resp = await handler(dummyApigwEvent, dummyContext);
+      const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(400);
       expect(JSON.parse(resp.body)).toEqual('More than one record found, internal error');
       moqGetResult.verify(x => x(It.isValue(applicationReference)), Times.once());
@@ -100,7 +98,7 @@ describe('getResult handler', () => {
       dummyApigwEvent.pathParameters['app-ref'] = applicationReference.toString();
       dummyApigwEvent.pathParameters['staff-number'] = staffNumber;
       moqGetResult.setup(x => x(It.isAny())).returns(() => Promise.resolve(testResult));
-      const resp = await handler(dummyApigwEvent, dummyContext);
+      const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(200);
       // Check that the compressed data matches the original test_result from the DB
 

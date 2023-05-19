@@ -2,20 +2,19 @@ import { APIGatewayEvent, Context } from 'aws-lambda';
 import { handler } from '../handler';
 const lambdaTestUtils = require('aws-lambda-test-utils');
 import { Mock, It, Times } from 'typemoq';
+import { gunzipSync } from 'zlib';
 import * as configSvc from '../../../../common/framework/config/config';
 import {
   sampleToken,
   applicationReference,
   noResults,
   normalResultSinglar,
-} from '../__tests__/handler.spec.data';
+} from './handler.spec.data';
 import * as getRegeneratedEmailService from '../repositories/get-regenerated-emails-repository';
-import { gunzipSync } from 'zlib';
 import { RegeneratedEmailsRecord } from '../../../../common/domain/regenerated-emails';
 
 describe('getRegeneratedEmails handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
-  let dummyContext: Context;
   const moqGetRegeneratedEmails = Mock.ofInstance(getRegeneratedEmailService.getRegeneratedEmails);
   const moqBootstrapConfig = Mock.ofInstance(configSvc.bootstrapConfig);
 
@@ -29,7 +28,6 @@ describe('getRegeneratedEmails handler', () => {
       },
     });
 
-    dummyContext = lambdaTestUtils.mockContextCreator(() => null);
     process.env.EMPLOYEE_ID_EXT_KEY = 'extn.employeeId';
 
     spyOn(getRegeneratedEmailService, 'getRegeneratedEmails').and.callFake(moqGetRegeneratedEmails.object);
@@ -38,7 +36,7 @@ describe('getRegeneratedEmails handler', () => {
 
   describe('configuration initialisation', () => {
     it('should always bootstrap the config', async () => {
-      await handler(dummyApigwEvent, dummyContext);
+      await handler(dummyApigwEvent);
       moqBootstrapConfig.verify(x => x(), Times.once());
     });
   });
@@ -46,7 +44,7 @@ describe('getRegeneratedEmails handler', () => {
   describe('handling of invalid application reference', () => {
     it('should fail with bad request', async () => {
       dummyApigwEvent.pathParameters['appRef'] = '@invalidCharacter';
-      const response = await handler(dummyApigwEvent, dummyContext);
+      const response = await handler(dummyApigwEvent);
       expect(response.statusCode).toBe(400);
     });
   });
@@ -55,7 +53,7 @@ describe('getRegeneratedEmails handler', () => {
   describe('handling of invalid application reference', () => {
     it('should fail with bad request', async () => {
       dummyApigwEvent.pathParameters['appRef'] = '1000000000001';
-      const response = await handler(dummyApigwEvent, dummyContext);
+      const response = await handler(dummyApigwEvent);
       expect(response.statusCode).toBe(400);
     });
   });
@@ -64,7 +62,7 @@ describe('getRegeneratedEmails handler', () => {
     it('should fail with bad request', async () => {
       dummyApigwEvent.pathParameters['appRef'] = applicationReference.toString();
       moqGetRegeneratedEmails.setup(x => x(It.isAny())).returns(() => noResults as any);
-      const response = await handler(dummyApigwEvent, dummyContext);
+      const response = await handler(dummyApigwEvent);
       expect(response.statusCode).toBe(404);
       expect(JSON.parse(response.body)).toEqual('No records found matching criteria');
       moqGetRegeneratedEmails.verify(x => x(It.isValue(applicationReference)), Times.once());
@@ -75,7 +73,7 @@ describe('getRegeneratedEmails handler', () => {
     it('should return a compressed test result matching the URL parameters single result', async () => {
       dummyApigwEvent.pathParameters['appRef'] = applicationReference.toString();
       moqGetRegeneratedEmails.setup(x => x(It.isAny())).returns(() => normalResultSinglar as any);
-      const response = await handler(dummyApigwEvent, dummyContext);
+      const response = await handler(dummyApigwEvent);
       const decompressedData = gunzipSync(Buffer.from(response.body, 'base64'));
       const singlarMatch: RegeneratedEmailsRecord = JSON.parse(decompressedData.toString()) as RegeneratedEmailsRecord;
 
