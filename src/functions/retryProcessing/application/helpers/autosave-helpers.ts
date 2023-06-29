@@ -101,7 +101,7 @@ export const getAutosaveTestResultRecords = (db: mysql.Connection): Promise<Test
         WHERE autosave = 1;
         `,
       [],
-      (err, results, fields) => {
+      (err, results: any, fields) => {
         if (err) {
           reject(err);
         }
@@ -126,7 +126,7 @@ export const getAutosaveQueueRecords = (db: mysql.Connection): Promise<UploadQue
         WHERE tr.autosave = 1;
         `,
       [],
-      (err, results, fields) => {
+      (err, results: any, fields) => {
         if (err) {
           reject(err);
         }
@@ -173,7 +173,7 @@ export const getTestResultAppRefsForResultStatus = (db: mysql.Connection, result
         WHERE result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = '${resultStatus}')
         `,
       [],
-      (err, results, fields) => {
+      (err, results: any, fields) => {
         if (err) {
           reject(err);
         }

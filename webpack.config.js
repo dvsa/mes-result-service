@@ -11,6 +11,9 @@ const allEntries = Object.keys(YAML.load('serverless.yml').functions)
 module.exports = env => ({
   target: 'node',
   mode: 'production',
+  optimization: {
+    minimize: false
+  },
   entry: env && env.lambdas
     ? env.lambdas.split(',').reduce((entryObj, fnName) => ({ ...entryObj, [fnName]: allEntries[fnName] }), {})
     : allEntries,

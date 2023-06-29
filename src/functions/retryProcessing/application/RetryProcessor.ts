@@ -28,7 +28,7 @@ export class RetryProcessor implements IRetryProcessor {
     try {
       await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().query(buildMarkTestProcessedQuery());
-      const changedRowCount = rows.changedRows;
+      const changedRowCount = rows['changedRows'];
       customMetric(
         'ResultsSuccessfullyProcessedRowsChanged',
         'The amount of TEST_RESULT records updated to SUCCESSFUL status',
@@ -37,7 +37,7 @@ export class RetryProcessor implements IRetryProcessor {
       await this.connection.promise().commit();
       return changedRowCount;
     } catch (err) {
-      this.connection.rollback();
+      this.connection.rollback(null);
       warn('Error caught marking test results as successfully submitted', err.message);
     }
   }
@@ -54,7 +54,7 @@ export class RetryProcessor implements IRetryProcessor {
           notifyRetryCount,
           tarsRetryCount,
         ));
-      const changedRowCount = rows.changedRows;
+      const changedRowCount = rows['changedRows'];
       customMetric(
         'InterfacesQueuedForRetryRowsChanged',
         'The amount of UPLOAD_QUEUE records updated back to PROCESSING status for retry',
@@ -63,7 +63,7 @@ export class RetryProcessor implements IRetryProcessor {
       await this.connection.promise().commit();
       return changedRowCount;
     } catch (err) {
-      this.connection.rollback();
+      this.connection.rollback(null);
       warn('Error caught marking interfaces as ready for retry', err.message);
     }
   }
@@ -73,7 +73,7 @@ export class RetryProcessor implements IRetryProcessor {
     tarsRetryCount: number,
   ): Promise<void> {
     try {
-      const [rows, fields]: [FailedUploadQueueResult[], any] =
+      const [rows, fields]: [any, any] =
         await this.connection.promise().query(
           buildSelectTestsExceedingRetryQuery(rsisRetryCount, notifyRetryCount, tarsRetryCount),
         );
@@ -109,7 +109,7 @@ export class RetryProcessor implements IRetryProcessor {
         notifyRetryCount,
         tarsRetryCount,
       ));
-      const changedRowCount = rows.changedRows;
+      const changedRowCount = rows['changedRows'];
       customMetric(
         'ResultsAbortedRowsChanged',
         'The amount of TEST_RESULT records moved to the ERROR status',
@@ -118,7 +118,7 @@ export class RetryProcessor implements IRetryProcessor {
       await this.connection.promise().commit();
       return changedRowCount;
     } catch (err) {
-      this.connection.rollback();
+      this.connection.rollback(null);
       warn('Error caught marking interfaces as aborted', err.message);
     }
   }
@@ -139,8 +139,8 @@ export class RetryProcessor implements IRetryProcessor {
       const [testResultStatusRows] = await this.connection.promise()
         .query(manualInterventionReprocessTestResultQuery);
 
-      const changedRowCount = uploadQueueStatusRows.changedRows
-        + uploadQueueNewRows.affectedRows + testResultStatusRows.changedRows;
+      const changedRowCount = uploadQueueStatusRows['changedRows']
+        + uploadQueueNewRows['affectedRows'] + testResultStatusRows['changedRows'];
       customMetric(
         'InterventionRequeueRowsChanged',
         'The number of TEST_RESULT+UPLOAD_QUEUE records updated as part of reprocessing manual intervention',
@@ -149,7 +149,7 @@ export class RetryProcessor implements IRetryProcessor {
       await this.connection.promise().commit();
       return changedRowCount;
     } catch (err) {
-      this.connection.rollback();
+      this.connection.rollback(null);
       warn('Error caught updating records marked for reprocess by manual intervention', err.message);
     }
   }
@@ -158,7 +158,7 @@ export class RetryProcessor implements IRetryProcessor {
     try {
       await this.connection.promise().beginTransaction();
       const [rows] = await this.connection.promise().query(buildDeleteAcceptedQueueRowsQuery(cutOffPointInDays));
-      const deletedRowCount = rows.affectedRows;
+      const deletedRowCount = rows['affectedRows'];
       customMetric(
         'UploadQueueCleanupRowsChanged',
         'The number of UPLOAD_QUEUE records deleted due to being successful and older than the threshold',
@@ -167,7 +167,7 @@ export class RetryProcessor implements IRetryProcessor {
       await this.connection.promise().commit();
       return deletedRowCount;
     } catch (err) {
-      this.connection.rollback();
+      this.connection.rollback(null);
       warn('Error caught processing old upload queue record cleanup', err.message);
     }
   }
@@ -177,7 +177,7 @@ export class RetryProcessor implements IRetryProcessor {
       await this.connection.promise().beginTransaction();
       const [rows] =
         await this.connection.promise().query(buildProcessStalledTestResultsQuery(autosaveCutOffPointInDays));
-      const createdRowCount = rows.affectedRows;
+      const createdRowCount = rows['affectedRows'];
       customMetric(
         'UploadQueueRsisRowsChanged',
         'The number of UPLOAD_QUEUE records added due to stale TEST_RESULT autosave data',
@@ -186,7 +186,7 @@ export class RetryProcessor implements IRetryProcessor {
       await this.connection.promise().commit();
       return createdRowCount;
     } catch (err) {
-      this.connection.rollback();
+      this.connection.rollback(null);
       warn('Error caught creating RSIS records for stale test result records', err.message);
     }
   }

@@ -6,7 +6,7 @@ export const updateUploadStatus = (appReference: number, body: any): string => {
 
   const uploadStatus: ProcessingStatus = body.state;
   const retryCount: number = body.retry_count;
-  const errorMessage: string | null = body.error_message;;
+  const errorMessage: string | null = body.error_message;
   const applicationReference: number = appReference;
   const staffNumber: string = body.staff_number;
   const uploadInterface: IntegrationType = body.interface;

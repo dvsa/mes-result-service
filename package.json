@@ -32,7 +32,7 @@
     "enjoi": "^9.0.1",
     "joi": "^17.7.1",
     "moment": "^2.29.4",
-    "mysql2": "^1.7.0"
+    "mysql2": "^2.3.3"
   },
   "devDependencies": {
     "@dvsa/mes-microservice-common": "0.8.3",

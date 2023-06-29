@@ -61,6 +61,20 @@ functions:
           path: test-results/delete
           method: put
 
+  passCertificateDuplicates:
+    handler: src/functions/passCertificateDuplicates/framework/handler.handler
+    events:
+      - http:
+          path: pass-certificate/duplicates
+          method: put
+
+  passCertificateMissingCertificates:
+    handler: src/functions/passCertificateMissingCertificates/framework/handler.handler
+    events:
+      - http:
+          path: pass-certificate/missing-certificates
+          method: get
+
 custom:
   dynamodb:
     start:

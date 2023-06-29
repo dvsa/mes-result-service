@@ -68,7 +68,7 @@ export const buildTestResultInsert = (
   ];
 
   // Specify that dates should be serialised in UTC.
-  return mysql.format(template, args, false, 'UTC');
+  return mysql.format(template, args);
 };
 
 export const buildUploadQueueInsert = (test: TestResultSchemasUnion, integration: IntegrationType): string => {
