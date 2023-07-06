@@ -114,13 +114,13 @@ CREATE TABLE DUPLICATE_CERTIFICATES
     PRIMARY KEY (pass_certificate_number)
 );
 
-CREATE TABLE SPOILED_CERTIFICATES_TYPE
+CREATE TABLE SPOILED_CERTIFICATES_STATUS
 (
     id                  TINYINT PRIMARY KEY,
-    interface_type_name VARCHAR(7)
+    spoiled_status_name VARCHAR(7)
 );
 
-INSERT INTO SPOILED_CERTIFICATES_TYPE(id, interface_type_name)
+INSERT INTO SPOILED_CERTIFICATES_STATUS(id, spoiled_status_name)
 VALUES (0, 'MISSING'),
        (1, 'SPOILED'),
        (2, 'OTHER');
@@ -135,5 +135,5 @@ CREATE TABLE SPOILED_CERTIFICATES
     reason                  VARCHAR(1000) NULL,
     PRIMARY KEY (pass_certificate_number),
     constraint SPOILED_CERTIFICATES_ibfk_1
-        foreign key (status) references SPOILED_CERTIFICATES_TYPE (id)
+        foreign key (status) references SPOILED_CERTIFICATES_STATUS (id)
 );

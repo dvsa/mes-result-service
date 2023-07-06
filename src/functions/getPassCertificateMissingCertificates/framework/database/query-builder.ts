@@ -32,7 +32,6 @@ export const getPassCertificates = (): string => {
                     )
             END AS book
           , substr(tr.pass_certificate_number, 6, 2) AS cert_number
-          , substr(tr.pass_certificate_number, 8, 1) AS check_digit
      FROM TEST_RESULT tr
      WHERE tr.pass_certificate_number IS NOT NULL
      UNION
@@ -66,7 +65,6 @@ export const getPassCertificates = (): string => {
                     )
     END AS book
           , substr(sc.pass_certificate_number, 6, 2) AS cert_number
-          , substr(sc.pass_certificate_number, 8, 1) AS check_digit
      FROM SPOILED_CERTIFICATES sc`;
 
   const args = [

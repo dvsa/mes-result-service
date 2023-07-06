@@ -11,9 +11,9 @@ import {
 } from '../application/certificate-service';
 
 export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Promise<Response> {
-  bootstrapLogging('identify missing certificates', event);
 
   try {
+    bootstrapLogging('identify missing certificates', event);
     await bootstrapConfig();
 
     const certificates: Certificates[] = await identifyCertificates();
@@ -30,6 +30,6 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
     return createResponse(response, HttpStatus.OK);
   } catch (err) {
     error(`ERROR - ${err.message} - `, 'something went wrong');
-    return createResponse(err, HttpStatus.BAD_REQUEST);
+    return createResponse(err, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

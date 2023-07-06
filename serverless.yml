@@ -62,18 +62,25 @@ functions:
           method: put
 
   passCertificateDuplicates:
-    handler: src/functions/passCertificateDuplicates/framework/handler.handler
+    handler: src/functions/putPassCertificateDuplicates/framework/handler.handler
     events:
       - http:
           path: pass-certificate/duplicates
           method: put
 
   passCertificateMissingCertificates:
-    handler: src/functions/passCertificateMissingCertificates/framework/handler.handler
+    handler: src/functions/getPassCertificateMissingCertificates/framework/handler.handler
     events:
       - http:
           path: pass-certificate/missing-certificates
           method: get
+
+  passCertificateMissingSpoiled:
+    handler: src/functions/postPassCertificateSpoiled/framework/handler.handler
+    events:
+      - http:
+          path: pass-certificate/spoiled-certificates
+          method: post
 
 custom:
   dynamodb:

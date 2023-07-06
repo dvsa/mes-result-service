@@ -7,18 +7,16 @@ import { bootstrapLogging, error } from '@dvsa/mes-microservice-common/applicati
 import { identifyDuplicateCertificates } from '../application/duplicate-certificate-service';
 
 export async function handler(event: APIGatewayProxyEvent): Promise<Response> {
-  bootstrapLogging('identify duplicate pass certificates', event);
 
-  await bootstrapConfig();
   try {
+    bootstrapLogging('identify duplicate pass certificates', event);
+    await bootstrapConfig();
+
     const response = await identifyDuplicateCertificates();
 
     return createResponse(response, HttpStatus.CREATED);
   } catch (err) {
-    error(`ERROR - ${err.message} - `, 'something here');
-    return createResponse(
-      { message: 'Error trying something' },
-      HttpStatus.INTERNAL_SERVER_ERROR,
-    );
+    error(`ERROR - ${err.message} - `, 'something went wrong');
+    return createResponse(err, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

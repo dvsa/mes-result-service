@@ -6,5 +6,5 @@ INSERT INTO SPOILED_CERTIFICATES(
     status,
     reason
 ) VALUES
-    ('D120103x','55555555','2023-10-01',1,2,'stolen')
+    ('D120103','55555555','2023-10-01',1,2,'stolen')
 ;
