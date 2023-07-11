@@ -6,11 +6,12 @@ import * as configSvc from '../../../../common/framework/config/config';
 import {
   queryParameter,
   queryParameterWith8DigitAppRef,
-  sampleToken_12345678, testResult,
+  testResult,
   testResultResponse,
 } from './handler.spec.data';
 import * as searchResultsSvc from '../repositories/search-repository';
 import { UserRole } from '../../../../common/domain/user-role';
+import { sampleToken_12345678 } from '../../../../common/framework/config/sampleTokens';
 
 describe('searchResults handler', () => {
   let dummyApigwEvent: APIGatewayEvent;

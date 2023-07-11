@@ -17,6 +17,10 @@ export const findMissingCerts = ((certificates: Certificates[]):any => {
 
     const uniqueTestCentres = Array.from(new Set(testCentres));
 
+    console.log('cert', certificates);
+    console.log('book', book);
+    console.log('realresult', findGapsInBook(certificates, book));
+
     const temp = {
       book,
       staffNumbers: findBooksStaffNumbers(certificates, book),
@@ -35,7 +39,7 @@ export const findMissingCerts = ((certificates: Certificates[]):any => {
  * @param certs
  * @param book
  */
-export const findGapsInBook = (certs: Certificates[], book: string): number[] => {
+export const findGapsInBook = (certs: Certificates[], book: string): string[] => {
   const missing = [];
 
   // extract all certificate numbers issued from a book,sorted (asc) with duplicates removed

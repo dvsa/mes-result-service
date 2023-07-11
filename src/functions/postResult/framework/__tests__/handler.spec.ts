@@ -10,8 +10,9 @@ import * as configSvc from '../../../../common/framework/config/config';
 import * as joiValidationSvc from '../../domain/mes-joi-schema-service';
 import * as jwtVerificationSvc from '../../application/jwt-verification-service';
 import { ValidationResult, ValidationError } from 'joi';
-import { sampleToken_12345678, sampleTest_12345678, sampleTest_empty } from '../__tests__/handler.spec.data';
+import { sampleTest_12345678, sampleTest_empty } from '../__tests__/handler.spec.data';
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
+import { sampleToken_12345678 } from '../../../../common/framework/config/sampleTokens';
 
 describe('postResult handler', () => {
   let dummyApigwEvent: APIGatewayEvent;

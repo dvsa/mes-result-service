@@ -6,6 +6,4 @@ export interface Certificates {
   test_date: Date;
   book: string;
   cert_number: string;
-  check_digit: string;
-  book_type: string;
 }
