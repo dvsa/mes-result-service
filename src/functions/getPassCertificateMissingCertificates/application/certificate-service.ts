@@ -17,10 +17,6 @@ export const findMissingCerts = ((certificates: Certificates[]):any => {
 
     const uniqueTestCentres = Array.from(new Set(testCentres));
 
-    console.log('cert', certificates);
-    console.log('book', book);
-    console.log('realresult', findGapsInBook(certificates, book));
-
     const temp = {
       book,
       staffNumbers: findBooksStaffNumbers(certificates, book),

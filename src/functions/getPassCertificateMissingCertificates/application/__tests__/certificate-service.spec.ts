@@ -1,7 +1,7 @@
 import { findBooksStaffNumbers, findGapsInBook, findMissingCerts } from '../certificate-service';
 import { Cert100, certificates, noCerts } from './certificate-service.spec.data';
 
-fdescribe('certificate-service', () => {
+describe('certificate-service', () => {
 
   describe('findMissingCerts', () => {
     it('should return an array of books with missing certificates', () => {

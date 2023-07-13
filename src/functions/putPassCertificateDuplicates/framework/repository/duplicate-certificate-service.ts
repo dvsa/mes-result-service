@@ -1,6 +1,6 @@
 import * as mysql from 'mysql2';
-import { getConnection } from '../../../common/framework/mysql/database';
-import { duplicateQuery } from '../framework/database/query-builder';
+import { getConnection } from '../../../../common/framework/mysql/database';
+import { duplicateQuery } from '../database/query-builder';
 
 export const identifyDuplicateCertificates = async (
 ): Promise<any[]> => {

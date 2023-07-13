@@ -18,8 +18,6 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
 
     const certificates: Certificates[] = await identifyCertificates();
 
-    // console.log('userCertificates', certificates);
-
     if (certificates.length === 0) {
       return createResponse(
         { message: 'No records found' }, HttpStatus.NOT_FOUND);

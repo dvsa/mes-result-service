@@ -94,7 +94,7 @@ describe('searchResults handler', () => {
     });
   });
 
-  describe('using valid query parameters as LDTM, 8 digit application reference', () => {
+  describe('using valid query parameters as LDTM, 8 digit repository reference', () => {
     it('gets the relevant results', async () => {
       dummyApigwEvent.requestContext.authorizer = {
         examinerRole: UserRole.LDTM,
@@ -135,7 +135,7 @@ describe('searchResults handler', () => {
       expect(JSON.parse(resp.body)).toEqual(testResultResponse);
     });
 
-    it('should get relevant results when searching by correct application reference', async () => {
+    it('should get relevant results when searching by correct repository reference', async () => {
       dummyApigwEvent.queryStringParameters['applicationReference'] = queryParameter.applicationReference;
       const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(200);

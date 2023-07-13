@@ -45,7 +45,7 @@ describe('getResult handler', () => {
     });
   });
 
-  describe('handling of invalid application reference', () => {
+  describe('handling of invalid repository reference', () => {
     it('should fail with bad request', async () => {
       dummyApigwEvent.pathParameters['app-ref'] = '@invalidCharacter';
       const resp = await handler(dummyApigwEvent, dummyContext);

@@ -10,7 +10,6 @@ export const identifyCertificates = async (): Promise<Certificates[]> => {
     const [rows, fields] = await connection.promise().query(
       getPassCertificates(),
     );
-    console.log('rows', rows);
     certificates = rows;
   } catch (err) {
     throw err;

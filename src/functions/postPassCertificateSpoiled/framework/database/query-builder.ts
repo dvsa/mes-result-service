@@ -4,8 +4,7 @@ import { SpoiledCertsQueryParameters } from '../../domain/query_parameters';
 export const insertSpoiledCertQuery = (queryParameters: SpoiledCertsQueryParameters): string => {
   const template = `
       INSERT INTO SPOILED_CERTIFICATES (pass_certificate_number, staff_number, spoiled_date, tc_id, status, reason)
-      VALUES (?, ?, ?, ?, ?, ?)
-  `;
+      VALUES (?, ?, ?, ?, ?, ?)`;
 
   const passCertificateNumber = queryParameters?.passCertificateNumber;
   const staffNumber = queryParameters?.staffNumber;

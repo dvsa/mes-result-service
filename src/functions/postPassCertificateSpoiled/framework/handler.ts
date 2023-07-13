@@ -6,7 +6,7 @@ import { bootstrapConfig } from '../../../common/framework/config/config';
 import { bootstrapLogging, error } from '@dvsa/mes-microservice-common/application/utils/logger';
 import { SpoiledCertsQueryParameters } from '../domain/query_parameters';
 import * as joi from 'joi';
-import { postSpoiledCertificates } from '../application/spoiled-certificate-service';
+import { postSpoiledCertificates } from './repository/spoiled-certificate-service';
 
 export async function handler(event: APIGatewayProxyEvent): Promise<Response> {
   try {
