@@ -10,7 +10,7 @@ import { postSpoiledCertificates } from './repository/spoiled-certificate-servic
 
 export async function handler(event: APIGatewayProxyEvent): Promise<Response> {
   try {
-    bootstrapLogging('record spoiled pass certificates', event);
+    bootstrapLogging('post-spoiled-pass-certificates', event);
 
     await bootstrapConfig();
 
@@ -72,9 +72,10 @@ export async function handler(event: APIGatewayProxyEvent): Promise<Response> {
       return createResponse(validationResult.error, HttpStatus.BAD_REQUEST);
     }
 
-    const response = await postSpoiledCertificates(queryParameters);
+    // attempt to insert record
+    await postSpoiledCertificates(queryParameters);
 
-    return createResponse(response, HttpStatus.CREATED);
+    return createResponse('Record Inserted', HttpStatus.CREATED);
   } catch (err) {
     error(`ERROR - ${err.message} - `, 'record not inserted');
     return createResponse(err.message, HttpStatus.INTERNAL_SERVER_ERROR);

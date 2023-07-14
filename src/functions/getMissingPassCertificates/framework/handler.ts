@@ -13,7 +13,7 @@ import {
 export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Promise<Response> {
 
   try {
-    bootstrapLogging('identify missing certificates', event);
+    bootstrapLogging('get-missing-pass-certificates', event);
     await bootstrapConfig();
 
     const certificates: Certificates[] = await identifyCertificates();

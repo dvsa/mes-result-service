@@ -61,22 +61,22 @@ functions:
           path: test-results/delete
           method: put
 
-  passCertificateDuplicates:
-    handler: src/functions/putPassCertificateDuplicates/framework/handler.handler
+  updateDuplicatePassCertificates:
+    handler: src/functions/updateDuplicatePassCertificates/framework/handler.handler
     events:
       - http:
-          path: pass-certificate/duplicates
+          path: pass-certificate/duplicate-certificates
           method: put
 
-  passCertificateMissingCertificates:
-    handler: src/functions/getPassCertificateMissingCertificates/framework/handler.handler
+  getMissingPassCertificates:
+    handler: src/functions/getMissingPassCertificates/framework/handler.handler
     events:
       - http:
           path: pass-certificate/missing-certificates
           method: get
 
-  passCertificateMissingSpoiled:
-    handler: src/functions/postPassCertificateSpoiled/framework/handler.handler
+  postSpoiledPassCertificates:
+    handler: src/functions/postSpoiledPassCertificates/framework/handler.handler
     events:
       - http:
           path: pass-certificate/spoiled-certificates

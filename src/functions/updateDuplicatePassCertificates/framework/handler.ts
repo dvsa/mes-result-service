@@ -9,12 +9,12 @@ import { identifyDuplicateCertificates } from './repository/duplicate-certificat
 export async function handler(event: APIGatewayProxyEvent): Promise<Response> {
 
   try {
-    bootstrapLogging('identify duplicate pass certificates', event);
+    bootstrapLogging('update-duplicate-pass-certificates', event);
     await bootstrapConfig();
 
-    const response = await identifyDuplicateCertificates();
+    await identifyDuplicateCertificates();
 
-    return createResponse(response, HttpStatus.CREATED);
+    return createResponse({}, HttpStatus.CREATED);
   } catch (err) {
     error(`ERROR - ${err.message} - `, 'something went wrong');
     return createResponse(err, HttpStatus.INTERNAL_SERVER_ERROR);
