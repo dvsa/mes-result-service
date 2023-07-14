@@ -5,7 +5,7 @@ import { HttpStatus } from '../../../common/application/api/HttpStatus';
 import { bootstrapConfig } from '../../../common/framework/config/config';
 import { bootstrapLogging, error } from '@dvsa/mes-microservice-common/application/utils/logger';
 import { identifyCertificates } from './repository/missing-certificate-repository';
-import { Certificates } from '../../../common/domain/certificates';
+import { Books, Certificates } from '../../../common/domain/certificates';
 import {
   findMissingCerts,
 } from '../application/certificate-service';
@@ -23,7 +23,7 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
         { message: 'No records found' }, HttpStatus.NOT_FOUND);
     }
 
-    const response = findMissingCerts(certificates);
+    const response: Books[] = findMissingCerts(certificates);
 
     return createResponse(response, HttpStatus.OK);
   } catch (err) {

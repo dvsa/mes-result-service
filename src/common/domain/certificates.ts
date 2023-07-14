@@ -7,3 +7,10 @@ export interface Certificates {
   book: string;
   cert_number: string;
 }
+
+export interface Books{
+  book: string;
+  staffNumbers: string[];
+  testCentres: number[];
+  missingCertificates: string[];
+}

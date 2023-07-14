@@ -76,7 +76,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<Response> {
 
     return createResponse(response, HttpStatus.CREATED);
   } catch (err) {
-    error(`ERROR - ${err.message} - `, 'something went wrong');
+    error(`ERROR - ${err.message} - `, 'record not inserted');
     return createResponse(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
