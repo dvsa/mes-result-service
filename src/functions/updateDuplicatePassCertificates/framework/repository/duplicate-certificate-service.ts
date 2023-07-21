@@ -2,7 +2,7 @@ import * as mysql from 'mysql2';
 import { getConnection } from '../../../../common/framework/mysql/database';
 import { duplicateQuery } from '../database/query-builder';
 
-export const identifyDuplicateCertificates = async (
+export const updateDuplicateCertificates = async (
 )=> {
   const connection: mysql.Connection = getConnection();
   let batch;

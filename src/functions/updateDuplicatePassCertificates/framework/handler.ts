@@ -4,7 +4,7 @@ import createResponse from '../../../common/application/utils/createResponse';
 import { HttpStatus } from '../../../common/application/api/HttpStatus';
 import { bootstrapConfig } from '../../../common/framework/config/config';
 import { bootstrapLogging, error } from '@dvsa/mes-microservice-common/application/utils/logger';
-import { identifyDuplicateCertificates } from './repository/duplicate-certificate-service';
+import { updateDuplicateCertificates } from './repository/duplicate-certificate-service';
 
 export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Promise<Response> {
 
@@ -12,7 +12,7 @@ export async function handler(event: APIGatewayProxyEvent, fnCtx: Context): Prom
     bootstrapLogging('update-duplicate-pass-certificates', event);
     await bootstrapConfig();
 
-    await identifyDuplicateCertificates();
+    await updateDuplicateCertificates();
 
     return createResponse({}, HttpStatus.CREATED);
   } catch (err) {
