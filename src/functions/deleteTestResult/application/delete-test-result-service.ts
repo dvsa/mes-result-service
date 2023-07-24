@@ -6,11 +6,12 @@ import { deleteTestResultRecord, deleteUploadQueueRecord } from '../framework/da
 export const deleteTestResult = async (): Promise<void> => {
   const connection: mysql.Connection = getConnection();
   try {
-    const [testResultDeleted] = await connection.promise().query(deleteTestResultRecord());
-    info('No of TEST_RESULT records Deleted: ', testResultDeleted['affectedRows']);
+    const [testResultDeleted] = await connection.promise().query<mysql.ResultSetHeader>(deleteTestResultRecord());
+    console.log('testResultDeleted', testResultDeleted);
+    info('No of TEST_RESULT records Deleted: ', testResultDeleted.affectedRows);
 
-    const [uploadQueueDeleted] = await connection.promise().query(deleteUploadQueueRecord());
-    info('No of UPLOAD_QUEUE records Deleted: ', uploadQueueDeleted['affectedRows']);
+    const [uploadQueueDeleted] = await connection.promise().query<mysql.ResultSetHeader>(deleteUploadQueueRecord());
+    info('No of UPLOAD_QUEUE records Deleted: ', uploadQueueDeleted.affectedRows);
   } catch (err) {
     connection.rollback(null);
     throw err;

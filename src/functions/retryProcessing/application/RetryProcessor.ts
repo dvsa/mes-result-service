@@ -27,8 +27,8 @@ export class RetryProcessor implements IRetryProcessor {
   async processSuccessful(): Promise<number> {
     try {
       await this.connection.promise().beginTransaction();
-      const [rows] = await this.connection.promise().query(buildMarkTestProcessedQuery());
-      const changedRowCount = rows['changedRows'];
+      const [rows] = await this.connection.promise().query<mysql.ResultSetHeader>(buildMarkTestProcessedQuery());
+      const changedRowCount = rows.changedRows;
       customMetric(
         'ResultsSuccessfullyProcessedRowsChanged',
         'The amount of TEST_RESULT records updated to SUCCESSFUL status',
@@ -104,12 +104,12 @@ export class RetryProcessor implements IRetryProcessor {
   ): Promise<number> {
     try {
       await this.connection.promise().beginTransaction();
-      const [rows] = await this.connection.promise().query(buildAbortTestsExceeingRetryQuery(
+      const [rows] = await this.connection.promise().query<mysql.ResultSetHeader>(buildAbortTestsExceeingRetryQuery(
         rsisRetryCount,
         notifyRetryCount,
         tarsRetryCount,
       ));
-      const changedRowCount = rows['changedRows'];
+      const changedRowCount = rows.changedRows;
       customMetric(
         'ResultsAbortedRowsChanged',
         'The amount of TEST_RESULT records moved to the ERROR status',
@@ -129,18 +129,18 @@ export class RetryProcessor implements IRetryProcessor {
 
       // Move UPLOAD_QUEUE rows in ERROR and against a PENDING TEST_RESULT back to PROCESSING
       const [uploadQueueStatusRows] = await this.connection.promise()
-        .query(manualInterventionReprocessUploadQueueQuery);
+        .query<mysql.ResultSetHeader>(manualInterventionReprocessUploadQueueQuery);
 
       // Recreate potentially missing UPLOAD_QUEUE records for PENDING TEST_RESULTs
       const [uploadQueueNewRows] = await this.connection.promise()
-        .query(manualInterventionUploadQueueReplacementQuery);
+        .query<mysql.ResultSetHeader>(manualInterventionUploadQueueReplacementQuery);
 
       // Move PENDING TEST_RESULTs back to PROCESSING
       const [testResultStatusRows] = await this.connection.promise()
-        .query(manualInterventionReprocessTestResultQuery);
+        .query<mysql.ResultSetHeader>(manualInterventionReprocessTestResultQuery);
 
-      const changedRowCount = uploadQueueStatusRows['changedRows']
-        + uploadQueueNewRows['affectedRows'] + testResultStatusRows['changedRows'];
+      const changedRowCount = uploadQueueStatusRows.changedRows
+        + uploadQueueNewRows.affectedRows + testResultStatusRows.changedRows;
       customMetric(
         'InterventionRequeueRowsChanged',
         'The number of TEST_RESULT+UPLOAD_QUEUE records updated as part of reprocessing manual intervention',
@@ -157,8 +157,9 @@ export class RetryProcessor implements IRetryProcessor {
   async processOldEntryCleanup(cutOffPointInDays: number): Promise<number> {
     try {
       await this.connection.promise().beginTransaction();
-      const [rows] = await this.connection.promise().query(buildDeleteAcceptedQueueRowsQuery(cutOffPointInDays));
-      const deletedRowCount = rows['affectedRows'];
+      const [rows] = await this.connection.promise()
+        .query<mysql.ResultSetHeader>(buildDeleteAcceptedQueueRowsQuery(cutOffPointInDays));
+      const deletedRowCount = rows.affectedRows;
       customMetric(
         'UploadQueueCleanupRowsChanged',
         'The number of UPLOAD_QUEUE records deleted due to being successful and older than the threshold',
@@ -176,8 +177,9 @@ export class RetryProcessor implements IRetryProcessor {
     try {
       await this.connection.promise().beginTransaction();
       const [rows] =
-        await this.connection.promise().query(buildProcessStalledTestResultsQuery(autosaveCutOffPointInDays));
-      const createdRowCount = rows['affectedRows'];
+        await this.connection.promise()
+          .query<mysql.ResultSetHeader>(buildProcessStalledTestResultsQuery(autosaveCutOffPointInDays));
+      const createdRowCount = rows.affectedRows;
       customMetric(
         'UploadQueueRsisRowsChanged',
         'The number of UPLOAD_QUEUE records added due to stale TEST_RESULT autosave data',

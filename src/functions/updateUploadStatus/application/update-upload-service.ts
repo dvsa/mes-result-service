@@ -9,9 +9,9 @@ export const updateUpload = async (id: number, body: SubmissionOutcome): Promise
   const connection: mysql.Connection = getConnection();
 
   try {
-    const [update] = await connection.promise().query(updateUploadStatus(id, body));
+    const [update] = await connection.promise().query<mysql.ResultSetHeader>(updateUploadStatus(id, body));
     // PK should prevent more than 1 record being updated, assume it's 0
-    if (update['changedRows'] !== 1) {
+    if (update.changedRows !== 1) {
       throw new InconsistentUpdateError();
     }
   } catch (err) {
