@@ -36,6 +36,9 @@ CREATE TABLE TEST_RESULT (
   driver_surname VARCHAR(50) NOT NULL,
   result_status TINYINT NOT NULL,
   autosave BIT NOT NULL,
+  activity_code VARCHAR(2),
+  category VARCHAR(10),
+  pass_certificate_number VARCHAR(8),
   PRIMARY KEY (application_reference,staff_number),
   FOREIGN KEY (result_status) REFERENCES RESULT_STATUS(id)
 );

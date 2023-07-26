@@ -27,7 +27,7 @@ export class RetryProcessor implements IRetryProcessor {
   async processSuccessful(): Promise<number> {
     try {
       await this.connection.promise().beginTransaction();
-      const [rows] = await this.connection.promise().query(buildMarkTestProcessedQuery());
+      const [rows] = await this.connection.promise().query<mysql.ResultSetHeader>(buildMarkTestProcessedQuery());
       const changedRowCount = rows.changedRows;
       customMetric(
         'ResultsSuccessfullyProcessedRowsChanged',
@@ -37,7 +37,7 @@ export class RetryProcessor implements IRetryProcessor {
       await this.connection.promise().commit();
       return changedRowCount;
     } catch (err) {
-      this.connection.rollback();
+      this.connection.rollback(null);
       warn('Error caught marking test results as successfully submitted', err.message);
     }
   }
@@ -54,7 +54,7 @@ export class RetryProcessor implements IRetryProcessor {
           notifyRetryCount,
           tarsRetryCount,
         ));
-      const changedRowCount = rows.changedRows;
+      const changedRowCount = rows['changedRows'];
       customMetric(
         'InterfacesQueuedForRetryRowsChanged',
         'The amount of UPLOAD_QUEUE records updated back to PROCESSING status for retry',
@@ -63,7 +63,7 @@ export class RetryProcessor implements IRetryProcessor {
       await this.connection.promise().commit();
       return changedRowCount;
     } catch (err) {
-      this.connection.rollback();
+      this.connection.rollback(null);
       warn('Error caught marking interfaces as ready for retry', err.message);
     }
   }
@@ -73,7 +73,7 @@ export class RetryProcessor implements IRetryProcessor {
     tarsRetryCount: number,
   ): Promise<void> {
     try {
-      const [rows, fields]: [FailedUploadQueueResult[], any] =
+      const [rows, fields]: [any, any] =
         await this.connection.promise().query(
           buildSelectTestsExceedingRetryQuery(rsisRetryCount, notifyRetryCount, tarsRetryCount),
         );
@@ -104,7 +104,7 @@ export class RetryProcessor implements IRetryProcessor {
   ): Promise<number> {
     try {
       await this.connection.promise().beginTransaction();
-      const [rows] = await this.connection.promise().query(buildAbortTestsExceeingRetryQuery(
+      const [rows] = await this.connection.promise().query<mysql.ResultSetHeader>(buildAbortTestsExceeingRetryQuery(
         rsisRetryCount,
         notifyRetryCount,
         tarsRetryCount,
@@ -118,7 +118,7 @@ export class RetryProcessor implements IRetryProcessor {
       await this.connection.promise().commit();
       return changedRowCount;
     } catch (err) {
-      this.connection.rollback();
+      this.connection.rollback(null);
       warn('Error caught marking interfaces as aborted', err.message);
     }
   }
@@ -129,15 +129,15 @@ export class RetryProcessor implements IRetryProcessor {
 
       // Move UPLOAD_QUEUE rows in ERROR and against a PENDING TEST_RESULT back to PROCESSING
       const [uploadQueueStatusRows] = await this.connection.promise()
-        .query(manualInterventionReprocessUploadQueueQuery);
+        .query<mysql.ResultSetHeader>(manualInterventionReprocessUploadQueueQuery);
 
       // Recreate potentially missing UPLOAD_QUEUE records for PENDING TEST_RESULTs
       const [uploadQueueNewRows] = await this.connection.promise()
-        .query(manualInterventionUploadQueueReplacementQuery);
+        .query<mysql.ResultSetHeader>(manualInterventionUploadQueueReplacementQuery);
 
       // Move PENDING TEST_RESULTs back to PROCESSING
       const [testResultStatusRows] = await this.connection.promise()
-        .query(manualInterventionReprocessTestResultQuery);
+        .query<mysql.ResultSetHeader>(manualInterventionReprocessTestResultQuery);
 
       const changedRowCount = uploadQueueStatusRows.changedRows
         + uploadQueueNewRows.affectedRows + testResultStatusRows.changedRows;
@@ -149,7 +149,7 @@ export class RetryProcessor implements IRetryProcessor {
       await this.connection.promise().commit();
       return changedRowCount;
     } catch (err) {
-      this.connection.rollback();
+      this.connection.rollback(null);
       warn('Error caught updating records marked for reprocess by manual intervention', err.message);
     }
   }
@@ -157,7 +157,8 @@ export class RetryProcessor implements IRetryProcessor {
   async processOldEntryCleanup(cutOffPointInDays: number): Promise<number> {
     try {
       await this.connection.promise().beginTransaction();
-      const [rows] = await this.connection.promise().query(buildDeleteAcceptedQueueRowsQuery(cutOffPointInDays));
+      const [rows] = await this.connection.promise()
+        .query<mysql.ResultSetHeader>(buildDeleteAcceptedQueueRowsQuery(cutOffPointInDays));
       const deletedRowCount = rows.affectedRows;
       customMetric(
         'UploadQueueCleanupRowsChanged',
@@ -167,7 +168,7 @@ export class RetryProcessor implements IRetryProcessor {
       await this.connection.promise().commit();
       return deletedRowCount;
     } catch (err) {
-      this.connection.rollback();
+      this.connection.rollback(null);
       warn('Error caught processing old upload queue record cleanup', err.message);
     }
   }
@@ -176,7 +177,8 @@ export class RetryProcessor implements IRetryProcessor {
     try {
       await this.connection.promise().beginTransaction();
       const [rows] =
-        await this.connection.promise().query(buildProcessStalledTestResultsQuery(autosaveCutOffPointInDays));
+        await this.connection.promise()
+          .query<mysql.ResultSetHeader>(buildProcessStalledTestResultsQuery(autosaveCutOffPointInDays));
       const createdRowCount = rows.affectedRows;
       customMetric(
         'UploadQueueRsisRowsChanged',
@@ -186,7 +188,7 @@ export class RetryProcessor implements IRetryProcessor {
       await this.connection.promise().commit();
       return createdRowCount;
     } catch (err) {
-      this.connection.rollback();
+      this.connection.rollback(null);
       warn('Error caught creating RSIS records for stale test result records', err.message);
     }
   }

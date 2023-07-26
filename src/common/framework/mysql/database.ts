@@ -9,6 +9,7 @@ export const getConnection = (): mysql.Connection => {
     database: configuration.mesDatabaseName,
     user: configuration.mesDatabaseUsername,
     password: configuration.mesDatabasePassword,
+    timezone: 'utc',
     charset: 'UTF8_GENERAL_CI',
     ssl: process.env.TESTING_MODE ? null : certificate,
     authSwitchHandler(data: any, cb: any) {

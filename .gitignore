@@ -21,3 +21,4 @@ artefacts
 .nyc_output/
 .idea/
 tslint-to-eslint-config.log
+.env.local

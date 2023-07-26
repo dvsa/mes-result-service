@@ -1,10 +1,8 @@
 import * as jwtVerificationSvc from '../jwt-verification-service';
 import { APIGatewayEvent, APIGatewayProxyEvent } from 'aws-lambda';
-import {
-  sampleToken_12345678,
-  sampleTest_12345678,
-} from '../../framework/__tests__/handler.spec.data';
 import { getStaffIdFromTest } from '../../framework/handler';
+import { sampleTest_12345678 } from '../../framework/__tests__/handler.spec.data';
+import { sampleToken_12345678 } from '../../../../common/framework/config/sampleTokens';
 const lambdaTestUtils = require('aws-lambda-test-utils');
 
 describe('JWTVerificationService', () => {

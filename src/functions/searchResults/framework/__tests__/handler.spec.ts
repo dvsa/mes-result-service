@@ -6,11 +6,12 @@ import * as configSvc from '../../../../common/framework/config/config';
 import {
   queryParameter,
   queryParameterWith8DigitAppRef,
-  sampleToken_12345678, testResult,
+  testResult,
   testResultResponse,
 } from './handler.spec.data';
 import * as searchResultsSvc from '../repositories/search-repository';
 import { UserRole } from '../../../../common/domain/user-role';
+import { sampleToken_12345678 } from '../../../../common/framework/config/sampleTokens';
 
 describe('searchResults handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
@@ -93,7 +94,7 @@ describe('searchResults handler', () => {
     });
   });
 
-  describe('using valid query parameters as LDTM, 8 digit application reference', () => {
+  describe('using valid query parameters as LDTM, 8 digit repository reference', () => {
     it('gets the relevant results', async () => {
       dummyApigwEvent.requestContext.authorizer = {
         examinerRole: UserRole.LDTM,
@@ -134,7 +135,7 @@ describe('searchResults handler', () => {
       expect(JSON.parse(resp.body)).toEqual(testResultResponse);
     });
 
-    it('should get relevant results when searching by correct application reference', async () => {
+    it('should get relevant results when searching by correct repository reference', async () => {
       dummyApigwEvent.queryStringParameters['applicationReference'] = queryParameter.applicationReference;
       const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(200);

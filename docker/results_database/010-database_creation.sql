@@ -40,9 +40,9 @@ CREATE TABLE TEST_RESULT
     driver_surname          varchar(50) not null,
     result_status           tinyint     not null,
     autosave                bit         not null,
-    activity_code           varchar(2)  null,
+    activity_code           varchar(2) null,
     category                varchar(10) null,
-    pass_certificate_number varchar(8)  null,
+    pass_certificate_number varchar(8) null,
     version                 varchar(20) null,
     app_version             varchar(10) null,
     primary key (application_reference, staff_number),
@@ -100,8 +100,40 @@ CREATE TABLE AUDIT_EMAIL_REGEN
     regenerated_date      TIMESTAMP    NOT NULL,
     previous_email        VARCHAR(200) NULL,
     new_email             VARCHAR(200) NOT NULL,
-    previous_language     VARCHAR(10)  NULL,
+    previous_language     VARCHAR(10) NULL,
     new_language          VARCHAR(10)  NOT NULL,
     user_name             VARCHAR(200) NOT NULL,
     ticket_ref            VARCHAR(32)  NOT NULL
+);
+
+CREATE TABLE DUPLICATE_CERTIFICATES
+(
+    pass_certificate_number varchar(8) NOT NULL,
+    times_cert_used         BIGINT     NOT NULL,
+    test_details            json       NOT NULL,
+    PRIMARY KEY (pass_certificate_number)
+);
+
+CREATE TABLE SPOILED_CERTIFICATES_STATUS
+(
+    id                  TINYINT PRIMARY KEY,
+    spoiled_status_name VARCHAR(7)
+);
+
+INSERT INTO SPOILED_CERTIFICATES_STATUS(id, spoiled_status_name)
+VALUES (0, 'MISSING'),
+       (1, 'SPOILED'),
+       (2, 'OTHER');
+
+CREATE TABLE SPOILED_CERTIFICATES
+(
+    pass_certificate_number varchar(8)  NOT NULL,
+    staff_number            varchar(10) NOT NULL,
+    spoiled_date            date        NOT NULL,
+    tc_id                   bigint      NOT NULL,
+    status                  tinyint     NOT NULL,
+    reason                  VARCHAR(1000) NULL,
+    PRIMARY KEY (pass_certificate_number),
+    constraint SPOILED_CERTIFICATES_ibfk_1
+        foreign key (status) references SPOILED_CERTIFICATES_STATUS (id)
 );

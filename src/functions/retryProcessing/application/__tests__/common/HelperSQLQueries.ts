@@ -22,7 +22,7 @@ export const getErroredTestAppRefs = (db: mysql.Connection): Promise<number[]> =
         AND result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = 'ERROR')
       `,
       [],
-      (err, results, fields) => {
+      (err, results: any, fields) => {
         if (err) {
           reject(err);
         }
@@ -47,7 +47,7 @@ export const getErroredTestAppRef = (db: mysql.Connection, appRef: number): Prom
     db.query(
       formattedQuery,
       [],
-      (err, results, fields) => {
+      (err, results: any, fields) => {
         if (err) {
           reject(err);
         }
@@ -65,7 +65,7 @@ export const getAutosaveQueueRecords = (db: mysql.Connection): Promise<UploadQue
       WHERE tr.autosave = 1;
       `,
       [],
-      (err, results, fields) => {
+      (err, results: any, fields) => {
         if (err) {
           reject(err);
         }
@@ -94,7 +94,7 @@ export const getAutosaveQueueRecord =
       db.query(
         formattedQuery,
         [],
-        (err, results, fields) => {
+        (err, results: any, fields) => {
           if (err) {
             reject(err);
           }
@@ -147,7 +147,7 @@ export const getQueueCount =
       db.query(
         formattedQuery,
         [],
-        (err, result, fields) => {
+        (err, result: any, fields) => {
           if (err) {
             reject(err);
           }
@@ -165,7 +165,7 @@ export const getTestResultAppRefsForResultStatus = (db: mysql.Connection, result
       WHERE result_status = (SELECT id FROM RESULT_STATUS WHERE result_status_name = '${resultStatus}')
       `,
       [],
-      (err, results, fields) => {
+      (err, results: any, fields) => {
         if (err) {
           reject(err);
         }
@@ -183,7 +183,7 @@ export const getProcessingUploadQueueRecords = (db: mysql.Connection): Promise<A
         upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'PROCESSING')
       `,
       [],
-      (err, results, fields) => {
+      (err, results: any, fields) => {
         if (err) {
           reject(err);
         }
@@ -204,7 +204,7 @@ export const getAppRefInterfaceCombosWithProcessingStatusAndRetriesOccurred =
         AND upload_status = (SELECT id FROM PROCESSING_STATUS WHERE processing_status_name = 'PROCESSING');
       `,
         [],
-        (err, results, fields) => {
+        (err, results: any, fields) => {
           if (err) {
             reject(err);
           }
@@ -220,7 +220,7 @@ export const getAllUploadQueueRecords = (db: mysql.Connection): Promise<AppRefIn
       SELECT application_reference, interface FROM UPLOAD_QUEUE
       `,
       [],
-      (err, results, fields) => {
+      (err, results: any, fields) => {
         if (err) {
           reject(err);
         }

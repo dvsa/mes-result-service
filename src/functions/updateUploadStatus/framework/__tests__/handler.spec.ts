@@ -66,7 +66,7 @@ describe('updateUploadStatus handler', () => {
     expect(JSON.parse(res.body).message).toBe('Error parsing request body into JSON');
   });
 
-  it('should send a BAD_REQUEST response when the application reference isnt a parsable string', async () => {
+  it('should send a BAD_REQUEST response when the repository reference isnt a parsable string', async () => {
     dummyApigwEvent.pathParameters['app-ref'] = 'an invalid number';
     dummyApigwEvent.body = dummyApigwEvent.body = JSON.stringify({
       retry_count: 1,

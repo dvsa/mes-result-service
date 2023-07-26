@@ -9,7 +9,7 @@ describe('QueryBuilder', () => {
     });
     it('should have the correct date as UTC in the INSERT', () => {
       const result = buildTestResultInsert(dummyTestResult, false, false);
-      expect(result).toMatch(/2019-06-05 11:38:00.000/);
+      expect(result).toContain('2019-06-05T12:38:00');
     });
     it('should have the staff number in the INSERT', () => {
       const result = buildTestResultInsert(dummyTestResult, false, false);

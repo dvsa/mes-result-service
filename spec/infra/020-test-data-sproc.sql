@@ -22,7 +22,10 @@ BEGIN
     driver_number,
     driver_surname,
     result_status,
-    autosave
+    autosave,
+    activity_code,
+    category,
+    pass_certificate_number
   ) VALUES
     (
       AppRef,
@@ -34,7 +37,10 @@ BEGIN
       CONCAT('dnum', AppRef),
       'Pearson',
       (SELECT id FROM RESULT_STATUS WHERE result_status_name = ResultStatus),
-      0
+      0,
+      '1',
+      'B',
+      'C123456X'
     );
 
   IF TarsStatus IS NOT NULL THEN

@@ -4,7 +4,6 @@ const lambdaTestUtils = require('aws-lambda-test-utils');
 import { Mock, It, Times } from 'typemoq';
 import * as configSvc from '../../../../common/framework/config/config';
 import {
-  sampleToken_12345678,
   testResult,
   applicationReference,
   staffNumber,
@@ -14,6 +13,7 @@ import {
 import * as getResultSvc from '../repositories/get-result-repository';
 import { gunzipSync } from 'zlib';
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
+import { sampleToken_12345678 } from '../../../../common/framework/config/sampleTokens';
 
 describe('getResult handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
@@ -45,7 +45,7 @@ describe('getResult handler', () => {
     });
   });
 
-  describe('handling of invalid application reference', () => {
+  describe('handling of invalid repository reference', () => {
     it('should fail with bad request', async () => {
       dummyApigwEvent.pathParameters['app-ref'] = '@invalidCharacter';
       const resp = await handler(dummyApigwEvent, dummyContext);

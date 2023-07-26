@@ -43,7 +43,7 @@ describe('getRegeneratedEmails handler', () => {
     });
   });
 
-  describe('handling of invalid application reference', () => {
+  describe('handling of invalid repository reference', () => {
     it('should fail with bad request', async () => {
       dummyApigwEvent.pathParameters['appRef'] = '@invalidCharacter';
       const response = await handler(dummyApigwEvent, dummyContext);
@@ -52,7 +52,7 @@ describe('getRegeneratedEmails handler', () => {
   });
 
 
-  describe('handling of invalid application reference', () => {
+  describe('handling of invalid repository reference', () => {
     it('should fail with bad request', async () => {
       dummyApigwEvent.pathParameters['appRef'] = '1000000000001';
       const response = await handler(dummyApigwEvent, dummyContext);

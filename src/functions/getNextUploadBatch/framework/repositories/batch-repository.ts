@@ -13,7 +13,7 @@ export class BatchRepository implements IBatchRepository {
       const [rows, fields] = await connection.promise().query(buildTarsNextBatchQuery(batchSize, interfaceType));
       batch = rows;
     } catch (err) {
-      connection.rollback();
+      connection.rollback(null);
       throw err;
     } finally {
       connection.end();

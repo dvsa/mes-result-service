@@ -35,7 +35,7 @@ describe('updateUploadStatus query builder', () => {
     const res = updateUploadStatus(dummyAppRef, dummyRequestBody);
     expect(res).toMatch(/staff_number = '12345'/);
   });
-  it('should contain the correct application referenence', () => {
+  it('should contain the correct repository referenence', () => {
     const res = updateUploadStatus(dummyAppRef, dummyRequestBody);
     expect(res).toMatch(/application_reference = 1234567890/);
   });
