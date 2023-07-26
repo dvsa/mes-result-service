@@ -58,7 +58,6 @@ describe('getPassCertificates/missingCertificates', () => {
 
     it('should create a response ' +
          'no records found and an appropriate status code when no certs are missing', async () => {
-      // moqGetMissingCertificates.setup(x => x()).returns(() => Promise.resolve([]));
       moqGetMissingCertificates.setup(x => x()).returns(() => Promise.resolve(noIdentifiedMissingCertificates));
       const response = await handler(dummyApigwEvent, dummyContext);
       expect(response.statusCode).toEqual(404);
@@ -67,7 +66,6 @@ describe('getPassCertificates/missingCertificates', () => {
 
     it('should create a response ' +
          'finding missing certificates and an appropriate status code', async () => {
-      // moqGetMissingCertificates.setup(x => x()).returns(() => Promise.resolve([]));
       moqGetMissingCertificates.setup(x => x()).returns(() => Promise.resolve(identifiedMissingCertificates));
       const response = await handler(dummyApigwEvent, dummyContext);
       expect(response.statusCode).toEqual(200);

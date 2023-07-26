@@ -4,7 +4,7 @@ import { Books, Certificates } from '../../../common/domain/certificates';
  * Construct a payload for each book with missing certificates
  * @param certificates
  */
-export const findMissingCerts = ((certificates: Certificates[]): Books[] => {
+export const findMissingCerts = (certificates: Certificates[]): Books[] => {
   const userBooks = certificates.map(cert => cert.book);
   const uniqueBooks = Array.from(new Set(userBooks));
 
@@ -28,7 +28,7 @@ export const findMissingCerts = ((certificates: Certificates[]): Books[] => {
   });
 
   return booksWithMissingCerts;
-});
+};
 
 /**
  * Identify and return all missing certificates for a specific book
