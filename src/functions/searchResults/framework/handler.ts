@@ -19,14 +19,15 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
   try {
     bootstrapLogging('search-test-results', event);
 
-    await bootstrapConfig();
-
-    const queryParameters: QueryParameters = new QueryParameters();
-
     if (!event.queryStringParameters) {
       error('No query params supplied');
       return createResponse('Query parameters have to be supplied', HttpStatus.BAD_REQUEST);
     }
+
+    await bootstrapConfig();
+
+    // @TODO: Consider moving the setting of the queryParameters out of handler.
+    const queryParameters: QueryParameters = new QueryParameters();
 
     // Set the parameters from the event to the queryParameter holder object
     if (event.queryStringParameters.startDate) {
@@ -60,10 +61,10 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
       queryParameters.activityCode = event.queryStringParameters.activityCode;
     }
     if (event.queryStringParameters.category) {
-      queryParameters.category = event.queryStringParameters.category;
+      queryParameters.category = decodeURIComponent(event.queryStringParameters.category);
     }
     if (event.queryStringParameters.passCertificateNumber) {
-      queryParameters.passCertificateNumber = event.queryStringParameters.passCertificateNumber;
+      queryParameters.passCertificateNumber = decodeURIComponent(event.queryStringParameters.passCertificateNumber);
     }
 
     if (Object.keys(queryParameters).length === 0) {
@@ -71,6 +72,8 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
       return createResponse('Query parameters have to be supplied', HttpStatus.BAD_REQUEST);
     }
 
+    // @TODO: Consider moving Schema Validation out of handler.
+    //  Handler should call out to single method, which returns the error or null;
     const parametersSchema = joi.object().keys({
       startDate: joi.string().regex(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/).optional()
         .label('Please provide a valid date with the format \'YYYY-MM-DD\''),
@@ -148,6 +151,7 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
 
     const result: TestResultRecord[] = await getConciseSearchResults(queryParameters);
 
+    // @TODO: Consider moving the data mapping out of handler.
     const results: TestResultSchemasUnion[] = result.map(row => row.test_result);
     const condensedTestResult: SearchResultTestSchema[] = [];
 

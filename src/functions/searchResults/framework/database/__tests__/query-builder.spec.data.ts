@@ -5,7 +5,7 @@ export const queryParameter: QueryParameters = {
   endDate: '2019-12-12',
   staffNumber: '00123456',
   driverNumber: 'SHAWX885220A99HC',
-  applicationReference: '1234570231',
+  applicationReference: '12345670231', // 11 digit staff number
   dtcCode: 'EXTC1',
   excludeAutoSavedTests: 'true',
   category: 'C',
@@ -19,7 +19,7 @@ export const queryParameterRekey: QueryParameters = {
   endDate: '2019-12-12',
   staffNumber: '00123456',
   driverNumber: 'SHAWX885220A99HC',
-  applicationReference: '1234570231',
+  applicationReference: '12345678', // 8 digit staff number
   dtcCode: 'EXTC1',
   excludeAutoSavedTests: 'true',
   category: 'C',
