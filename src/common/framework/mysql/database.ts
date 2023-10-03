@@ -9,13 +9,11 @@ export const getConnection = (): mysql.Connection => {
     database: configuration.mesDatabaseName,
     user: configuration.mesDatabaseUsername,
     password: configuration.mesDatabasePassword,
-    timezone: 'utc',
+    timezone: 'UTC',
     charset: 'UTF8_GENERAL_CI',
     ssl: process.env.TESTING_MODE ? null : certificate,
-    authSwitchHandler(data: any, cb: any) {
-      if (data.pluginName === 'mysql_clear_password') {
-        cb(null, Buffer.from(`${configuration.mesDatabasePassword}\0`));
-      }
+    authPlugins: {
+      mysql_clear_password: () => () => Buffer.from('mysql_clear_password'),
     },
   });
   return connection;
