@@ -5,7 +5,7 @@ import { QueryParameters } from '../../../domain/query_parameters';
 describe('QueryBuilder', () => {
   let result: string;
 
-  fdescribe('getSearchResultQuery', () => {
+  describe('getSearchResultQuery', () => {
     beforeEach(() => {
       result = getSearchResultQuery(queryParameter as QueryParameters).replace(/\s+/g, ' ');
     });

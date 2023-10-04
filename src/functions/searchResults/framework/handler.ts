@@ -5,15 +5,14 @@ import { HttpStatus } from '../../../common/application/api/HttpStatus';
 import Response from '../../../common/application/api/Response';
 import { getConciseSearchResults } from './repositories/search-repository';
 import { bootstrapConfig } from '../../../common/framework/config/config';
-import * as joi from 'joi';
-import { QueryParameters } from '../domain/query_parameters';
-import { SearchResultTestSchema } from '@dvsa/mes-search-schema';
-import { get } from 'lodash';
 import { getEmployeeIdFromRequestContext } from '../../../common/application/utils/getEmployeeId';
-import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
 import { TestResultRecord } from '../../../common/domain/test-results';
 import { UserRole } from '../../../common/domain/user-role';
-import { formatApplicationReference } from '@dvsa/mes-microservice-common/domain/tars';
+import { dePermittedQueries, ldtmPermittedQueries } from '../domain/permitted-queries';
+import { QueryParamValidator } from '../application/validate-query-params';
+import { SearchResultsParams } from '../application/construct-query-params';
+import { TestResultMapper } from '../application/map-test-results';
+import { isSearchingForOwnTests } from '../application/own-test-check';
 
 export async function handler(event: APIGatewayEvent): Promise<Response> {
   try {
@@ -26,97 +25,17 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
 
     await bootstrapConfig();
 
-    // @TODO: Consider moving the setting of the queryParameters out of handler.
-    const queryParameters: QueryParameters = new QueryParameters();
-
-    // Set the parameters from the event to the queryParameter holder object
-    if (event.queryStringParameters.startDate) {
-      queryParameters.startDate = event.queryStringParameters.startDate;
-    }
-    if (event.queryStringParameters.endDate) {
-      queryParameters.endDate = event.queryStringParameters.endDate;
-    }
-    if (event.queryStringParameters.driverNumber) {
-      queryParameters.driverNumber = event.queryStringParameters.driverNumber;
-    }
-    if (event.queryStringParameters.staffNumber) {
-      queryParameters.staffNumber = event.queryStringParameters.staffNumber;
-    }
-    // guard against filtering on rekey without providing a staff number
-
-    if (event.queryStringParameters.rekey) {
-      queryParameters.rekey = !!(event.queryStringParameters.rekey === 'true' && queryParameters.staffNumber);
-    }
-    if (event.queryStringParameters.dtcCode) {
-      queryParameters.dtcCode = event.queryStringParameters.dtcCode;
-    }
-    if (event.queryStringParameters.applicationReference) {
-      queryParameters.applicationReference = event.queryStringParameters.applicationReference;
-    }
-    if (event.queryStringParameters.excludeAutoSavedTests) {
-      queryParameters.excludeAutoSavedTests = event.queryStringParameters.excludeAutoSavedTests === 'true' ?
-        'true' : 'false';
-    }
-    if (event.queryStringParameters.activityCode) {
-      queryParameters.activityCode = event.queryStringParameters.activityCode;
-    }
-    if (event.queryStringParameters.category) {
-      queryParameters.category = decodeURIComponent(event.queryStringParameters.category);
-    }
-    if (event.queryStringParameters.passCertificateNumber) {
-      queryParameters.passCertificateNumber = decodeURIComponent(event.queryStringParameters.passCertificateNumber);
-    }
-
+    const queryParameters = new SearchResultsParams(event.queryStringParameters).get();
     if (Object.keys(queryParameters).length === 0) {
       error('No query params supplied');
       return createResponse('Query parameters have to be supplied', HttpStatus.BAD_REQUEST);
     }
 
-    // @TODO: Consider moving Schema Validation out of handler.
-    //  Handler should call out to single method, which returns the error or null;
-    const parametersSchema = joi.object().keys({
-      startDate: joi.string().regex(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/).optional()
-        .label('Please provide a valid date with the format \'YYYY-MM-DD\''),
-      endDate: joi.string().regex(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/).optional()
-        .label('Please provide a valid date with the format \'YYYY-MM-DD\''),
-      driverId: joi.string().alphanum().max(16).optional(),
-      staffNumber: joi.string().alphanum().optional(),
-      rekey: joi.boolean().optional(),
-      dtcCode: joi.string().alphanum().optional(),
-      appRef: joi.number().max(1000000000000).optional(),
-      excludeAutoSavedTests: joi.string().optional(),
-      activityCode: joi.string().alphanum().optional(),
-      category: joi.string().optional(),
-      passCertificateNumber: joi.string().optional(),
-    });
-
-    const validationResult = parametersSchema.validate({
-      driverId: queryParameters.driverNumber,
-      staffNumber: queryParameters.staffNumber,
-      rekey: queryParameters.rekey,
-      dtcCode: queryParameters.dtcCode,
-      appRef: queryParameters.applicationReference,
-      startDate: queryParameters.startDate,
-      endDate: queryParameters.endDate,
-      excludeAutoSavedTests: queryParameters.excludeAutoSavedTests,
-      activityCode: queryParameters.activityCode,
-      category: queryParameters.category,
-      passCertificateNumber: queryParameters.passCertificateNumber,
-    });
-
+    const validationResult = new QueryParamValidator(queryParameters).getResult();
     if (validationResult.error) {
       error('Validation error', validationResult.error);
       return createResponse(validationResult.error, HttpStatus.BAD_REQUEST);
     }
-
-    const ldtmPermittedQueries = [
-      'startDate', 'staffNumber', 'endDate', 'driverNumber',
-      'dtcCode', 'applicationReference', 'excludeAutoSavedTests',
-      'activityCode', 'category', 'passCertificateNumber',
-      'rekey',
-    ];
-
-    const dePermittedQueries = ['driverNumber', 'applicationReference', 'excludeAutoSavedTests'];
 
     const isLDTM = event.requestContext.authorizer.examinerRole === UserRole.LDTM;
 
@@ -130,7 +49,7 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
 
     debug('Searching as', event.requestContext.authorizer.examinerRole);
 
-    // This is to be safe, incase new parameters are added for DE only in the future
+    // This is to be safe, in case new parameters are added for DE only in the future
     if (isDLG || isLDTM || searchingForOwnTest) {
       for (const key in queryParameters) {
         if (!ldtmPermittedQueries.includes(key)) {
@@ -149,37 +68,15 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
       queryParameters.staffNumber = staffNumber;
     }
 
-    const result: TestResultRecord[] = await getConciseSearchResults(queryParameters);
+    const results: TestResultRecord[] = await getConciseSearchResults(queryParameters);
 
-    // @TODO: Consider moving the data mapping out of handler.
-    const results: TestResultSchemasUnion[] = result.map(row => row.test_result);
-    const condensedTestResult: SearchResultTestSchema[] = [];
-
-    for (const testResultRow of results) {
-      const appRef = testResultRow.journalData.applicationReference;
-      condensedTestResult.push(
-        {
-          costCode: testResultRow.journalData.testCentre.costCode,
-          testDate: testResultRow.journalData.testSlotAttributes.start,
-          driverNumber: testResultRow.journalData.candidate.driverNumber,
-          candidateName: testResultRow.journalData.candidate.candidateName,
-          applicationReference: formatApplicationReference(appRef),
-          category: testResultRow.category,
-          activityCode: testResultRow.activityCode,
-          passCertificateNumber: get(testResultRow, 'passCompletion.passCertificateNumber', null),
-          grade: get(testResultRow, 'testData.review.grade', null),
-        },
-      );
-    }
+    const condensedTestResult = new TestResultMapper(results).format();
 
     info('Number of test results returning ', results.length);
+
     return createResponse(condensedTestResult, HttpStatus.OK);
   } catch (err) {
     error('Search results', err);
     return createResponse(err, HttpStatus.BAD_REQUEST);
   }
 }
-
-const isSearchingForOwnTests = (queryParameters: QueryParameters, staffNumber: string): boolean => {
-  return queryParameters && queryParameters.staffNumber === staffNumber;
-};

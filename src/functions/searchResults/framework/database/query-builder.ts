@@ -9,7 +9,7 @@ export const getSearchResultQuery = (queryParameters: QueryParameters): string =
   // generate SQL statement
   return MyBatis.getStatement(
     'searchResults', // <-- 'namespace' declared inside <mapper> tag
-    'selectRows',
+    'selectRows', // 'id' declared inside <sql> tag
     { ...queryParameters },
     { language: 'sql' }
   );
