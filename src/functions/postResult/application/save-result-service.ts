@@ -18,8 +18,8 @@ export const saveTestResult = async (
     await trySaveUploadQueueRecords(connection, testResult, hasValidationError, isPartialTestResult);
     connection.commit();
   } catch (err) {
-    connection.rollback(null);
     error(`Error saving result: ${err}`);
+    connection.rollback(null);
     throw err;
   } finally {
     connection.end();

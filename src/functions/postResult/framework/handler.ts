@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
-import { bootstrapLogging, error, warn } from '@dvsa/mes-microservice-common/application/utils/logger';
+import { bootstrapLogging, debug, error, warn } from '@dvsa/mes-microservice-common/application/utils/logger';
 import createResponse from '../../../common/application/utils/createResponse';
 import Response from '../../../common/application/api/Response';
 import { HttpStatus } from '../../../common/application/api/HttpStatus';
@@ -14,21 +14,18 @@ import { verifyRequest } from '../application/jwt-verification-service';
 export async function handler(event: APIGatewayProxyEvent): Promise<Response> {
   let testResult: TestResultSchemasUnion;
 
-  let isPartialTestResult = false;
-  if (event.queryStringParameters && event.queryStringParameters['partial']
-    && event.queryStringParameters['partial'].toLowerCase() === 'true') {
-    isPartialTestResult = true;
-  }
-
   bootstrapLogging('post-result', event);
 
   await bootstrapConfig();
 
   try {
     if (isNullOrBlank(event.body)) {
+      error('Null or blank request body');
       return createResponse({ message: 'Error: Null or blank request body' }, HttpStatus.BAD_REQUEST);
     }
     testResult = decompressTestResult(event.body as string);
+
+    debug('Decompression successful');
   } catch (err) {
     if (err instanceof TestResultDecompressionError) {
       error(`Could not decompress test result body ${event.body}`);
@@ -37,11 +34,15 @@ export async function handler(event: APIGatewayProxyEvent): Promise<Response> {
   }
 
   if (!verifyRequest(event, getStaffIdFromTest(testResult))) {
+    error('EmployeeId and staffId do not match');
     return createResponse({ message: 'EmployeeId and staffId do not match' }, HttpStatus.UNAUTHORIZED);
   }
 
   try {
+    const isPartialTestResult = event.queryStringParameters?.partial?.toLowerCase() === 'true';
+
     const validationResult = validateMESJoiSchema(testResult);
+
     if (validationResult?.error) {
       // Validation error thrown with no action possible by examiner - save results in error state - return HTTP 201
       // to prevent app stalling at 'upload pending'.
@@ -49,6 +50,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<Response> {
       await saveTestResult(testResult, true, isPartialTestResult);
       return createResponse({}, HttpStatus.CREATED);
     }
+    debug('Validation passed');
 
     await saveTestResult(testResult, false, isPartialTestResult);
   } catch (err) {

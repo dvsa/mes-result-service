@@ -6,9 +6,9 @@ import { RegeneratedEmailsRecord } from '../../../../common/domain/regenerated-e
 
 export const getRegeneratedEmails = async (appRef: number): Promise<RegeneratedEmailsRecord[]> => {
   const connection: mysql.Connection = getConnection();
-  let batch;
+  let batch: mysql.RowDataPacket[];
   try {
-    const [rows] = await connection.promise().query(
+    const [rows] = await connection.promise().query<mysql.RowDataPacket[]>(
       buildGetRegeneratedEmailQuery(appRef),
     );
     batch = rows;
@@ -17,5 +17,5 @@ export const getRegeneratedEmails = async (appRef: number): Promise<RegeneratedE
   } finally {
     connection.end();
   }
-  return batch;
+  return batch as RegeneratedEmailsRecord[];
 };
