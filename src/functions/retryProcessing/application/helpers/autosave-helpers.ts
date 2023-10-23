@@ -93,7 +93,7 @@ export const deleteAutosaveTestResultData = (
 /**
  * Return a result set of TEST_RESULT records that contains autosave data
  */
-export const getAutosaveTestResultRecords = (db: mysql.Connection): Promise<TestResultInterface> => {
+export const getAutosaveTestResultRecords = (db: mysql.Connection): Promise<TestResultInterface[]> => {
   return new Promise((resolve, reject) => {
     db.query(
       `
@@ -105,7 +105,7 @@ export const getAutosaveTestResultRecords = (db: mysql.Connection): Promise<Test
         if (err) {
           reject(err);
         }
-        resolve(results.map(row =>
+        resolve((results as mysql.RowDataPacket[]).map(row =>
           ({
             application_reference: row.application_reference,
             result_status: row.result_status,
@@ -130,7 +130,7 @@ export const getAutosaveQueueRecords = (db: mysql.Connection): Promise<UploadQue
         if (err) {
           reject(err);
         }
-        resolve(results.map(row =>
+        resolve((results as mysql.RowDataPacket[]).map(row =>
           ({
             application_reference: row.application_reference,
             interface: row.interface,
@@ -177,7 +177,7 @@ export const getTestResultAppRefsForResultStatus = (db: mysql.Connection, result
         if (err) {
           reject(err);
         }
-        resolve(results.map(row => row.application_reference));
+        resolve((results as mysql.RowDataPacket[]).map(row => row.application_reference));
       });
   });
 };

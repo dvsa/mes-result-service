@@ -4,7 +4,8 @@ import { certificate } from '../../certs/ssl_profiles';
 
 export const getConnection = (): mysql.Connection => {
   const configuration = config();
-  const connection: mysql.Connection = mysql.createConnection({
+
+  return mysql.createConnection({
     host: configuration.mesDatabaseHostname,
     database: configuration.mesDatabaseName,
     user: configuration.mesDatabaseUsername,
@@ -17,5 +18,4 @@ export const getConnection = (): mysql.Connection => {
       }
     },
   });
-  return connection;
 };

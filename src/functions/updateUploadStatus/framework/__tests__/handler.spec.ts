@@ -8,7 +8,6 @@ import { InconsistentUpdateError } from '../../domain/InconsistentUpdateError';
 
 describe('updateUploadStatus handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
-  let dummyContext: Context;
 
   const moqBootstrapConfig = Mock.ofInstance(configSvc.bootstrapConfig);
   const moqUpdateUploadSvc = Mock.ofInstance(updateUploadSvc.updateUpload);
@@ -17,7 +16,6 @@ describe('updateUploadStatus handler', () => {
     moqUpdateUploadSvc.reset();
 
     dummyApigwEvent = lambdaTestUtils.mockEventCreator.createAPIGatewayEvent({});
-    dummyContext = lambdaTestUtils.mockContextCreator(() => null);
 
     spyOn(configSvc, 'bootstrapConfig').and.callFake(moqBootstrapConfig.object);
     spyOn(updateUploadSvc, 'updateUpload').and.callFake(moqUpdateUploadSvc.object);
@@ -35,7 +33,7 @@ describe('updateUploadStatus handler', () => {
       interface: 'TARS',
     });
 
-    const res = await handler(dummyApigwEvent, dummyContext);
+    const res = await handler(dummyApigwEvent);
     expect(res.statusCode).toEqual(201);
   });
 
@@ -43,7 +41,7 @@ describe('updateUploadStatus handler', () => {
     dummyApigwEvent.pathParameters['app-ref'] = '1234';
     dummyApigwEvent.body = '';
 
-    const res = await handler(dummyApigwEvent, dummyContext);
+    const res = await handler(dummyApigwEvent);
     expect(res.statusCode).toEqual(400);
     expect(JSON.parse(res.body).message).toBe('Empty path app-ref or request body');
   });
@@ -53,7 +51,7 @@ describe('updateUploadStatus handler', () => {
     dummyApigwEvent.body = JSON.stringify({
       upload_status: 'ACCEPTED',
     });
-    const res = await handler(dummyApigwEvent, dummyContext);
+    const res = await handler(dummyApigwEvent);
     expect(res.statusCode).toEqual(400);
     expect(JSON.parse(res.body).message).toBe('Empty path app-ref or request body');
   });
@@ -61,7 +59,7 @@ describe('updateUploadStatus handler', () => {
   it('should send a BAD_REQUEST response when the body isnt in JSON', async () => {
     dummyApigwEvent.pathParameters['app-ref'] = '1234';
     dummyApigwEvent.body = 'this is not json 1234';
-    const res = await handler(dummyApigwEvent, dummyContext);
+    const res = await handler(dummyApigwEvent);
     expect(res.statusCode).toEqual(400);
     expect(JSON.parse(res.body).message).toBe('Error parsing request body into JSON');
   });
@@ -71,7 +69,7 @@ describe('updateUploadStatus handler', () => {
     dummyApigwEvent.body = dummyApigwEvent.body = JSON.stringify({
       retry_count: 1,
     });
-    const res = await handler(dummyApigwEvent, dummyContext);
+    const res = await handler(dummyApigwEvent);
     expect(res.statusCode).toEqual(400);
     expect(JSON.parse(res.body).message)
       .toBe(`Error application reference is NaN: ${dummyApigwEvent.pathParameters['app-ref']}`);
@@ -88,7 +86,7 @@ describe('updateUploadStatus handler', () => {
       interface: 'TARS',
     });
 
-    const res = await handler(dummyApigwEvent, dummyContext);
+    const res = await handler(dummyApigwEvent);
 
     expect(res.statusCode).toBe(404);
   });
