@@ -88,7 +88,7 @@ export const testResult: TestResultRecord[] = [{
     {
       ETA: { physical: true },
       eco: { completed: true },
-      manoeuvres: { reverseRight: [Object] },
+      manoeuvres: { reverseRight: [{}] },
       drivingFaults: { moveOffSafety: 2, controlsAccelerator: 1 },
       seriousFaults: { controlsAccelerator: true },
       vehicleChecks: { showMeQuestion: [Object], tellMeQuestion: [Object] },
@@ -155,8 +155,7 @@ export const testResult: TestResultRecord[] = [{
       healthDeclarationAccepted: false,
       passCertificateNumberReceived: false,
     },
-    communicationPreferences:
-    {
+    communicationPreferences: {
       updatedEmail: 'jane.doe@example.com',
       communicationMethod: 'Email',
     },

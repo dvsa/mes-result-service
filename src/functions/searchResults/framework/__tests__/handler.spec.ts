@@ -1,7 +1,7 @@
-import { APIGatewayEvent, Context } from 'aws-lambda';
-import { handler } from '../handler';
+import { APIGatewayEvent } from 'aws-lambda';
 const lambdaTestUtils = require('aws-lambda-test-utils');
 import { Mock, It, Times } from 'typemoq';
+import { handler } from '../handler';
 import * as configSvc from '../../../../common/framework/config/config';
 import {
   queryParameter,

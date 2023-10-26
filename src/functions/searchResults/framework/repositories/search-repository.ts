@@ -1,7 +1,7 @@
 import { getConnection } from '../../../../common/framework/mysql/database';
 import * as mysql from 'mysql2';
 import { TestResultRecord } from '../../../../common/domain/test-results';
-import { getConciseSearchResultsFromSearchQuery } from '../database/query-builder';
+import { getSearchResultQuery } from '../database/query-builder';
 import { QueryParameters } from '../../domain/query_parameters';
 
 export const getConciseSearchResults = async (
@@ -10,8 +10,8 @@ export const getConciseSearchResults = async (
   const connection: mysql.Connection = getConnection();
   let batch;
   try {
-    const [rows, fields] = await connection.promise().query(
-      getConciseSearchResultsFromSearchQuery(queryParameters),
+    const [rows] = await connection.promise().query(
+      getSearchResultQuery(queryParameters),
     );
     batch = rows;
   } catch (err) {

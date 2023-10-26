@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="searchResults">
+    <!-- Define the query for grabbing all rows based on the QueryParams provided -->
+    <sql id="selectAllRows">
+        SELECT *
+        FROM TEST_RESULT
+        <where>
+            <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+                AND test_date >= #{startDate}
+                -- Less than or equals needs to be escaped in XML, therefore is represented as '&lt;='
+                AND test_date &lt;= #{endDate}
+            </if>
+            <if test="driverNumber != null and driverNumber != ''">
+                AND driver_number = #{driverNumber}
+            </if>
+            <if test="dtcCode != null and dtcCode != ''">
+                AND tc_cc = #{dtcCode}
+            </if>
+            <if test="applicationReference != null and applicationReference != ''">
+                <choose>
+                    <when test="applicationReference.length == 8">
+                        -- Finds appRefs based on 8 digits
+                        -- Uses range query to find appRefs between those numbers
+                        -- Most performant way of implementing the 8 digit app ref search
+                        AND application_reference >= CONCAT(#{applicationReference}, '000')
+                        AND application_reference &lt;= CONCAT(#{applicationReference}, '999')
+                    </when>
+                    <otherwise>
+                        AND application_reference = #{applicationReference}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="staffNumber != null and staffNumber != ''">
+                AND staff_number = #{staffNumber}
+            </if>
+            <if test="activityCode != null and activityCode != ''">
+                AND activity_code = #{activityCode}
+            </if>
+            <if test="category != null and category != ''">
+                AND category = #{category}
+            </if>
+            <if test="passCertificateNumber != null and passCertificateNumber != ''">
+                AND pass_certificate_number = #{passCertificateNumber}
+            </if>
+            <if test="excludeAutoSavedTests == 'true'">
+                AND autosave != 1
+            </if>
+        </where>
+    </sql>
+
+    <!-- We can reuse the bulk logic from id="selectAllRows", this is represented via the <include> tag -->
+    <select id="selectRows">
+        SELECT TR.test_result
+        FROM (<include refid="selectAllRows"/>) as TR
+        <where>
+            <if test="rekey == true">
+                -- We also conditionally add a filter for rekey
+                AND JSON_EXTRACT(TR.test_result, "$.rekey") = true
+            </if>
+        </where>
+        ORDER BY TR.test_date DESC
+        LIMIT 200;
+    </select>
+</mapper>

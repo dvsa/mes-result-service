@@ -1,6 +1,6 @@
-import { CatBUniqueTypes } from '@dvsa/mes-test-schema/categories/B';
 import { TestResultRecord } from '../../../../common/domain/test-results';
-import { SearchResultTestSchema } from '@dvsa/mes-search-schema';
+import {CommunicationPreferences, TestSlotAttributes} from '@dvsa/mes-test-schema/categories/common';
+import {TestResultSchemasUnion} from '@dvsa/mes-test-schema/categories';
 
 // tslint:disable: variable-name
 export const sampleToken_12345678 =
@@ -22,32 +22,15 @@ Mr7SfbJkD33tHIuG0w71qZBTCacS9PjxrmTv9Qe6QRRsI-kSOwsF-u2L1-kL6iO67LdZa04jxTJVZ3P0
 KiSIwqfAWbFxxh5eUkQfpwARch7wLMnthebO9t-bIS5W2YrL_aJILUhQpz0LO32IDlKMcz63hmCTYvSybCTqTXGd_2unhvE\
 fwRdeWktLRZvkP2lIwiv6dKn43gijVg5bQxA';
 
-export const sampleToken_01234567 =
-  'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IkN0ZlFDOExlLThOc0M3b0MyelFrWnBjcmZPYyIsImtpZCI6Ik\
-N0ZlFDOExlLThOc0M3b0MyelFrWnBjcmZPYyJ9.eyJhdWQiOiIwOWZkZDY4Yy00ZjJmLTQ1YzItYmU1NS1kZDk4MTA0ZDRm\
-NzQiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC82YzQ0OGQ5MC00Y2ExLTRjYWYtYWI1OS0wYTJhYTY3ZDc4MDE\
-vIiwiaWF0IjoxNTYwNDM0NDQyLCJuYmYiOjE1NjA0MzQ0NDIsImV4cCI6MTU2MDQzNTk0MiwiYWNyIjoiMSIsImFpbyI6Ij\
-QyWmdZT2l0T1pZb2EyZmgrWDhHbTdCeTk5YlFwNmxkclVxc3VySUhuTzhhVEp2MDlBa0EiLCJhbXIiOlsicHdkIl0sImFwc\
-GlkIjoiMDlmZGQ2OGMtNGYyZi00NWMyLWJlNTUtZGQ5ODEwNGQ0Zjc0IiwiYXBwaWRhY3IiOiIwIiwiZXh0bi5lbXBsb3ll\
-ZUlkIjpbIjAxMjM0NTY3Il0sImlwYWRkciI6IjE4NS4zMS4xNTUuMTU1IiwibmFtZSI6Ik1FU0JldGEgVXNlciAxIiwib2l\
-kIjoiOGUwNjQ2ODAtOGFiZS00ZWY5LWFjYmItMjlkNWEzMGFhNmVjIiwic2NwIjoiRGlyZWN0b3J5LlJlYWQuQWxsIFVzZX\
-IuUmVhZCIsInN1YiI6InZwSndEVW9MbWlwS0RNMHhMNTc4MGFrNXgza1pZLUM5aWRPdFhtY01RVUkiLCJ0aWQiOiI2YzQ0O\
-GQ5MC00Y2ExLTRjYWYtYWI1OS0wYTJhYTY3ZDc4MDEiLCJ1bmlxdWVfbmFtZSI6Im1vYmV4YW1pbmVyMUBkdnNhZ292Lm9u\
-bWljcm9zb2Z0LmNvbSIsInVwbiI6Im1vYmV4YW1pbmVyMUBkdnNhZ292Lm9ubWljcm9zb2Z0LmNvbSIsInV0aSI6IkMwT2x\
-FblJjODB5bFhVZFlOLWxDQUEiLCJ2ZXIiOiIxLjAifQ.JYF-pIPaPgwx53cSsHRBnW9xqKzcn15aUdSS2_A7U7kyqWegkyo\
-ndTCIYl_iwCW4hqdmMD5U8pGXFDYahbCABUsrJPnX1-4L9rFCBvRQzpGKZPJsrPAeLZjPFXLQ_Rk9VOFAZaTXAI426FYp75\
-WsvyZCPejXBvjTk8NTUh6NcdXr6oZW1cMVMYVLf1kOjS8QopynWfe1349DnFNvUEMqILlj7Fr5LXD5HZo81sjYWLSyijOzI\
-VUQ4QJMUSisGQ9wSBR7GgFuPvKrdIzvi-2dZLcaCazThAsA9XxV1FetdMtFHcX0XiW-FEDfEYZhJoMhj7Gyk0GW9Z4kyDj-\
-sKbh_w';
-
 export const noTestResults: TestResultRecord[] = [];
 
-export const testResult: TestResultRecord[] =
-  [{
+export const testResult: TestResultRecord[] = [
+  {
     test_result: {
       category: 'B',
       testData: {
-        ETA: {}, eco: {},
+        ETA: {},
+        eco: {},
         manoeuvres: {},
         drivingFaults: {},
         seriousFaults: {},
@@ -82,7 +65,7 @@ export const testResult: TestResultRecord[] =
             addressLine4: 'Address Line 4',
             addressLine5: 'Address Line 5',
           },
-          ethnicOriginCode: 1271,
+          ethnicityCode: '1271',
           primaryTelephone: '01234 567890',
           secondaryTelephone: '04321 098765',
         },
@@ -96,8 +79,8 @@ export const testResult: TestResultRecord[] =
           welshTest: false,
           extendedTest: false,
           specialNeeds: false,
-          vehicleSlotType: 'B57mins',
-        },
+          vehicleTypeCode: 'B57mins',
+        } as TestSlotAttributes,
         applicationReference: {
           checkDigit: 1,
           applicationId: 1234567,
@@ -132,9 +115,10 @@ export const testResult: TestResultRecord[] =
       communicationPreferences: {
         updatedEmail: '',
         communicationMethod: 'Post',
-      },
-    },
-  }];
+      } as CommunicationPreferences,
+    } as TestResultSchemasUnion,
+  },
+];
 
 export const moreThanOneTestResult: TestResultRecord[] = [
   testResult[0],
