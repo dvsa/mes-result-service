@@ -1,4 +1,4 @@
-import { RDS } from 'aws-sdk';
+import {Signer, SignerConfig} from '@aws-sdk/rds-signer';
 
 export const defaultIfNotPresent = (value: string | null | undefined, defaultValue: string) => {
   if (!value || value.trim().length === 0) {
@@ -14,13 +14,13 @@ export const throwIfNotPresent = (value: string | null | undefined, configKey: s
   return value;
 };
 
-export const generateSignerOptions = (hostname: string, username: string): RDS.Signer.SignerOptions => {
+export const generateSignerOptions = (hostname: string, username: string) => {
   return {
     username,
     hostname,
     port: 3306,
     region: process.env.AWS_REGION,
-  };
+  } as SignerConfig;
 };
 
 const iamRdsConfigValid = (hostname: string | undefined, username: string | undefined) => {
@@ -45,14 +45,14 @@ export const tryFetchRdsAccessToken = async (
   throwIfNotPresent(hostname, 'mesDatabaseHostname');
   throwIfNotPresent(username, 'mesDatabaseUsername');
 
-  const signer = new RDS.Signer();
-  const signerOptions = generateSignerOptions(hostname, username);
-  return new Promise((resolve, reject) => {
-    signer.getAuthToken(signerOptions, (err, token) => {
-      if (err) {
-        throw new Error(`Generating an auth token failed. Error message: ${err.message}`);
-      }
-      resolve(token);
-    });
-  });
+  try {
+    const signerOptions = generateSignerOptions(hostname, username);
+
+    const signer = new Signer(signerOptions);
+
+    return await signer.getAuthToken();
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : JSON.stringify(err);
+    throw new Error(`Generating an auth token failed. Error message: ${msg}`);
+  }
 };
