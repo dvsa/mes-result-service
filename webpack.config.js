@@ -26,8 +26,7 @@ module.exports = env => ({
   },
   plugins: [
     new webpack.IgnorePlugin({
-      resourceRegExp: /^cardinal$/,
-      contextRegExp: /./,
+      resourceRegExp: /^aws-crt/,
     }),
   ],
   resolve: {
