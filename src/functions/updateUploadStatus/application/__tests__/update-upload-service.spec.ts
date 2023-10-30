@@ -1,5 +1,6 @@
-import * as database from '../../../../common/framework/mysql/database';
 import { Mock } from 'typemoq';
+import * as mysql from 'mysql2';
+import * as database from '../../../../common/framework/mysql/database';
 import { updateUpload } from '../update-upload-service';
 import { SubmissionOutcome } from '../../domain/SubmissionOutcome';
 import { IntegrationType } from '../../../postResult/domain/result-integration';
@@ -20,7 +21,7 @@ describe('UpdateUploadService', () => {
     promise: () => connectionPromiseStub,
     end: jasmine.createSpy('end'),
     rollback: jasmine.createSpy('rollback'),
-  };
+  } as unknown as mysql.Connection;
 
   beforeEach(() => {
     moqGetConnection.reset();
@@ -31,12 +32,12 @@ describe('UpdateUploadService', () => {
   });
 
   it('should return successfully when a single record is updated', async () => {
-    connectionPromiseStub.query.and.returnValue(Promise.resolve([{ changedRows: 1 }]));
+    connectionPromiseStub.query.and.returnValue(Promise.resolve([{ affectedRows: 1 }]));
     await updateUpload(123, mockSubmissionOutcome);
   });
 
   it('should throw an error when no records are updated', async () => {
-    connectionPromiseStub.query.and.returnValue(Promise.resolve([{ changedRows: 0 }]));
+    connectionPromiseStub.query.and.returnValue(Promise.resolve([{ affectedRows: 0 }]));
 
     try {
       await updateUpload(123, mockSubmissionOutcome);

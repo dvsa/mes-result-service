@@ -1,4 +1,4 @@
-import * as mysql from 'mysql2';
+import * as mysql from 'mysql2';
 import { IRetryProcessor } from '../../IRetryProcessor';
 import { RetryProcessor } from '../../RetryProcessor';
 import {
@@ -72,9 +72,7 @@ describe('SupportIntervention', () => {
   });
 
   describe('AUTOSAVE - FAILED VALIDATION (NO RECORDS CREATED', () => {
-
-    it('should create a new PROCESSING record for TARS & NOTIFY (NOT RSIS) and set result to PROCESSING', async () => {
-
+    it('should create a new PROCESSING record for TARS & NOTIFY (NOT RSIS) and set result to PROCESSING', async () => {
       await retryProcessor.processSupportInterventions();
       const autosaveRecords = await getAutosaveQueueRecords(db);
       const processingResults = await getTestResultAppRefsForResultStatus(db, 'PROCESSING');
@@ -91,13 +89,10 @@ describe('SupportIntervention', () => {
 
       expect(processingResults).toContain(SupportInterventionTestCases.AutosaveNoUploadRecords);
     });
-
   });
 
   describe('FULL SUBMISSION - FAILED VALIDATION (NO RECORDS CREATED', () => {
-
-    it('should create new records for TARS, NOTIFY & RSIS and set result to PROCESSING (full submission)', async () => {
-
+    it('should create new records for TARS, NOTIFY & RSIS and set result to PROCESSING (full submission)', async () => {
       await retryProcessor.processSupportInterventions();
       const processingUploadQueueRecords = await getProcessingUploadQueueRecords(db);
       const processingResults = await getTestResultAppRefsForResultStatus(db, 'PROCESSING');
@@ -114,8 +109,7 @@ describe('SupportIntervention', () => {
   });
 
   describe('FULL SUBMISSION - 1 OR MORE INTERFACES FAILED', () => {
-    it('should set result status PENDING->PROCESSING and set and queue status ERROR->PROCESSING', async () => {
-
+    it('should set result status PENDING->PROCESSING and set and queue status ERROR->PROCESSING', async () => {
       await retryProcessor.processSupportInterventions();
       const processingUploadQueueRecords = await getProcessingUploadQueueRecords(db);
       const processingResults = await getTestResultAppRefsForResultStatus(db, 'PROCESSING');
@@ -146,8 +140,7 @@ describe('SupportIntervention', () => {
   });
 
   describe('AUTOSAVE - 1 OR MORE INTERFACES FAILED', () => {
-    it('should set result status PENDING->PROCESSING (with autosave) and set and queue ERROR->PROCESSING', async () => {
-
+    it('should set result status PENDING->PROCESSING (with autosave) and set and queue ERROR->PROCESSING', async () => {
       await retryProcessor.processSupportInterventions();
       const autosaveRecords = await getAutosaveQueueRecords(db);
       const processingResults = await getTestResultAppRefsForResultStatus(db, 'PROCESSING');

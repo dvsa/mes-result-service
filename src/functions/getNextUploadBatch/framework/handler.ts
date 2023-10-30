@@ -1,4 +1,4 @@
-import { APIGatewayEvent, Context } from 'aws-lambda';
+import { APIGatewayEvent } from 'aws-lambda';
 import { getNextUploadBatch } from '../application/next-update-batch-service';
 import createResponse from '../../../common/application/utils/createResponse';
 import { HttpStatus } from '../../../common/application/api/HttpStatus';
@@ -9,11 +9,11 @@ import * as joi from 'joi';
 import { bootstrapConfig } from '../../../common/framework/config/config';
 import { bootstrapLogging, customMetric, error } from '@dvsa/mes-microservice-common/application/utils/logger';
 
-export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<Response> {
+export async function handler(event: APIGatewayEvent): Promise<Response> {
 
   bootstrapLogging('get-next-upload-batch', event);
 
-  let nextBatchData;
+  let nextBatchData: string[];
   const interfaceType = convertToInterfaceType(event.queryStringParameters.interface);
   const batchSize = Number(event.queryStringParameters.batch_size);
 
@@ -31,6 +31,7 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
   });
 
   if (validationResult.error) {
+    error('Validation error', validationResult.error);
     return createResponse(validationResult.error, HttpStatus.BAD_REQUEST);
   }
 
@@ -46,7 +47,7 @@ export async function handler(event: APIGatewayEvent, fnCtx: Context): Promise<R
   } catch (err) {
     error(`ERROR - ${err.message} - `, enrichError(err, interfaceType, batchSize));
     return createResponse(
-      { message: `Error trying retrive a batch of ${batchSize} results for ${interfaceType}` },
+      { message: `Error trying retrieve a batch of ${batchSize} results for ${interfaceType}` },
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }

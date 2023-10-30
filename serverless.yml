@@ -2,7 +2,7 @@ service: mes-result-service
 
 provider:
   name: aws
-  runtime: nodejs16.x
+  runtime: nodejs18.x
 
 functions:
   postResult:
@@ -62,11 +62,6 @@ functions:
           method: put
 
 custom:
-  dynamodb:
-    start:
-      port: 8000
-      inMemory: true
-      migrate: true
   webpack:
     webpackConfig: 'webpack-sls-offline.config.js'
 

@@ -1,4 +1,4 @@
-import { APIGatewayEvent, Context } from 'aws-lambda';
+import { APIGatewayEvent } from 'aws-lambda';
 import { handler } from '../handler';
 const lambdaTestUtils = require('aws-lambda-test-utils');
 import { Mock } from 'typemoq';
@@ -8,7 +8,6 @@ import { HttpStatus } from '../../../../common/application/api/HttpStatus';
 
 describe('deleteTestResult handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
-  let dummyContext: Context;
 
   const moqBootstrapConfig = Mock.ofInstance(configSvc.bootstrapConfig);
   const moqDeleteTestResultSvc = Mock.ofInstance(deleteTestResultSvc.deleteTestResult);
@@ -17,7 +16,6 @@ describe('deleteTestResult handler', () => {
     moqDeleteTestResultSvc.reset();
 
     dummyApigwEvent = lambdaTestUtils.mockEventCreator.createAPIGatewayEvent({});
-    dummyContext = lambdaTestUtils.mockContextCreator(() => null);
 
     spyOn(configSvc, 'bootstrapConfig').and.callFake(moqBootstrapConfig.object);
     spyOn(deleteTestResultSvc, 'deleteTestResult').and.callFake(moqDeleteTestResultSvc.object);
