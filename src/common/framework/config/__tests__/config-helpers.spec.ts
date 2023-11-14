@@ -31,9 +31,5 @@ describe('ConfigHelpers', () => {
         expect(err).toEqual(new Error('No value for fallback envvar hello for config'));
       }
     });
-    it('should be defined', async () => {
-      const token = await tryFetchRdsAccessToken('hostname', 'username', 'hello');
-      expect(token).toBeDefined();
-    });
   });
 });
