@@ -1,5 +1,6 @@
-import { buildTestResultInsert } from '../query-builder';
-import { dummyTestResult } from './query-builder.spec.data';
+import {buildTestResultInsert, buildUploadQueueInsert} from '../query-builder';
+import {dummyTestResult} from './query-builder.spec.data';
+import {IntegrationType} from '../../../domain/result-integration';
 
 describe('QueryBuilder', () => {
   describe('buildTestResultInsert', () => {
@@ -50,6 +51,25 @@ describe('QueryBuilder', () => {
     it('should have pass certificate number in the INSERT', () => {
       const result = buildTestResultInsert(dummyTestResult, false, false);
       expect(result).toMatch(/abc123/);
+    });
+  });
+
+  describe('buildUploadQueueInsert', () => {
+    beforeEach(() => {
+      jasmine.clock().install();
+      jasmine.clock().mockDate(new Date(2023, 11, 10));
+    });
+
+    afterEach(() => {
+      jasmine.clock().uninstall();
+    });
+
+    it('should return the upload queue insert', () => {
+      const result = buildUploadQueueInsert(dummyTestResult, IntegrationType.TARS);
+      expect(result).toMatch(/INSERT INTO UPLOAD_QUEUE/);
+      expect(result).toMatch(/(1234571026, '999', '2023-12-10 00:00:00.000', 0, 0, 0)/);
+      expect(result).toMatch(/ON DUPLICATE KEY UPDATE/);
+      expect(result).toMatch(/application_reference = 1234571026/);
     });
   });
 });
