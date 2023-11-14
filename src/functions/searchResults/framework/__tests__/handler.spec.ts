@@ -10,7 +10,7 @@ import {
   testResultResponse,
 } from './handler.spec.data';
 import * as searchResultsSvc from '../repositories/search-repository';
-import { UserRole } from '../../../../common/domain/user-role';
+import { ExaminerRole } from '@dvsa/mes-microservice-common/domain/examiner-role';
 
 describe('searchResults handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
@@ -52,7 +52,7 @@ describe('searchResults handler', () => {
   describe('handling of only isLDTM parameter', () => {
     it('should fail with bad request and give an error message', async () => {
       dummyApigwEvent.requestContext.authorizer = {
-        examinerRole: UserRole.LDTM,
+        examinerRole: ExaminerRole.LDTM,
       };
       const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(400);
@@ -72,7 +72,7 @@ describe('searchResults handler', () => {
   describe('using valid query parameters as LDTM', () => {
     it('gets the relevant results', async () => {
       dummyApigwEvent.requestContext.authorizer = {
-        examinerRole: UserRole.LDTM,
+        examinerRole: ExaminerRole.LDTM,
       };
       dummyApigwEvent.queryStringParameters['startDate'] = queryParameter.startDate;
       dummyApigwEvent.queryStringParameters['endDate'] = queryParameter.endDate;
@@ -96,7 +96,7 @@ describe('searchResults handler', () => {
   describe('using valid query parameters as LDTM, 8 digit application reference', () => {
     it('gets the relevant results', async () => {
       dummyApigwEvent.requestContext.authorizer = {
-        examinerRole: UserRole.LDTM,
+        examinerRole: ExaminerRole.LDTM,
       };
       dummyApigwEvent.queryStringParameters['startDate'] = queryParameterWith8DigitAppRef.startDate;
       dummyApigwEvent.queryStringParameters['endDate'] = queryParameterWith8DigitAppRef.endDate;
@@ -122,7 +122,7 @@ describe('searchResults handler', () => {
   describe('request made by DLG', () => {
     beforeEach(() => {
       dummyApigwEvent.requestContext.authorizer = {
-        examinerRole: UserRole.DLG,
+        examinerRole: ExaminerRole.DLG,
       };
       moqSearchResults.setup(x => x(It.isAny())).returns(() => Promise.resolve(testResult));
     });

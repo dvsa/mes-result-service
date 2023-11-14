@@ -4,7 +4,7 @@ const lambdaTestUtils = require('aws-lambda-test-utils');
 import { Mock, Times } from 'typemoq';
 import * as configSvc from '../../../../common/framework/config/config';
 import * as database from '../../../../common/framework/mysql/database';
-import { HttpStatus } from '../../../../common/application/api/HttpStatus';
+import { HttpStatus } from '@dvsa/mes-microservice-common/application/api/http-status';
 
 describe('retryProcessing handler', () => {
   let dummyScheduledEvent: ScheduledEvent;

@@ -1,9 +1,8 @@
-import { APIGatewayProxyEvent, Context } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import { get } from 'lodash';
 import { error, warn, bootstrapLogging } from '@dvsa/mes-microservice-common/application/utils/logger';
-import Response from '../../../common/application/api/Response';
-import createResponse from '../../../common/application/utils/createResponse';
-import { HttpStatus } from '../../../common/application/api/HttpStatus';
+import { createResponse } from '@dvsa/mes-microservice-common/application/api/create-response';
+import { HttpStatus } from '@dvsa/mes-microservice-common/application/api/http-status';
 import { bootstrapConfig } from '../../../common/framework/config/config';
 import { isNullOrBlank } from '../../postResult/framework/handler';
 import { updateUpload } from '../application/update-upload-service';
@@ -11,7 +10,7 @@ import { InconsistentUpdateError } from '../domain/InconsistentUpdateError';
 import { SubmissionOutcome } from '../domain/SubmissionOutcome';
 import { getAppRefFromPathParameters } from '../../../common/application/utils/getPathParms';
 
-export async function handler(event: APIGatewayProxyEvent): Promise<Response> {
+export async function handler(event: APIGatewayProxyEvent) {
   bootstrapLogging('update-upload-status', event);
   await bootstrapConfig();
 

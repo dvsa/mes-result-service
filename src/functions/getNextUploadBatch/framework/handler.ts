@@ -1,15 +1,14 @@
 import { APIGatewayEvent } from 'aws-lambda';
-import { getNextUploadBatch } from '../application/next-update-batch-service';
-import createResponse from '../../../common/application/utils/createResponse';
-import { HttpStatus } from '../../../common/application/api/HttpStatus';
-import Response from '../../../common/application/api/Response';
+import { createResponse } from '@dvsa/mes-microservice-common/application/api/create-response';
+import { HttpStatus } from '@dvsa/mes-microservice-common/application/api/http-status';
 import { InterfaceTypes } from '../domain/interface-types';
 import { gzipSync } from 'zlib';
 import * as joi from 'joi';
+import { getNextUploadBatch } from '../application/next-update-batch-service';
 import { bootstrapConfig } from '../../../common/framework/config/config';
 import { bootstrapLogging, customMetric, error } from '@dvsa/mes-microservice-common/application/utils/logger';
 
-export async function handler(event: APIGatewayEvent): Promise<Response> {
+export async function handler(event: APIGatewayEvent) {
 
   bootstrapLogging('get-next-upload-batch', event);
 

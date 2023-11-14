@@ -4,7 +4,7 @@ const lambdaTestUtils = require('aws-lambda-test-utils');
 import { Mock } from 'typemoq';
 import * as configSvc from '../../../../common/framework/config/config';
 import * as deleteTestResultSvc from '../../application/delete-test-result-service';
-import { HttpStatus } from '../../../../common/application/api/HttpStatus';
+import { HttpStatus } from '@dvsa/mes-microservice-common/application/api/http-status';
 
 describe('deleteTestResult handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
