@@ -1,21 +1,20 @@
 import { APIGatewayEvent } from 'aws-lambda';
-import {bootstrapLogging, debug, error, info} from '@dvsa/mes-microservice-common/application/utils/logger';
-import createResponse from '../../../common/application/utils/createResponse';
-import { HttpStatus } from '../../../common/application/api/HttpStatus';
-import Response from '../../../common/application/api/Response';
+import { bootstrapLogging, debug, error, info } from '@dvsa/mes-microservice-common/application/utils/logger';
+import { createResponse } from '@dvsa/mes-microservice-common/application/api/create-response';
+import { HttpStatus } from '@dvsa/mes-microservice-common/application/api/http-status';
 import { getConciseSearchResults } from './repositories/search-repository';
 import { bootstrapConfig } from '../../../common/framework/config/config';
 import * as joi from 'joi';
 import { QueryParameters } from '../domain/query_parameters';
 import { SearchResultTestSchema } from '@dvsa/mes-search-schema';
 import { get } from 'lodash';
-import { getEmployeeIdFromRequestContext } from '../../../common/application/utils/getEmployeeId';
+import { ExaminerRole } from '@dvsa/mes-microservice-common/domain/examiner-role';
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
 import { TestResultRecord } from '../../../common/domain/test-results';
-import { UserRole } from '../../../common/domain/user-role';
+import { getStaffNumberFromRequestContext } from '@dvsa/mes-microservice-common/framework/security/authorisation';
 import { formatApplicationReference } from '@dvsa/mes-microservice-common/domain/tars';
 
-export async function handler(event: APIGatewayEvent): Promise<Response> {
+export async function handler(event: APIGatewayEvent) {
   try {
     bootstrapLogging('search-test-results', event);
 
@@ -115,11 +114,11 @@ export async function handler(event: APIGatewayEvent): Promise<Response> {
 
     const dePermittedQueries = ['driverNumber', 'applicationReference', 'excludeAutoSavedTests'];
 
-    const isLDTM = event.requestContext.authorizer.examinerRole === UserRole.LDTM;
+    const isLDTM = event.requestContext.authorizer.examinerRole === ExaminerRole.LDTM;
 
-    const isDLG = event.requestContext.authorizer.examinerRole === UserRole.DLG;
+    const isDLG = event.requestContext.authorizer.examinerRole === ExaminerRole.DLG;
 
-    const staffNumber: string = getEmployeeIdFromRequestContext(event.requestContext);
+    const staffNumber: string = getStaffNumberFromRequestContext(event.requestContext);
 
     const searchingForOwnTest = isSearchingForOwnTests(queryParameters, staffNumber);
 

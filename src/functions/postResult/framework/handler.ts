@@ -1,9 +1,8 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
 import { bootstrapLogging, debug, error, warn } from '@dvsa/mes-microservice-common/application/utils/logger';
-import createResponse from '../../../common/application/utils/createResponse';
-import Response from '../../../common/application/api/Response';
-import { HttpStatus } from '../../../common/application/api/HttpStatus';
+import { createResponse } from '@dvsa/mes-microservice-common/application/api/create-response';
+import { HttpStatus } from '@dvsa/mes-microservice-common/application/api/http-status';
 import { decompressTestResult } from '../application/decompression-service';
 import { saveTestResult } from '../application/save-result-service';
 import { TestResultDecompressionError } from '../domain/errors/test-result-decompression-error';
@@ -11,7 +10,7 @@ import { bootstrapConfig } from '../../../common/framework/config/config';
 import { validateMESJoiSchema } from '../domain/mes-joi-schema-service';
 import { verifyRequest } from '../application/jwt-verification-service';
 
-export async function handler(event: APIGatewayProxyEvent): Promise<Response> {
+export async function handler(event: APIGatewayProxyEvent) {
   let testResult: TestResultSchemasUnion;
 
   bootstrapLogging('post-result', event);

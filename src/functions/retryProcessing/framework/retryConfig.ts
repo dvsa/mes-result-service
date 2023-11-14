@@ -1,6 +1,4 @@
-import {
-  defaultIfNotPresent,
-} from '../../../common/framework/config/config-helpers';
+import { defaultIfNotPresent } from '@dvsa/mes-microservice-common/framework/config/config';
 
 export type Config = {
   retryCutOffPointDays: number;

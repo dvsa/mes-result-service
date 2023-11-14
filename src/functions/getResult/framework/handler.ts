@@ -1,10 +1,9 @@
 import { APIGatewayEvent } from 'aws-lambda';
 
 import { bootstrapConfig } from '../../../common/framework/config/config';
-import Response from '../../../common/application/api/Response';
+import { createResponse } from '@dvsa/mes-microservice-common/application/api/create-response';
 import { getResult } from './repositories/get-result-repository';
-import { HttpStatus } from '../../../common/application/api/HttpStatus';
-import createResponse from '../../../common/application/utils/createResponse';
+import { HttpStatus } from '@dvsa/mes-microservice-common/application/api/http-status';
 import * as joi from 'joi';
 import { TestResultRecord } from '../../../common/domain/test-results';
 import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
@@ -15,7 +14,7 @@ import {
 } from '../../../common/application/utils/getPathParms';
 import {bootstrapLogging, error} from '@dvsa/mes-microservice-common/application/utils/logger';
 
-export async function handler(event: APIGatewayEvent): Promise<Response> {
+export async function handler(event: APIGatewayEvent) {
   try {
     bootstrapLogging('get-result', event);
 

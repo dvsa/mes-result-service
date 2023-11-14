@@ -1,5 +1,5 @@
+import { throwIfNotPresent } from '@dvsa/mes-microservice-common/framework/config/config';
 import {
-  throwIfNotPresent,
   tryFetchRdsAccessToken,
 } from './config-helpers';
 

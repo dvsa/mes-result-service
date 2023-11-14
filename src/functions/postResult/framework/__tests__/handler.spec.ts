@@ -6,12 +6,12 @@ import { Mock, It, Times } from 'typemoq';
 import { handler, getStaffIdFromTest } from '../handler';
 import * as decompressionService from '../../application/decompression-service';
 import { TestResultDecompressionError } from '../../domain/errors/test-result-decompression-error';
-import { HttpStatus } from '../../../../common/application/api/HttpStatus';
 import * as saveResultSvc from '../../application/save-result-service';
 import * as configSvc from '../../../../common/framework/config/config';
 import * as joiValidationSvc from '../../domain/mes-joi-schema-service';
 import * as jwtVerificationSvc from '../../application/jwt-verification-service';
 import { sampleToken_12345678, sampleTest_12345678, sampleTest_empty } from './handler.spec.data';
+import { HttpStatus } from '@dvsa/mes-microservice-common/application/api/http-status';
 
 describe('postResult handler', () => {
   let dummyApigwEvent: APIGatewayEvent;

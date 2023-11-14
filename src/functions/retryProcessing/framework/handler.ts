@@ -1,8 +1,7 @@
 import { ScheduledEvent } from 'aws-lambda';
 import * as mysql from 'mysql2';
-import createResponse from '../../../common/application/utils/createResponse';
-import { HttpStatus } from '../../../common/application/api/HttpStatus';
-import Response from '../../../common/application/api/Response';
+import { createResponse } from '@dvsa/mes-microservice-common/application/api/create-response';
+import { HttpStatus } from '@dvsa/mes-microservice-common/application/api/http-status';
 import { RetryProcessor } from '../application/RetryProcessor';
 import { bootstrapConfig } from '../../../common/framework/config/config';
 import { IRetryProcessor } from '../application/IRetryProcessor';
@@ -12,7 +11,7 @@ import { RetryProcessingFacade } from '../domain/RetryProcessingFacade';
 import { getConnection } from '../../../common/framework/mysql/database';
 import { setIsolationLevelSerializable } from './database/query-templates';
 
-export async function handler(event: ScheduledEvent): Promise<Response> {
+export async function handler(event: ScheduledEvent) {
   let connection: mysql.Connection;
 
   try {
