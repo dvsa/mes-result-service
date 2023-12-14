@@ -1,5 +1,6 @@
-export class QueryParameters {
+import {ExaminerRole} from '@dvsa/mes-microservice-common/domain/examiner-role';
 
+export class QueryParameters {
   startDate : string;
   staffNumber: string;
   endDate: string;
@@ -11,4 +12,5 @@ export class QueryParameters {
   category: string;
   passCertificateNumber: string;
   rekey: boolean;
+  role?: ExaminerRole;
 }
