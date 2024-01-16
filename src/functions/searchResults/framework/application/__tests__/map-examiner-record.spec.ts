@@ -47,8 +47,7 @@ describe('Map results', () => {
         controlledStop: true,
         independentDriving: 'Sat nav',
         manoeuvres: {reverseRight: {selected: true}},
-        showMeQuestions: [{code: '1'}],
-        tellMeQuestions: [{code: '2'}],
+        vehicleChecks: Object({ tellMeQuestion: Object({ code: '2' }), showMeQuestion: Object({ code: '1' }) }),
       });
   });
 })

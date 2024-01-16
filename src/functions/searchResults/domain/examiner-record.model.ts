@@ -15,6 +15,5 @@ export interface ExaminerRecordModel {
   safetyQuestions?: QuestionResult[];
   balanceQuestions?: QuestionResult[];
   manoeuvres?: any;
-  showMeQuestions?: [QuestionResult] | QuestionResult[];
-  tellMeQuestions?: [QuestionResult] | QuestionResult[];
+  vehicleChecks?: any;
 }

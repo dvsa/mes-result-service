@@ -68,7 +68,7 @@ export async function handler(event: APIGatewayEvent) {
       return createResponse('Query parameters have to be supplied', HttpStatus.BAD_REQUEST);
     }
 
-    let validationResult: joi.ValidationResult<any> = null;
+    let validationResult: joi.ValidationResult<any>;
 
     if (event.queryStringParameters.searchType === 'records') {
       validationResult = validateExaminerRecordsSchema(queryParameters);
