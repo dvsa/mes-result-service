@@ -7,6 +7,7 @@ describe('Map results', () => {
   it('should map the results into an examiner record model', () => {
     const mockTestResult = {
       journalData: {
+        testSlotAttributes: {start: '11-11-2011'},
         applicationReference: {
           applicationId: 123456,
           bookingSequence: 22,
@@ -44,9 +45,10 @@ describe('Map results', () => {
         startDate: '11-11-2011',
         controlledStop: true,
         independentDriving: 'Sat nav',
-        manoeuvres: [{reverseRight: {selected: true}}],
+        manoeuvres: {reverseRight: {selected: true}},
         showMeQuestions: [{code: '1'}],
         tellMeQuestions: [{code: '2'}],
       });
   });
-});
+})
+;
