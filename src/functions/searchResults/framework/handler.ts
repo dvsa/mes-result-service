@@ -118,9 +118,9 @@ export async function handler(event: APIGatewayEvent) {
 
     const dePermittedQueries = ['driverNumber', 'applicationReference', 'excludeAutoSavedTests'];
 
-    const isLDTM = true;
+    const isLDTM = event.requestContext.authorizer.examinerRole === ExaminerRole.LDTM;
 
-    const isDLG = false;
+    const isDLG = event.requestContext.authorizer.examinerRole === ExaminerRole.DLG;
 
     const staffNumber: string = getStaffNumberFromRequestContext(event.requestContext);
 
