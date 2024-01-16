@@ -1,8 +1,20 @@
-import {CategoryCode, TestCentre} from '@dvsa/mes-test-schema/categories/common';
+import {TestCategory} from '@dvsa/mes-test-schema/category-definitions/common/test-category';
+import {TestCentre, QuestionResult, IndependentDriving} from '@dvsa/mes-test-schema/categories/common';
+import {Circuit} from '@dvsa/mes-test-schema/categories/AM1';
+
 
 export interface ExaminerRecordModel {
   appRef: number;
-  testCategory: CategoryCode;
+  testCategory: TestCategory;
   testCentre: TestCentre;
-  routeNumber: number;
+  routeNumber: Number;
+  startDate: string;
+  controlledStop?: boolean;
+  independentDriving?: IndependentDriving;
+  circuit?: Circuit;
+  safetyQuestions?: QuestionResult[];
+  balanceQuestions?: QuestionResult[];
+  manoeuvres?: any;
+  showMeQuestions?: [QuestionResult] | QuestionResult[];
+  tellMeQuestions?: [QuestionResult] | QuestionResult[];
 }
