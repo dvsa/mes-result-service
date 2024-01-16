@@ -1,7 +1,8 @@
 import {TestResultSchemasUnion} from '@dvsa/mes-test-schema/categories';
-import {formatForExaminerRecords} from '../map-results';
+import {formatForExaminerRecords} from '../map-examiner-record';
 import {TestCategory} from '@dvsa/mes-test-schema/category-definitions/common/test-category';
-import {ExaminerRecordModel} from '../../domain/examiner-record.model';
+import {ExaminerRecordModel} from '../../../domain/examiner-record.model';
+
 
 describe('Map results', () => {
   it('should map the results into an examiner record model', () => {

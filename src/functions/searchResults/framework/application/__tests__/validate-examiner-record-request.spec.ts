@@ -1,6 +1,6 @@
 import {ExaminerRole} from '@dvsa/mes-microservice-common/domain/examiner-role';
-import {validateExaminerRecordsSchema} from '../validate-request';
-import {QueryParameters} from '../../../searchResults/domain/query_parameters';
+import {validateExaminerRecordsSchema} from '../validate-examiner-record-request';
+import {QueryParameters} from '../../../domain/query_parameters';
 
 describe('Validate request', () => {
   describe('getExaminerRecordsSchema', () => {

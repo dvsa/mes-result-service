@@ -1,6 +1,6 @@
 import * as joi from 'joi';
-import {QueryParameters} from '../../searchResults/domain/query_parameters';
 import {ExaminerRole} from '@dvsa/mes-microservice-common/domain/examiner-role';
+import {QueryParameters} from '../../domain/query_parameters';
 
 export const DATE_FORMAT = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
 export const DATE_FORMAT_ERR_MSG

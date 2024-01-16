@@ -1,18 +1,21 @@
-import { APIGatewayEvent } from 'aws-lambda';
-import { bootstrapLogging, debug, error, info } from '@dvsa/mes-microservice-common/application/utils/logger';
-import { createResponse } from '@dvsa/mes-microservice-common/application/api/create-response';
-import { HttpStatus } from '@dvsa/mes-microservice-common/application/api/http-status';
-import { getConciseSearchResults } from './repositories/search-repository';
-import { bootstrapConfig } from '../../../common/framework/config/config';
+import {APIGatewayEvent} from 'aws-lambda';
+import {bootstrapLogging, debug, error, info} from '@dvsa/mes-microservice-common/application/utils/logger';
+import {createResponse} from '@dvsa/mes-microservice-common/application/api/create-response';
+import {HttpStatus} from '@dvsa/mes-microservice-common/application/api/http-status';
+import {getConciseSearchResults} from './repositories/search-repository';
+import {bootstrapConfig} from '../../../common/framework/config/config';
 import * as joi from 'joi';
-import { QueryParameters } from '../domain/query_parameters';
-import { SearchResultTestSchema } from '@dvsa/mes-search-schema';
-import { get } from 'lodash';
-import { ExaminerRole } from '@dvsa/mes-microservice-common/domain/examiner-role';
-import { TestResultSchemasUnion } from '@dvsa/mes-test-schema/categories';
-import { TestResultRecord } from '../../../common/domain/test-results';
-import { getStaffNumberFromRequestContext } from '@dvsa/mes-microservice-common/framework/security/authorisation';
-import { formatApplicationReference } from '@dvsa/mes-microservice-common/domain/tars';
+import {QueryParameters} from '../domain/query_parameters';
+import {SearchResultTestSchema} from '@dvsa/mes-search-schema';
+import {get} from 'lodash';
+import {ExaminerRole} from '@dvsa/mes-microservice-common/domain/examiner-role';
+import {TestResultSchemasUnion} from '@dvsa/mes-test-schema/categories';
+import {TestResultRecord} from '../../../common/domain/test-results';
+import {getStaffNumberFromRequestContext} from '@dvsa/mes-microservice-common/framework/security/authorisation';
+import {formatApplicationReference} from '@dvsa/mes-microservice-common/domain/tars';
+import {ExaminerRecordModel} from '../domain/examiner-record.model';
+import {validateExaminerRecordsSchema} from './application/validate-examiner-record-request';
+import {formatForExaminerRecords} from './application/map-examiner-record';
 
 export async function handler(event: APIGatewayEvent) {
   try {
@@ -28,12 +31,8 @@ export async function handler(event: APIGatewayEvent) {
     }
 
     // Set the parameters from the event to the queryParameter holder object
-    if (event.queryStringParameters.startDate) {
-      queryParameters.startDate = event.queryStringParameters.startDate;
-    }
-    if (event.queryStringParameters.endDate) {
-      queryParameters.endDate = event.queryStringParameters.endDate;
-    }
+    if (event.queryStringParameters.startDate) {queryParameters.startDate = event.queryStringParameters.startDate;}
+    if (event.queryStringParameters.endDate) {queryParameters.endDate = event.queryStringParameters.endDate;}
     if (event.queryStringParameters.driverNumber) {
       queryParameters.driverNumber = event.queryStringParameters.driverNumber;
     }
@@ -45,9 +44,7 @@ export async function handler(event: APIGatewayEvent) {
     if (event.queryStringParameters.rekey) {
       queryParameters.rekey = !!(event.queryStringParameters.rekey === 'true' && queryParameters.staffNumber);
     }
-    if (event.queryStringParameters.dtcCode) {
-      queryParameters.dtcCode = event.queryStringParameters.dtcCode;
-    }
+    if (event.queryStringParameters.dtcCode) {queryParameters.dtcCode = event.queryStringParameters.dtcCode;}
     if (event.queryStringParameters.applicationReference) {
       queryParameters.applicationReference = event.queryStringParameters.applicationReference;
     }
@@ -58,47 +55,54 @@ export async function handler(event: APIGatewayEvent) {
     if (event.queryStringParameters.activityCode) {
       queryParameters.activityCode = event.queryStringParameters.activityCode;
     }
-    if (event.queryStringParameters.category) {
-      queryParameters.category = event.queryStringParameters.category;
-    }
+    if (event.queryStringParameters.category) {queryParameters.category = event.queryStringParameters.category;}
     if (event.queryStringParameters.passCertificateNumber) {
       queryParameters.passCertificateNumber = event.queryStringParameters.passCertificateNumber;
     }
+    const role = event.requestContext.authorizer.examinerRole as ExaminerRole;
+    if (event.requestContext.authorizer.examinerRole) queryParameters.role = role;
+
 
     if (Object.keys(queryParameters).length === 0) {
       error('No query params supplied');
       return createResponse('Query parameters have to be supplied', HttpStatus.BAD_REQUEST);
     }
 
-    const parametersSchema = joi.object().keys({
-      startDate: joi.string().regex(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/).optional()
-        .label('Please provide a valid date with the format \'YYYY-MM-DD\''),
-      endDate: joi.string().regex(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/).optional()
-        .label('Please provide a valid date with the format \'YYYY-MM-DD\''),
-      driverId: joi.string().alphanum().max(16).optional(),
-      staffNumber: joi.string().alphanum().optional(),
-      rekey: joi.boolean().optional(),
-      dtcCode: joi.string().alphanum().optional(),
-      appRef: joi.number().max(1000000000000).optional(),
-      excludeAutoSavedTests: joi.string().optional(),
-      activityCode: joi.string().alphanum().optional(),
-      category: joi.string().optional(),
-      passCertificateNumber: joi.string().optional(),
-    });
+    let validationResult: joi.ValidationResult<any> = null;
 
-    const validationResult = parametersSchema.validate({
-      driverId: queryParameters.driverNumber,
-      staffNumber: queryParameters.staffNumber,
-      rekey: queryParameters.rekey,
-      dtcCode: queryParameters.dtcCode,
-      appRef: queryParameters.applicationReference,
-      startDate: queryParameters.startDate,
-      endDate: queryParameters.endDate,
-      excludeAutoSavedTests: queryParameters.excludeAutoSavedTests,
-      activityCode: queryParameters.activityCode,
-      category: queryParameters.category,
-      passCertificateNumber: queryParameters.passCertificateNumber,
-    });
+    if (event.queryStringParameters.searchType === 'records') {
+      validationResult = validateExaminerRecordsSchema(queryParameters);
+    } else {
+      const parametersSchema = joi.object().keys({
+        startDate: joi.string().regex(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/).optional()
+          .label('Please provide a valid date with the format \'YYYY-MM-DD\''),
+        endDate: joi.string().regex(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/).optional()
+          .label('Please provide a valid date with the format \'YYYY-MM-DD\''),
+        driverId: joi.string().alphanum().max(16).optional(),
+        staffNumber: joi.string().alphanum().optional(),
+        rekey: joi.boolean().optional(),
+        dtcCode: joi.string().alphanum().optional(),
+        appRef: joi.number().max(1000000000000).optional(),
+        excludeAutoSavedTests: joi.string().optional(),
+        activityCode: joi.string().alphanum().optional(),
+        category: joi.string().optional(),
+        passCertificateNumber: joi.string().optional(),
+      });
+
+      validationResult = parametersSchema.validate({
+        driverId: queryParameters.driverNumber,
+        staffNumber: queryParameters.staffNumber,
+        rekey: queryParameters.rekey,
+        dtcCode: queryParameters.dtcCode,
+        appRef: queryParameters.applicationReference,
+        startDate: queryParameters.startDate,
+        endDate: queryParameters.endDate,
+        excludeAutoSavedTests: queryParameters.excludeAutoSavedTests,
+        activityCode: queryParameters.activityCode,
+        category: queryParameters.category,
+        passCertificateNumber: queryParameters.passCertificateNumber,
+      });
+    }
 
     if (validationResult.error) {
       error('Validation error', validationResult.error);
@@ -109,14 +113,14 @@ export async function handler(event: APIGatewayEvent) {
       'startDate', 'staffNumber', 'endDate', 'driverNumber',
       'dtcCode', 'applicationReference', 'excludeAutoSavedTests',
       'activityCode', 'category', 'passCertificateNumber',
-      'rekey',
+      'rekey', 'role',
     ];
 
     const dePermittedQueries = ['driverNumber', 'applicationReference', 'excludeAutoSavedTests'];
 
-    const isLDTM = event.requestContext.authorizer.examinerRole === ExaminerRole.LDTM;
+    const isLDTM = true;
 
-    const isDLG = event.requestContext.authorizer.examinerRole === ExaminerRole.DLG;
+    const isDLG = false;
 
     const staffNumber: string = getStaffNumberFromRequestContext(event.requestContext);
 
@@ -148,27 +152,35 @@ export async function handler(event: APIGatewayEvent) {
     const result: TestResultRecord[] = await getConciseSearchResults(queryParameters);
 
     const results: TestResultSchemasUnion[] = result.map(row => row.test_result);
-    const condensedTestResult: SearchResultTestSchema[] = [];
 
-    for (const testResultRow of results) {
-      const appRef = testResultRow.journalData.applicationReference;
-      condensedTestResult.push(
-        {
-          costCode: testResultRow.journalData.testCentre.costCode,
-          testDate: testResultRow.journalData.testSlotAttributes.start,
-          driverNumber: testResultRow.journalData.candidate.driverNumber,
-          candidateName: testResultRow.journalData.candidate.candidateName,
-          applicationReference: formatApplicationReference(appRef),
-          category: testResultRow.category,
-          activityCode: testResultRow.activityCode,
-          passCertificateNumber: get(testResultRow, 'passCompletion.passCertificateNumber', null),
-          grade: get(testResultRow, 'testData.review.grade', null),
-        },
+    // Format the data based on whether it's being returned for search for completed or examiner records
+    if (event.queryStringParameters.searchType === 'records') {
+      const condensedTestResult: ExaminerRecordModel[] = result.map(
+        ({ test_result }) => formatForExaminerRecords(test_result),
       );
+      info('Number of test results returning ', results.length);
+      return createResponse(condensedTestResult, HttpStatus.OK);
+    } else {
+      const condensedTestResult: SearchResultTestSchema[]= [];
+      for (const testResultRow of results) {
+        const appRef = testResultRow.journalData.applicationReference;
+        condensedTestResult.push(
+          {
+            costCode: testResultRow.journalData.testCentre.costCode,
+            testDate: testResultRow.journalData.testSlotAttributes.start,
+            driverNumber: testResultRow.journalData.candidate.driverNumber,
+            candidateName: testResultRow.journalData.candidate.candidateName,
+            applicationReference: formatApplicationReference(appRef),
+            category: testResultRow.category,
+            activityCode: testResultRow.activityCode,
+            passCertificateNumber: get(testResultRow, 'passCompletion.passCertificateNumber', null),
+            grade: get(testResultRow, 'testData.review.grade', null),
+          },
+        );
+      }
+      info('Number of test results returning ', results.length);
+      return createResponse(condensedTestResult, HttpStatus.OK);
     }
-
-    info('Number of test results returning ', results.length);
-    return createResponse(condensedTestResult, HttpStatus.OK);
   } catch (err) {
     error('Search results', err);
     return createResponse(err, HttpStatus.BAD_REQUEST);

@@ -1,9 +1,9 @@
 import {TestResultSchemasUnion} from '@dvsa/mes-test-schema/categories';
 import {formatApplicationReference} from '@dvsa/mes-microservice-common/domain/tars';
 import {get} from 'lodash';
-import {ExaminerRecordModel} from '../domain/examiner-record.model';
 import {TestCategory} from '@dvsa/mes-test-schema/category-definitions/common/test-category';
-import { TestCentre, QuestionResult } from '@dvsa/mes-test-schema/categories/common';
+import { TestCentre } from '@dvsa/mes-test-schema/categories/common';
+import {ExaminerRecordModel} from '../../domain/examiner-record.model';
 
 export const formatForExaminerRecords = (testResult: TestResultSchemasUnion): ExaminerRecordModel => {
   let result: ExaminerRecordModel = {
@@ -21,36 +21,16 @@ export const formatForExaminerRecords = (testResult: TestResultSchemasUnion): Ex
     {value: 'safetyQuestions', path: 'testData.safetyAndBalanceQuestions.safetyQuestions'},
     {value: 'balanceQuestions', path: 'testData.safetyAndBalanceQuestions.balanceQuestions'},
     {value: 'manoeuvres', path: 'testData.manoeuvres'},
+    {value: 'vehicleChecks', path: 'testData.vehicleChecks'},
   ].forEach(value => {
-    if (get(testResult, value.path)) {
+    const pathValue = get(testResult, value.path);
+    if (pathValue) {
       result = {
         ...result,
-        [value.value]: get(testResult, value.path),
+        [value.value]: pathValue,
       };
     }
   });
-
-  if (get(testResult, 'testData.vehicleChecks.showMeQuestion') ||
-      get(testResult, 'testData.vehicleChecks.showMeQuestions')) {
-    result = {
-      ...result,
-      showMeQuestions: [
-        ...[get(testResult, 'testData.vehicleChecks.showMeQuestion', null)] as [QuestionResult],
-        ...get(testResult, 'testData.vehicleChecks.showMeQuestions', []) as QuestionResult[],
-      ],
-    };
-  }
-
-  if (get(testResult, 'testData.vehicleChecks.tellMeQuestion') ||
-      get(testResult, 'testData.vehicleChecks.tellMeQuestions')) {
-    result = {
-      ...result,
-      tellMeQuestions: [
-        ...[get(testResult, 'testData.vehicleChecks.tellMeQuestion', null)] as [QuestionResult],
-        ...get(testResult, 'testData.vehicleChecks.tellMeQuestions', []) as QuestionResult[],
-      ],
-    };
-  }
 
   console.log(result);
   return result;
