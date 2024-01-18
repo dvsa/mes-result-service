@@ -3,7 +3,7 @@ import { QueryParameters } from '../../domain/query_parameters';
 
 export const getConciseSearchResultsFromSearchQuery = (
   queryParameters: QueryParameters,
-  limit: number = 200,
+  orderAndLimit: boolean = true,
 ): string => {
   const parameterArray: string[] = [];
   let queries: string[] = [];
@@ -81,7 +81,8 @@ export const getConciseSearchResultsFromSearchQuery = (
   if (queryParameters.rekey) {
     queryString = queryString.concat(') as TR WHERE JSON_EXTRACT(TR.test_result, "$.rekey") = true ');
   }
-  queryString = queryString.concat(`ORDER BY ${queryParameters.rekey ? 'TR.' : ''}test_date DESC LIMIT ${limit};`);
-
+  queryString = queryString.concat(
+    orderAndLimit ? `ORDER BY ${queryParameters.rekey ? 'TR.' : ''}test_date DESC LIMIT 200;` : ';'
+  );
   return mysql.format(queryString, parameterArray);
 };

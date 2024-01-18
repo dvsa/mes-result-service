@@ -23,6 +23,7 @@
     "prepush": "npm run security-scan && npm run lint && npm test",
     "security-scan": "git secrets --scan && git log -p | scanrepo",
     "start": "npm run compile && sls offline start",
+    "start:livereload": "npm run compile && sls offline start --reloadHandler",
     "test": "npm run compile && jasmine",
     "test:int": "npm run compile && jasmine \"build/**/*int.js\"",
     "test:jasmine-coverage": "c8 npm run test",

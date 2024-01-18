@@ -37,7 +37,7 @@ functions:
     handler: src/functions/searchExaminerRecords/framework/handler.handler
     events:
       - http:
-          path: test-results/examiner-records
+          path: test-results/search-examiner-records
           method: get
 
   getResult:
