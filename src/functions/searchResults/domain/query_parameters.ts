@@ -11,4 +11,5 @@ export class QueryParameters {
   category: string;
   passCertificateNumber: string;
   rekey: boolean;
+  searchType?: string;
 }

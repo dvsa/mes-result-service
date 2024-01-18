@@ -1,7 +1,10 @@
 import * as mysql from 'mysql2';
 import { QueryParameters } from '../../domain/query_parameters';
 
-export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryParameters): string => {
+export const getConciseSearchResultsFromSearchQuery = (
+  queryParameters: QueryParameters,
+  limit: number = 200,
+): string => {
   const parameterArray: string[] = [];
   let queries: string[] = [];
   let queryString: string = '';
@@ -78,7 +81,7 @@ export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryPar
   if (queryParameters.rekey) {
     queryString = queryString.concat(') as TR WHERE JSON_EXTRACT(TR.test_result, "$.rekey") = true ');
   }
-  queryString = queryString.concat(`ORDER BY ${queryParameters.rekey ? 'TR.' : ''}test_date DESC LIMIT 200;`);
+  queryString = queryString.concat(`ORDER BY ${queryParameters.rekey ? 'TR.' : ''}test_date DESC LIMIT ${limit};`);
 
   return mysql.format(queryString, parameterArray);
 };
