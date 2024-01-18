@@ -59,5 +59,13 @@ describe('QueryBuilder', () => {
       expect(result).toContain('SELECT TR.test_result from (SELECT * FROM TEST_RESULT WHERE');
       expect(result).toContain('WHERE JSON_EXTRACT(TR.test_result, "$.rekey") = true');
     });
+    it('should add limiter when orderAndLimit is true', () => {
+      const result = getConciseSearchResultsFromSearchQuery(queryParameterRekey, true);
+      expect(result).toContain('DESC LIMIT 200');
+    });
+    it('should not add limiter when orderAndLimit is false', () => {
+      const result = getConciseSearchResultsFromSearchQuery(queryParameterRekey, false);
+      expect(result).not.toContain('DESC LIMIT 200');
+    });
   });
 });

@@ -30,8 +30,36 @@ describe('SearchRepository', () => {
       spyOn(queryBuilder, 'getConciseSearchResultsFromSearchQuery').and.returnValue('Mock SQL Query');
     });
 
+    it('should call getConciseSearchResultsFromSearchQuery with true if orderAndLimit is true', async () => {
+      const expectedData = [];
+
+      mockQueryFunction
+        .setup(x => x(It.isAnyString(), It.isAny()))
+        .returns(async () => [expectedData, []] as [RowDataPacket[], FieldPacket[]]);
+
+      mockEndFunction
+        .setup(x => x())
+        .returns(() => {});
+
+      await getConciseSearchResults(new QueryParameters(), true);
+      expect(queryBuilder.getConciseSearchResultsFromSearchQuery).toHaveBeenCalledWith(new QueryParameters(), true);
+    });
+    it('should call getConciseSearchResultsFromSearchQuery with false if orderAndLimit is false', async () => {
+      const expectedData = [];
+
+      mockQueryFunction
+        .setup(x => x(It.isAnyString(), It.isAny()))
+        .returns(async () => [expectedData, []] as [RowDataPacket[], FieldPacket[]]);
+
+      mockEndFunction
+        .setup(x => x())
+        .returns(() => {});
+
+      await getConciseSearchResults(new QueryParameters(), false);
+      expect(queryBuilder.getConciseSearchResultsFromSearchQuery).toHaveBeenCalledWith(new QueryParameters(), false);
+    });
+
     it('should return data on successful execution', async () => {
-      const appRef = 123;
       const expectedData = [];
 
       mockQueryFunction
