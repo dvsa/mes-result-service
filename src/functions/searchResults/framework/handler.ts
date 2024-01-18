@@ -8,14 +8,14 @@ import * as joi from 'joi';
 import {QueryParameters} from '../domain/query_parameters';
 import {SearchResultTestSchema} from '@dvsa/mes-search-schema';
 import {get} from 'lodash';
-import {ExaminerRole} from '@dvsa/mes-microservice-common/domain/examiner-role';
 import {TestResultSchemasUnion} from '@dvsa/mes-test-schema/categories';
 import {TestResultRecord} from '../../../common/domain/test-results';
 import {getStaffNumberFromRequestContext} from '@dvsa/mes-microservice-common/framework/security/authorisation';
 import {formatApplicationReference} from '@dvsa/mes-microservice-common/domain/tars';
-import {ExaminerRecordModel} from '../domain/examiner-record.model';
 import {validateExaminerRecordsSchema} from './application/validate-examiner-record-request';
-import {formatForExaminerRecords} from './application/map-examiner-record';
+import {gzipSync} from 'zlib';
+import {ExaminerRole} from '@dvsa/mes-microservice-common/domain/examiner-role';
+import * as process from 'process';
 
 export async function handler(event: APIGatewayEvent) {
   try {
@@ -59,9 +59,6 @@ export async function handler(event: APIGatewayEvent) {
     if (event.queryStringParameters.passCertificateNumber) {
       queryParameters.passCertificateNumber = event.queryStringParameters.passCertificateNumber;
     }
-    const role = event.requestContext.authorizer.examinerRole as ExaminerRole;
-    if (event.requestContext.authorizer.examinerRole) queryParameters.role = role;
-
 
     if (Object.keys(queryParameters).length === 0) {
       error('No query params supplied');
@@ -113,7 +110,7 @@ export async function handler(event: APIGatewayEvent) {
       'startDate', 'staffNumber', 'endDate', 'driverNumber',
       'dtcCode', 'applicationReference', 'excludeAutoSavedTests',
       'activityCode', 'category', 'passCertificateNumber',
-      'rekey', 'role',
+      'rekey',
     ];
 
     const dePermittedQueries = ['driverNumber', 'applicationReference', 'excludeAutoSavedTests'];
@@ -149,17 +146,16 @@ export async function handler(event: APIGatewayEvent) {
       queryParameters.staffNumber = staffNumber;
     }
 
-    const result: TestResultRecord[] = await getConciseSearchResults(queryParameters);
+    const result: TestResultRecord[] = await getConciseSearchResults(
+      queryParameters, event.queryStringParameters.searchType === 'records' ? undefined : Number(process.env.LIMIT)
+    );
 
     const results: TestResultSchemasUnion[] = result.map(row => row.test_result);
 
     // Format the data based on whether it's being returned for search for completed or examiner records
     if (event.queryStringParameters.searchType === 'records') {
-      const condensedTestResult: ExaminerRecordModel[] = result.map(
-        ({ test_result }) => formatForExaminerRecords(test_result),
-      );
       info('Number of test results returning ', results.length);
-      return createResponse(condensedTestResult, HttpStatus.OK);
+      return createResponse(gzipSync(JSON.stringify(results)).toString('base64'), HttpStatus.OK);
     } else {
       const condensedTestResult: SearchResultTestSchema[]= [];
       for (const testResultRow of results) {

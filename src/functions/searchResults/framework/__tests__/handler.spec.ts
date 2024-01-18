@@ -87,6 +87,7 @@ describe('searchResults handler', () => {
       dummyApigwEvent.queryStringParameters['passCertificateNumber'] = queryParameter.passCertificateNumber;
       moqSearchResults.setup(x => x(It.isAny())).returns(() => Promise.resolve(testResult));
       const resp = await handler(dummyApigwEvent);
+      console.log(resp);
       expect(resp.statusCode).toBe(200);
       expect(JSON.parse(resp.body)).toEqual(testResultResponse);
       moqSearchResults.verify(x => x(It.isObjectWith(queryParameter)), Times.once());
@@ -116,6 +117,16 @@ describe('searchResults handler', () => {
       expect(resp.statusCode).toBe(200);
       expect(JSON.parse(resp.body)).toEqual(testResultResponse);
       moqSearchResults.verify(x => x(It.isObjectWith(queryParameterWith8DigitAppRef)), Times.once());
+    });
+  });
+
+  describe('request made with searchType record', () => {
+    it('should run search with no limit', () => {
+      dummyApigwEvent.queryStringParameters['startDate'] = queryParameterWith8DigitAppRef.startDate;
+      dummyApigwEvent.queryStringParameters['endDate'] = queryParameterWith8DigitAppRef.endDate;
+      dummyApigwEvent.queryStringParameters['driverNumber'] = queryParameterWith8DigitAppRef.driverNumber;
+
+      expect(moqSearchResults).toHaveBeenCalledWith({}, undefined);
     });
   });
 
