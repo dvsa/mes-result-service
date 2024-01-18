@@ -1,0 +1,77 @@
+import { APIGatewayEvent } from 'aws-lambda';
+import { handler } from '../handler';
+const lambdaTestUtils = require('aws-lambda-test-utils');
+import { Mock, It, Times } from 'typemoq';
+import * as configSvc from '../../../../common/framework/config/config';
+import {
+  queryParameter,
+  sampleToken_12345678,
+  testResult,
+  testResultResponse,
+} from '../../../searchResults/framework/__tests__/handler.spec.data';
+import * as searchResultsSvc from '../../../searchResults/framework/repositories/search-repository';
+import {gzipSync} from 'zlib';
+
+describe('searchExaminerRecords handler', () => {
+  let dummyApigwEvent: APIGatewayEvent;
+  const moqBootstrapConfig = Mock.ofInstance(configSvc.bootstrapConfig);
+
+  beforeEach(() => {
+    moqBootstrapConfig.reset();
+
+    dummyApigwEvent = lambdaTestUtils.mockEventCreator.createAPIGatewayEvent({
+      headers: {
+        Authorization: sampleToken_12345678,
+      },
+    });
+
+    process.env.EMPLOYEE_ID_EXT_KEY = 'extn.employeeId';
+
+    spyOn(configSvc, 'bootstrapConfig').and.callFake(moqBootstrapConfig.object);
+  });
+
+  describe('configuration initialisation', () => {
+    it('should always bootstrap the config', async () => {
+      await handler(dummyApigwEvent);
+      moqBootstrapConfig.verify(x => x(), Times.once());
+    });
+  });
+
+  describe('handling of no parameters', () => {
+    it('should fail with bad request and give an error message', async () => {
+      dummyApigwEvent.queryStringParameters = null;
+      const resp = await handler(dummyApigwEvent);
+      expect(resp.statusCode).toBe(400);
+      expect(JSON.parse(resp.body)).toBe('Query parameters have to be supplied');
+    });
+  });
+
+  describe('using invalid query parameters', () => {
+    it('should fail with bad request and give an error message', async () => {
+      dummyApigwEvent.queryStringParameters = { test: 'test' };
+      const resp = await handler(dummyApigwEvent);
+      expect(resp.statusCode).toBe(400);
+      expect(JSON.parse(resp.body)).toBe('Not permitted to use the parameter test');
+    });
+  });
+
+  describe('using valid query parameters', () => {
+    it('gets the relevant results', async () => {
+
+      dummyApigwEvent.queryStringParameters = {
+        startDate: queryParameter.startDate,
+        endDate: queryParameter.endDate,
+        staffNumber: queryParameter.staffNumber,
+      };
+
+      spyOn(searchResultsSvc, 'getConciseSearchResults').and.returnValue(Promise.resolve(testResult));
+
+      const resp = await handler(dummyApigwEvent);
+      expect(resp.statusCode).toBe(200);
+      expect(JSON.parse(resp.body)).toEqual(gzipSync(JSON.stringify(testResult.map(value => {
+        return value.test_result;
+      }))).toString('base64'));
+    });
+  });
+
+});

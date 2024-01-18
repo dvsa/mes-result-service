@@ -8,10 +8,6 @@ export const DATE_FORMAT_ERR_MSG
 
 const getExaminerRecordsSchema = (): joi.ObjectSchema<QueryParameters> => {
   return joi.object().keys({
-    role: joi
-      .string()
-      .valid(ExaminerRole.DE, ExaminerRole.LDTM)
-      .required(),
     startDate: joi
       .string()
       .regex(DATE_FORMAT)
@@ -23,17 +19,14 @@ const getExaminerRecordsSchema = (): joi.ObjectSchema<QueryParameters> => {
       .required()
       .label(DATE_FORMAT_ERR_MSG),
     staffNumber: joi
-      .when('role', {
-        is: joi.string().valid(ExaminerRole.DE),
-        then: joi.string().alphanum().required(),
-        otherwise: joi.string().alphanum().optional(),
-      }),
+      .string()
+      .alphanum()
+      .required(),
   });
 };
 
 export const validateExaminerRecordsSchema = (queryParameters: QueryParameters) => {
   return getExaminerRecordsSchema().validate({
-    role: queryParameters.role,
     staffNumber: queryParameters.staffNumber,
     startDate: queryParameters.startDate,
     endDate: queryParameters.endDate,

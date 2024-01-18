@@ -1,38 +1,44 @@
-import {ExaminerRole} from '@dvsa/mes-microservice-common/domain/examiner-role';
 import {validateExaminerRecordsSchema} from '../validate-request';
 import {QueryParameters} from '../../../searchResults/domain/query_parameters';
 
 describe('Validate request', () => {
   describe('getExaminerRecordsSchema', () => {
-    it('should return error if not meeting validation', () => {
+    it('should return error if startDate is missing', () => {
       const qp = new QueryParameters();
 
-      qp.startDate = 'hello';
+      qp.endDate = '1111-11-11';
+      qp.staffNumber = '1';
 
       const res = validateExaminerRecordsSchema(qp);
 
       expect(res.error).not.toBeNull();
     });
-
-    it('should not require staffNumber for LDTM', () => {
+    it('should return error if endDate is missing', () => {
       const qp = new QueryParameters();
 
-      qp.role = ExaminerRole.LDTM;
-      qp.startDate = '2023-12-01';
-      qp.endDate = '2023-12-05';
+      qp.startDate = '1111-11-11';
+      qp.staffNumber = '1';
 
       const res = validateExaminerRecordsSchema(qp);
 
-      expect(res.error).toEqual(undefined);
+      expect(res.error).not.toBeNull();
     });
-
-    it('should require staffNumber for DE', () => {
+    it('should return error if staffNumber is missing', () => {
       const qp = new QueryParameters();
 
-      qp.role = ExaminerRole.DE;
-      qp.staffNumber = '1234567';
-      qp.startDate = '2023-12-01';
-      qp.endDate = '2023-12-05';
+      qp.startDate = '1111-11-11';
+      qp.endDate = '1111-11-11';
+
+      const res = validateExaminerRecordsSchema(qp);
+
+      expect(res.error).not.toBeNull();
+    });
+    it('should not return error if all fields are present', () => {
+      const qp = new QueryParameters();
+
+      qp.staffNumber = '1';
+      qp.startDate = '1111-11-11';
+      qp.endDate = '1111-11-11';
 
       const res = validateExaminerRecordsSchema(qp);
 

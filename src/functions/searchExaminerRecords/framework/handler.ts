@@ -9,11 +9,9 @@ import {
 } from '../application/validate-request';
 import {TestResultRecord} from '../../../common/domain/test-results';
 import {getConciseSearchResults} from '../../searchResults/framework/repositories/search-repository';
-import {formatForExaminerRecords} from '../application/map-results';
 import {serialiseError} from '../../../common/application/utils/serialise-error';
 import * as process from 'process';
-import {ExaminerRecordModel} from '../domain/examiner-record.model';
-import {ExaminerRole} from '@dvsa/mes-microservice-common/domain/examiner-role';
+import {gzipSync} from 'zlib';
 
 export async function handler(event: APIGatewayEvent) {
   try {
@@ -30,13 +28,19 @@ export async function handler(event: APIGatewayEvent) {
       return createResponse('Query parameters have to be supplied', HttpStatus.BAD_REQUEST);
     }
 
-    const role = event.requestContext.authorizer.examinerRole as ExaminerRole;
+    const allowedQueries = ['startDate', 'endDate', 'staffNumber'];
+
+    for (const key in event.queryStringParameters) {
+      if (!allowedQueries.includes(key)) {
+        error(`Not permitted to use the parameter ${key}`);
+        return createResponse(`Not permitted to use the parameter ${key}`, HttpStatus.BAD_REQUEST);
+      }
+    }
 
     // Set the parameters from the event to the queryParameter holder object
     if (event.queryStringParameters.startDate) queryParameters.startDate = event.queryStringParameters.startDate;
     if (event.queryStringParameters.endDate) queryParameters.endDate = event.queryStringParameters.endDate;
     if (event.queryStringParameters.staffNumber) queryParameters.staffNumber = event.queryStringParameters.staffNumber;
-    if (event.requestContext.authorizer.examinerRole) queryParameters.role = role;
 
     if (Object.keys(queryParameters).length === 0) {
       error('No query params supplied');
@@ -54,15 +58,17 @@ export async function handler(event: APIGatewayEvent) {
 
     debug('Validating passed');
 
-    const result: TestResultRecord[] = await getConciseSearchResults(queryParameters, Number(process.env.LIMIT));
+    const result: TestResultRecord[] = await getConciseSearchResults(queryParameters, false);
 
     debug(`Results found for payload size of ${process.env.LIMIT}`);
 
-    const format: ExaminerRecordModel[] = result.map(
-      ({ test_result }) => formatForExaminerRecords(test_result),
-    );
+    console.log('result', result);
 
-    return createResponse(format, HttpStatus.OK);
+    const format= result.map((value) => {
+      return value.test_result;
+    });
+
+    return createResponse(gzipSync(JSON.stringify(format)).toString('base64'), HttpStatus.OK);
   } catch (err) {
     error('Unknown error', serialiseError(err));
     return createResponse('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
