@@ -30,7 +30,7 @@ describe('SearchRepository', () => {
       spyOn(queryBuilder, 'getConciseSearchResultsFromSearchQuery').and.returnValue('Mock SQL Query');
     });
 
-    it('should call getConciseSearchResultsFromSearchQuery with true if orderAndLimit is true', async () => {
+    it('should call getConciseSearchResultsFromSearchQuery with true if limitResults is true', async () => {
       const expectedData = [];
 
       mockQueryFunction
@@ -44,7 +44,7 @@ describe('SearchRepository', () => {
       await getConciseSearchResults(new QueryParameters(), true);
       expect(queryBuilder.getConciseSearchResultsFromSearchQuery).toHaveBeenCalledWith(new QueryParameters(), true);
     });
-    it('should call getConciseSearchResultsFromSearchQuery with false if orderAndLimit is false', async () => {
+    it('should call getConciseSearchResultsFromSearchQuery with false if limitResults is false', async () => {
       const expectedData = [];
 
       mockQueryFunction

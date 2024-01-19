@@ -6,13 +6,13 @@ import { QueryParameters } from '../../domain/query_parameters';
 
 export const getConciseSearchResults = async (
   queryParameters : QueryParameters,
-  orderAndLimit: boolean = true,
+  limitResults: boolean = true,
 ): Promise<TestResultRecord[]> => {
   const connection: mysql.Connection = getConnection();
   let batch;
   try {
     const [rows, fields] = await connection.promise().query(
-      getConciseSearchResultsFromSearchQuery(queryParameters, orderAndLimit),
+      getConciseSearchResultsFromSearchQuery(queryParameters, limitResults),
     );
     batch = rows;
   } catch (err) {
