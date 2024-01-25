@@ -12,6 +12,8 @@ import {getConciseSearchResults} from '../../searchResults/framework/repositorie
 import {serialiseError} from '../../../common/application/utils/serialise-error';
 import * as process from 'process';
 import {gzipSync} from 'zlib';
+import {TestResultSchemasUnion} from '@dvsa/mes-test-schema/categories';
+import {ExaminerRecordModel, formatForExaminerRecords} from '@dvsa/mes-microservice-common/domain/examiner-records';
 
 export async function handler(event: APIGatewayEvent) {
   try {
@@ -64,8 +66,8 @@ export async function handler(event: APIGatewayEvent) {
 
     console.log('result', result);
 
-    const format= result.map((value) => {
-      return value.test_result;
+    const format: ExaminerRecordModel[] = result.map((value: TestResultRecord) => {
+      return formatForExaminerRecords(value.test_result as TestResultSchemasUnion);
     });
 
     return createResponse(gzipSync(JSON.stringify(format)).toString('base64'), HttpStatus.OK);

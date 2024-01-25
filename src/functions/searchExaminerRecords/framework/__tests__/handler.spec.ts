@@ -7,7 +7,6 @@ import {
   queryParameter,
   sampleToken_12345678,
   testResult,
-  testResultResponse,
 } from '../../../searchResults/framework/__tests__/handler.spec.data';
 import * as searchResultsSvc from '../../../searchResults/framework/repositories/search-repository';
 import {gzipSync} from 'zlib';
@@ -68,9 +67,18 @@ describe('searchExaminerRecords handler', () => {
 
       const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(200);
-      expect(JSON.parse(resp.body)).toEqual(gzipSync(JSON.stringify(testResult.map(value => {
-        return value.test_result;
-      }))).toString('base64'));
+      expect(JSON.parse(resp.body)).toEqual(gzipSync(
+        JSON.stringify([{
+          appRef:1234569019,
+          testCategory:'B',
+          testCentre:{centreId:54321,costCode:'EXTC1'},
+          startDate:'2019-06-26T09:07:00',
+          controlledStop:true,
+          independentDriving:'Sat nav',
+          manoeuvres:{reverseRight:[null]},
+          showMeQuestions:[[null]],
+          tellMeQuestions:[[null]]}])
+      ).toString('base64'));
     });
   });
 
