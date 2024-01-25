@@ -41,7 +41,7 @@ npm start
 
 ## Build
 
-To build a zip file for every function to `build/artifacts`, run:
+To build a zip file for every function to `artifacts`, run:
 
 ```shell
 npm run package

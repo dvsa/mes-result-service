@@ -62,9 +62,11 @@ export async function handler(event: APIGatewayEvent) {
 
     const result: TestResultRecord[] = await getConciseSearchResults(queryParameters, false);
 
-    debug(`Results found for payload size of ${process.env.LIMIT}`);
-
-    console.log('result', result);
+    if (result.length > 0) {
+      debug(`Results found for ${queryParameters.staffNumber} with a payload size of ${result.length}`);
+    } else {
+      debug(`No results found for ${queryParameters.staffNumber}`);
+    }
 
     const format: ExaminerRecordModel[] = result.map((value: TestResultRecord) => {
       return formatForExaminerRecords(value.test_result as TestResultSchemasUnion);
