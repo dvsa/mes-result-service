@@ -7,13 +7,12 @@ import {HttpStatus} from '@dvsa/mes-microservice-common/application/api/http-sta
 import {
   validateExaminerRecordsSchema,
 } from '../application/validate-request';
-import {TestResultRecord} from '../../../common/domain/test-results';
-import {getConciseSearchResults} from '../../searchResults/framework/repositories/search-repository';
+import {
+  getExaminerRecords,
+} from '../../searchResults/framework/repositories/search-repository';
 import {serialiseError} from '../../../common/application/utils/serialise-error';
-import * as process from 'process';
 import {gzipSync} from 'zlib';
-import {TestResultSchemasUnion} from '@dvsa/mes-test-schema/categories';
-import {ExaminerRecordModel, formatForExaminerRecords} from '@dvsa/mes-microservice-common/domain/examiner-records';
+import {ExaminerRecordModel} from '@dvsa/mes-microservice-common/domain/examiner-records';
 
 export async function handler(event: APIGatewayEvent) {
   try {
@@ -60,7 +59,10 @@ export async function handler(event: APIGatewayEvent) {
 
     debug('Validating passed');
 
-    const result: TestResultRecord[] = await getConciseSearchResults(queryParameters, false);
+    const result: ExaminerRecordModel[] = await getExaminerRecords(
+      queryParameters,
+      false
+    );
 
     if (result.length > 0) {
       debug(`Results found for ${queryParameters.staffNumber} with a payload size of ${result.length}`);
@@ -68,11 +70,7 @@ export async function handler(event: APIGatewayEvent) {
       debug(`No results found for ${queryParameters.staffNumber}`);
     }
 
-    const format: ExaminerRecordModel[] = result.map((value: TestResultRecord) => {
-      return formatForExaminerRecords(value.test_result as TestResultSchemasUnion);
-    });
-
-    return createResponse(gzipSync(JSON.stringify(format)).toString('base64'), HttpStatus.OK);
+    return createResponse(gzipSync(JSON.stringify(result)).toString('base64'), HttpStatus.OK);
   } catch (err) {
     error('Unknown error', serialiseError(err));
     return createResponse('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
