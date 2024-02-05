@@ -4,12 +4,15 @@ const lambdaTestUtils = require('aws-lambda-test-utils');
 import { Mock, It, Times } from 'typemoq';
 import * as configSvc from '../../../../common/framework/config/config';
 import {
+  examinerRecord,
   queryParameter,
   sampleToken_12345678,
   testResult,
 } from '../../../searchResults/framework/__tests__/handler.spec.data';
 import * as searchResultsSvc from '../../../searchResults/framework/repositories/search-repository';
 import {gzipSync} from 'zlib';
+import {getExaminerRecords} from '../../../searchResults/framework/repositories/search-repository';
+import {TestCategory} from '@dvsa/mes-test-schema/category-definitions/common/test-category';
 
 describe('searchExaminerRecords handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
@@ -63,21 +66,17 @@ describe('searchExaminerRecords handler', () => {
         staffNumber: queryParameter.staffNumber,
       };
 
-      spyOn(searchResultsSvc, 'getConciseSearchResults').and.returnValue(Promise.resolve(testResult));
+      spyOn(searchResultsSvc, 'getExaminerRecords').and.returnValue(Promise.resolve(examinerRecord));
 
       const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(200);
       expect(JSON.parse(resp.body)).toEqual(gzipSync(
         JSON.stringify([{
-          appRef:1234569019,
-          testCategory:'B',
-          testCentre:{centreId:54321,costCode:'EXTC1'},
-          startDate:'2019-06-26T09:07:00',
-          controlledStop:true,
-          independentDriving:'Sat nav',
-          manoeuvres:{reverseRight:[null]},
-          showMeQuestions:[[null]],
-          tellMeQuestions:[[null]]}])
+          appRef: 1,
+          testCentre: { centreId: 54321, costCode: 'EXTC1' },
+          testCategory: TestCategory.B,
+          startDate: '2019-06-26T09:07:00',
+        }])
       ).toString('base64'));
     });
   });
