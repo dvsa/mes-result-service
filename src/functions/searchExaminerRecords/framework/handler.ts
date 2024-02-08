@@ -46,11 +46,6 @@ export async function handler(event: APIGatewayEvent) {
       moment().format('YYYY-MM-DD').toString();
     if (event.queryStringParameters.staffNumber) queryParameters.staffNumber = event.queryStringParameters.staffNumber;
 
-    if (Object.keys(queryParameters).length === 0) {
-      error('No query params supplied');
-      return createResponse('Query parameters have to be supplied', HttpStatus.BAD_REQUEST);
-    }
-
     debug('Validating request');
 
     const {error: joiError} = validateExaminerRecordsSchema(queryParameters);
