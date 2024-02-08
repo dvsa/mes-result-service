@@ -7,12 +7,10 @@ import {HttpStatus} from '@dvsa/mes-microservice-common/application/api/http-sta
 import {
   validateExaminerRecordsSchema,
 } from '../application/validate-request';
-import {
-  getExaminerRecords,
-} from '../../searchResults/framework/repositories/search-repository';
 import {serialiseError} from '../../../common/application/utils/serialise-error';
 import {gzipSync} from 'zlib';
 import {ExaminerRecordModel} from '@dvsa/mes-microservice-common/domain/examiner-records';
+import {getExaminerRecords} from './repositories/search-repository';
 
 export async function handler(event: APIGatewayEvent) {
   try {
@@ -50,7 +48,7 @@ export async function handler(event: APIGatewayEvent) {
 
     debug('Validating request');
 
-    const { error: joiError } = validateExaminerRecordsSchema(queryParameters);
+    const {error: joiError} = validateExaminerRecordsSchema(queryParameters);
 
     if (joiError) {
       error('Validation error', joiError);
@@ -59,10 +57,7 @@ export async function handler(event: APIGatewayEvent) {
 
     debug('Validating passed');
 
-    const result: ExaminerRecordModel[] = await getExaminerRecords(
-      queryParameters,
-      false
-    );
+    const result: ExaminerRecordModel[] = await getExaminerRecords(queryParameters);
 
     if (result.length > 0) {
       debug(`Results found for ${queryParameters.staffNumber} with a payload size of ${result.length}`);

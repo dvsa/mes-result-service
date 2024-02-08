@@ -4,8 +4,8 @@ import * as queryBuilder from '../../database/query-builder';
 import * as database from '../../../../../common/framework/mysql/database';
 import {Connection as PromiseConnection} from 'mysql2/promise';
 import {FieldPacket, RowDataPacket} from 'mysql2';
-import {getConciseSearchResults} from '../search-repository';
 import {QueryParameters} from '../../../domain/query_parameters';
+import {getExaminerRecords} from '../search-repository';
 
 describe('SearchRepository', () => {
   describe('getConciseSearchResults', () => {
@@ -27,11 +27,10 @@ describe('SearchRepository', () => {
         .returns(() => {});
 
       spyOn(database, 'getConnection').and.returnValue(mockMysqlConnection.object);
-      spyOn(queryBuilder, 'getConciseSearchResultsFromSearchQuery').and.returnValue('Mock SQL Query');
+      spyOn(queryBuilder, 'getExaminerRecordsFromSearchQuery').and.returnValue('Mock SQL Query');
     });
 
     it('should return data on successful execution', async () => {
-      const appRef = 123;
       const expectedData = [];
 
       mockQueryFunction
@@ -42,7 +41,7 @@ describe('SearchRepository', () => {
         .setup(x => x())
         .returns(() => {});
 
-      const result = await getConciseSearchResults(new QueryParameters());
+      const result = await getExaminerRecords(new QueryParameters());
 
       expect(result).toEqual(expectedData);
     });

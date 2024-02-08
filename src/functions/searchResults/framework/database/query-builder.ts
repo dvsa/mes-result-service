@@ -1,12 +1,7 @@
 import * as mysql from 'mysql2';
-import {QueryParameters} from '../../domain/query_parameters';
-import {examinerRecordsQuery} from './examinerRecordsQuery';
+import { QueryParameters } from '../../domain/query_parameters';
 
-export const getConciseSearchResultsFromSearchQuery = (
-  queryParameters: QueryParameters,
-  limitResults: boolean = true,
-  isExaminerRecords: boolean = false,
-): string => {
+export const getConciseSearchResultsFromSearchQuery = (queryParameters: QueryParameters): string => {
   const parameterArray: string[] = [];
   let queries: string[] = [];
   let queryString: string = '';
@@ -36,10 +31,10 @@ export const getConciseSearchResultsFromSearchQuery = (
   if (queryParameters.applicationReference) {
     if (queryParameters.applicationReference.toString().length === 8) {
       /*
-              Finds appRefs based on 8 digits provided
-              Uses range query to find appRefs between those numbers
-              Most performant way of implementing the 8 digit app ref search
-            */
+        Finds appRefs based on 8 digits provided
+        Uses range query to find appRefs between those numbers
+        Most performant way of implementing the 8 digit app ref search
+      */
       queries.push('application_reference >= ? AND application_reference <= ?');
       parameterArray.push(`${queryParameters.applicationReference.toString()}000`);
       parameterArray.push(`${queryParameters.applicationReference.toString()}999`);
@@ -71,8 +66,6 @@ export const getConciseSearchResultsFromSearchQuery = (
   // If rekey is true then existing query becomes sub query, extracting only tests marked for rekey from the result
   if (queryParameters.rekey) {
     queryString = queryString.concat('SELECT TR.test_result from (SELECT * FROM TEST_RESULT WHERE ');
-  } else if (isExaminerRecords) {
-    queryString = queryString.concat(examinerRecordsQuery);
   } else {
     queryString = queryString.concat('SELECT test_result FROM TEST_RESULT WHERE ');
   }
@@ -85,10 +78,7 @@ export const getConciseSearchResultsFromSearchQuery = (
   if (queryParameters.rekey) {
     queryString = queryString.concat(') as TR WHERE JSON_EXTRACT(TR.test_result, "$.rekey") = true ');
   }
-  queryString = queryString.concat(
-    limitResults ?
-      `ORDER BY ${queryParameters.rekey ? 'TR.' : ''}test_date DESC LIMIT 200;` :
-      'ORDER BY test_date DESC;'
-  );
+  queryString = queryString.concat(`ORDER BY ${queryParameters.rekey ? 'TR.' : ''}test_date DESC LIMIT 200;`);
+
   return mysql.format(queryString, parameterArray);
 };

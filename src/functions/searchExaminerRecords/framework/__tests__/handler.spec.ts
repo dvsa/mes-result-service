@@ -3,16 +3,12 @@ import { handler } from '../handler';
 const lambdaTestUtils = require('aws-lambda-test-utils');
 import { Mock, It, Times } from 'typemoq';
 import * as configSvc from '../../../../common/framework/config/config';
-import {
-  examinerRecord,
-  queryParameter,
-  sampleToken_12345678,
-  testResult,
-} from '../../../searchResults/framework/__tests__/handler.spec.data';
-import * as searchResultsSvc from '../../../searchResults/framework/repositories/search-repository';
+import * as searchResultsSvc from '../../framework/repositories/search-repository';
 import {gzipSync} from 'zlib';
-import {getExaminerRecords} from '../../../searchResults/framework/repositories/search-repository';
 import {TestCategory} from '@dvsa/mes-test-schema/category-definitions/common/test-category';
+import {sampleToken_12345678} from '../../../getResult/framework/__tests__/handler.spec.data';
+import {queryParameter} from '../database/__tests__/query-builder.spec.data';
+import {examinerRecord} from './handler.spec.data';
 
 describe('searchExaminerRecords handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
