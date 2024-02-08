@@ -11,6 +11,7 @@ import {serialiseError} from '../../../common/application/utils/serialise-error'
 import {gzipSync} from 'zlib';
 import {ExaminerRecordModel} from '@dvsa/mes-microservice-common/domain/examiner-records';
 import {getExaminerRecords} from './repositories/search-repository';
+import moment from 'moment';
 
 export async function handler(event: APIGatewayEvent) {
   try {
@@ -37,8 +38,12 @@ export async function handler(event: APIGatewayEvent) {
     }
 
     // Set the parameters from the event to the queryParameter holder object
-    if (event.queryStringParameters.startDate) queryParameters.startDate = event.queryStringParameters.startDate;
-    if (event.queryStringParameters.endDate) queryParameters.endDate = event.queryStringParameters.endDate;
+    queryParameters.startDate = event.queryStringParameters.startDate ?
+      event.queryStringParameters.startDate :
+      moment().subtract(2, 'years').format('YYYY-MM-DD').toString();
+    queryParameters.endDate = event.queryStringParameters.endDate ?
+      event.queryStringParameters.endDate :
+      moment().format('YYYY-MM-DD').toString();
     if (event.queryStringParameters.staffNumber) queryParameters.staffNumber = event.queryStringParameters.staffNumber;
 
     if (Object.keys(queryParameters).length === 0) {
