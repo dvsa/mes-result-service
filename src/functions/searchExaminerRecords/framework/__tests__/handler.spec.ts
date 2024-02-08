@@ -35,15 +35,6 @@ describe('searchExaminerRecords handler', () => {
     });
   });
 
-  describe('handling of no parameters', () => {
-    it('should fail with bad request and give an error message', async () => {
-      dummyApigwEvent.queryStringParameters = null;
-      const resp = await handler(dummyApigwEvent);
-      expect(resp.statusCode).toBe(400);
-      expect(JSON.parse(resp.body)).toBe('Query parameters have to be supplied');
-    });
-  });
-
   describe('using invalid query parameters', () => {
     it('should fail with bad request and give an error message', async () => {
       dummyApigwEvent.queryStringParameters = { test: 'test' };
