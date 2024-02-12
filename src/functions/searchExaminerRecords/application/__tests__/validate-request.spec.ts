@@ -2,7 +2,7 @@ import { validateExaminerRecordsSchema } from '../validate-request';
 import { ExaminerRecordsQueryParameters } from '../../domain/query_parameters';
 
 describe('Validate request', () => {
-  describe('getExaminerRecordsSchema', () => {
+  describe('validateExaminerRecordsSchema', () => {
     it('should return error if startDate is missing', () => {
       const qp = new ExaminerRecordsQueryParameters();
 
