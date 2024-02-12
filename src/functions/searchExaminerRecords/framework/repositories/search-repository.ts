@@ -1,11 +1,11 @@
 import { getConnection } from '../../../../common/framework/mysql/database';
 import * as mysql from 'mysql2';
-import { QueryParameters } from '../../domain/query_parameters';
+import { ExaminerRecordsQueryParameters } from '../../domain/query_parameters';
 import { ExaminerRecordModel } from '@dvsa/mes-microservice-common/domain/examiner-records';
 import { getExaminerRecordsFromSearchQuery } from '../database/query-builder';
 
 export const getExaminerRecords = async (
-  queryParameters: QueryParameters,
+  queryParameters: ExaminerRecordsQueryParameters,
 ): Promise<ExaminerRecordModel[]> => {
   const connection: mysql.Connection = getConnection();
   let batch;

@@ -4,7 +4,7 @@ import * as queryBuilder from '../../database/query-builder';
 import * as database from '../../../../../common/framework/mysql/database';
 import { Connection as PromiseConnection } from 'mysql2/promise';
 import { FieldPacket, RowDataPacket } from 'mysql2';
-import { QueryParameters } from '../../../domain/query_parameters';
+import { ExaminerRecordsQueryParameters } from '../../../domain/query_parameters';
 import { getExaminerRecords } from '../search-repository';
 
 describe('SearchRepository', () => {
@@ -45,7 +45,7 @@ describe('SearchRepository', () => {
         .returns(() => {
         });
 
-      const result = await getExaminerRecords(new QueryParameters());
+      const result = await getExaminerRecords(new ExaminerRecordsQueryParameters());
 
       expect(result).toEqual(expectedData);
     });

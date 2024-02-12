@@ -7,7 +7,6 @@ import { HttpStatus } from '@dvsa/mes-microservice-common/application/api/http-s
 import {
   validateExaminerRecordsSchema,
 } from '../application/validate-request';
-import { serialiseError } from '../../../common/application/utils/serialise-error';
 import { gzipSync } from 'zlib';
 import { ExaminerRecordModel } from '@dvsa/mes-microservice-common/domain/examiner-records';
 import { getExaminerRecords } from './repositories/search-repository';
@@ -67,7 +66,7 @@ export async function handler(event: APIGatewayEvent) {
 
     return createResponse(gzipSync(JSON.stringify(result)).toString('base64'), HttpStatus.OK);
   } catch (err) {
-    error('Unknown error', serialiseError(err));
+    error('Unknown error', JSON.stringify(err));
     return createResponse('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
