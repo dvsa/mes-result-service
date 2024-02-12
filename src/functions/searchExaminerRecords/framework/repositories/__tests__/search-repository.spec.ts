@@ -1,11 +1,11 @@
 import * as mysql from 'mysql2';
-import {Mock, It, IMock} from 'typemoq';
+import { Mock, It, IMock } from 'typemoq';
 import * as queryBuilder from '../../database/query-builder';
 import * as database from '../../../../../common/framework/mysql/database';
-import {Connection as PromiseConnection} from 'mysql2/promise';
-import {FieldPacket, RowDataPacket} from 'mysql2';
-import {QueryParameters} from '../../../domain/query_parameters';
-import {getExaminerRecords} from '../search-repository';
+import { Connection as PromiseConnection } from 'mysql2/promise';
+import { FieldPacket, RowDataPacket } from 'mysql2';
+import { QueryParameters } from '../../../domain/query_parameters';
+import { getExaminerRecords } from '../search-repository';
 
 describe('SearchRepository', () => {
   describe('getConciseSearchResults', () => {
@@ -14,17 +14,20 @@ describe('SearchRepository', () => {
     let mockEndFunction: IMock<() => void>;
 
     beforeEach(() => {
-      mockQueryFunction = Mock.ofInstance((sql: string, values?: any) => new Promise(() => {}));
-      mockEndFunction = Mock.ofInstance( () => {});
+      mockQueryFunction = Mock.ofInstance((sql: string, values?: any) => new Promise(() => {
+      }));
+      mockEndFunction = Mock.ofInstance(() => {
+      });
       mockMysqlConnection = Mock.ofType<mysql.Connection>();
 
       mockMysqlConnection
         .setup(x => x.promise())
-        .returns(() => ({ query: mockQueryFunction.object }) as PromiseConnection);
+        .returns(() => ({query: mockQueryFunction.object}) as PromiseConnection);
 
       mockMysqlConnection
         .setup(x => x.end())
-        .returns(() => {});
+        .returns(() => {
+        });
 
       spyOn(database, 'getConnection').and.returnValue(mockMysqlConnection.object);
       spyOn(queryBuilder, 'getExaminerRecordsFromSearchQuery').and.returnValue('Mock SQL Query');
@@ -39,7 +42,8 @@ describe('SearchRepository', () => {
 
       mockEndFunction
         .setup(x => x())
-        .returns(() => {});
+        .returns(() => {
+        });
 
       const result = await getExaminerRecords(new QueryParameters());
 

@@ -1,6 +1,6 @@
 import * as mysql from 'mysql2';
-import {QueryParameters} from '../../domain/query_parameters';
-import {examinerRecordsQuery} from './examinerRecordsQuery';
+import { QueryParameters } from '../../domain/query_parameters';
+import { examinerRecordsQuery } from './examinerRecordsQuery';
 
 export const getExaminerRecordsFromSearchQuery = (
   queryParameters: QueryParameters,

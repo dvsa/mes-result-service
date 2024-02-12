@@ -1,16 +1,16 @@
-import {APIGatewayEvent} from 'aws-lambda';
-import {bootstrapLogging, debug, error} from '@dvsa/mes-microservice-common/application/utils/logger';
-import {bootstrapConfig} from '../../../common/framework/config/config';
-import {QueryParameters} from '../../searchResults/domain/query_parameters';
-import {createResponse} from '@dvsa/mes-microservice-common/application/api/create-response';
-import {HttpStatus} from '@dvsa/mes-microservice-common/application/api/http-status';
+import { APIGatewayEvent } from 'aws-lambda';
+import { bootstrapLogging, debug, error } from '@dvsa/mes-microservice-common/application/utils/logger';
+import { bootstrapConfig } from '../../../common/framework/config/config';
+import { QueryParameters } from '../../searchResults/domain/query_parameters';
+import { createResponse } from '@dvsa/mes-microservice-common/application/api/create-response';
+import { HttpStatus } from '@dvsa/mes-microservice-common/application/api/http-status';
 import {
   validateExaminerRecordsSchema,
 } from '../application/validate-request';
-import {serialiseError} from '../../../common/application/utils/serialise-error';
-import {gzipSync} from 'zlib';
-import {ExaminerRecordModel} from '@dvsa/mes-microservice-common/domain/examiner-records';
-import {getExaminerRecords} from './repositories/search-repository';
+import { serialiseError } from '../../../common/application/utils/serialise-error';
+import { gzipSync } from 'zlib';
+import { ExaminerRecordModel } from '@dvsa/mes-microservice-common/domain/examiner-records';
+import { getExaminerRecords } from './repositories/search-repository';
 import moment from 'moment';
 
 export async function handler(event: APIGatewayEvent) {

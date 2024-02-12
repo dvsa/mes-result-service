@@ -1,5 +1,5 @@
 export class QueryParameters {
-  startDate : string;
+  startDate: string;
   staffNumber: string;
   endDate: string;
 }

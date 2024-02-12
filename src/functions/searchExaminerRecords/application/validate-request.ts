@@ -1,9 +1,9 @@
 import * as joi from 'joi';
-import {QueryParameters} from '../../searchResults/domain/query_parameters';
+import { QueryParameters } from '../../searchResults/domain/query_parameters';
 
 export const DATE_FORMAT = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
 export const DATE_FORMAT_ERR_MSG
-    = 'Please provide a valid date with the format \'YYYY-MM-DD\'';
+  = 'Please provide a valid date with the format \'YYYY-MM-DD\'';
 
 const getExaminerRecordsSchema = (): joi.ObjectSchema<QueryParameters> => {
   return joi.object().keys({

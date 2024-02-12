@@ -1,14 +1,15 @@
 import { APIGatewayEvent } from 'aws-lambda';
 import { handler } from '../handler';
+
 const lambdaTestUtils = require('aws-lambda-test-utils');
 import { Mock, It, Times } from 'typemoq';
 import * as configSvc from '../../../../common/framework/config/config';
 import * as searchResultsSvc from '../../framework/repositories/search-repository';
-import {gzipSync} from 'zlib';
-import {TestCategory} from '@dvsa/mes-test-schema/category-definitions/common/test-category';
-import {sampleToken_12345678} from '../../../getResult/framework/__tests__/handler.spec.data';
-import {queryParameter} from '../database/__tests__/query-builder.spec.data';
-import {examinerRecord} from './handler.spec.data';
+import { gzipSync } from 'zlib';
+import { TestCategory } from '@dvsa/mes-test-schema/category-definitions/common/test-category';
+import { sampleToken_12345678 } from '../../../getResult/framework/__tests__/handler.spec.data';
+import { queryParameter } from '../database/__tests__/query-builder.spec.data';
+import { examinerRecord } from './handler.spec.data';
 
 describe('searchExaminerRecords handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
@@ -37,7 +38,7 @@ describe('searchExaminerRecords handler', () => {
 
   describe('using invalid query parameters', () => {
     it('should fail with bad request and give an error message', async () => {
-      dummyApigwEvent.queryStringParameters = { test: 'test' };
+      dummyApigwEvent.queryStringParameters = {test: 'test'};
       const resp = await handler(dummyApigwEvent);
       expect(resp.statusCode).toBe(400);
       expect(JSON.parse(resp.body)).toBe('Not permitted to use the parameter test');
@@ -60,7 +61,7 @@ describe('searchExaminerRecords handler', () => {
       expect(JSON.parse(resp.body)).toEqual(gzipSync(
         JSON.stringify([{
           appRef: 1,
-          testCentre: { centreId: 54321, costCode: 'EXTC1' },
+          testCentre: {centreId: 54321, costCode: 'EXTC1'},
           testCategory: TestCategory.B,
           startDate: '2019-06-26T09:07:00',
         }])

@@ -1,5 +1,5 @@
-import {validateExaminerRecordsSchema} from '../validate-request';
-import {QueryParameters} from '../../../searchResults/domain/query_parameters';
+import { validateExaminerRecordsSchema } from '../validate-request';
+import { QueryParameters } from '../../../searchResults/domain/query_parameters';
 
 describe('Validate request', () => {
   describe('getExaminerRecordsSchema', () => {
