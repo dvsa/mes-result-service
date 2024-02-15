@@ -7,13 +7,12 @@ export const examinerRecordsQuery = `SELECT
         'centreName', JSON_UNQUOTE(JSON_EXTRACT(test_result, '$.journalData.testCentre.centreName'))
     ) AS testCentre,
     test_date AS 'startDate',
-    JSON_UNQUOTE(JSON_EXTRACT(test_result, '$.testSummary.routeNumber')) AS 'routeNumber',
+    CAST(JSON_UNQUOTE(JSON_EXTRACT(test_result, '$.testSummary.routeNumber')) as SIGNED) AS 'routeNumber',
     JSON_UNQUOTE(JSON_EXTRACT(test_result, '$.testData.controlledStop.selected')) AS 'controlledStop',
     JSON_UNQUOTE(JSON_EXTRACT(test_result, '$.testSummary.independentDriving')) AS 'independentDriving',
     JSON_UNQUOTE(JSON_EXTRACT(test_result, '$.testSummary.circuit')) AS 'circuit',
     JSON_EXTRACT(test_result, '$.testData.safetyAndBalanceQuestions.safetyQuestions') AS 'safetyQuestions',
     JSON_EXTRACT(test_result, '$.testData.safetyAndBalanceQuestions.balanceQuestions') AS 'balanceQuestions',
-    JSON_UNQUOTE(JSON_EXTRACT(test_result, '$.testData.manoeuvres')) AS 'manoeuvres',
     CASE
         WHEN JSON_CONTAINS_PATH(test_result, 'one', '$.testData.manoeuvres') THEN
             CASE
