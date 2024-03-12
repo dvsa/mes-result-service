@@ -17,7 +17,10 @@ export const examinerRecordsQuery = `SELECT
         WHEN JSON_CONTAINS_PATH(test_result, 'one', '$.testData.manoeuvres') THEN
             CASE
                 WHEN JSON_UNQUOTE(JSON_EXTRACT(test_result, '$.testData.manoeuvres')) = '{}' THEN NULL
-                ELSE JSON_ARRAY(JSON_EXTRACT(test_result, '$.testData.manoeuvres'))
+                ELSE
+                    IF(JSON_TYPE(JSON_EXTRACT(test_result, '$.testData.manoeuvres')) = 'ARRAY',
+                       JSON_EXTRACT(test_result, '$.testData.manoeuvres'),
+                       JSON_ARRAY(JSON_EXTRACT(test_result, '$.testData.manoeuvres')))
             END
     END AS manoeuvres,
     CASE
