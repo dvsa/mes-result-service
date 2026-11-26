@@ -6,12 +6,13 @@ import { getExaminerRecordsFromSearchQuery } from '../database/query-builder';
 
 export const getExaminerRecords = async (
   queryParameters: ExaminerRecordsQueryParameters,
+  staffNumber: string,
 ): Promise<ExaminerRecordModel[]> => {
   const connection: mysql.Connection = getConnection();
   let batch;
   try {
     const [rows, fields] = await connection.promise().query(
-      getExaminerRecordsFromSearchQuery(queryParameters),
+      getExaminerRecordsFromSearchQuery(queryParameters, staffNumber),
     );
     batch = rows;
   } catch (err) {

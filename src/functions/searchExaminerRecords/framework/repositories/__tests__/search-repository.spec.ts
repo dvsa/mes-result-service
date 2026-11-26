@@ -35,6 +35,10 @@ describe('SearchRepository', () => {
 
     it('should return data on successful execution', async () => {
       const expectedData = [];
+      const queryParameters = new ExaminerRecordsQueryParameters();
+      queryParameters.startDate = '2015-10-10';
+      queryParameters.endDate = '2019-12-12';
+      const staffNumber = '87654321';
 
       mockQueryFunction
         .setup(x => x(It.isAnyString(), It.isAny()))
@@ -45,9 +49,10 @@ describe('SearchRepository', () => {
         .returns(() => {
         });
 
-      const result = await getExaminerRecords(new ExaminerRecordsQueryParameters());
+      const result = await getExaminerRecords(queryParameters, staffNumber);
 
       expect(result).toEqual(expectedData);
+      expect(queryBuilder.getExaminerRecordsFromSearchQuery).toHaveBeenCalledWith(queryParameters, staffNumber);
     });
   });
 });

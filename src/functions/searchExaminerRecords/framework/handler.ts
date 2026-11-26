@@ -11,6 +11,7 @@ import { gzipSync } from 'zlib';
 import { ExaminerRecordModel } from '@dvsa/mes-microservice-common/domain/examiner-records';
 import { getExaminerRecords } from './repositories/search-repository';
 import moment from 'moment';
+import { getStaffNumberFromRequestContext } from '@dvsa/mes-microservice-common/framework/security/authorisation';
 
 export async function handler(event: APIGatewayEvent) {
   try {
@@ -27,7 +28,7 @@ export async function handler(event: APIGatewayEvent) {
       return createResponse('Query parameters have to be supplied', HttpStatus.BAD_REQUEST);
     }
 
-    const allowedQueries = ['startDate', 'endDate', 'staffNumber'];
+    const allowedQueries = ['startDate', 'endDate'];
 
     for (const key in event.queryStringParameters) {
       if (!allowedQueries.includes(key)) {
@@ -40,14 +41,18 @@ export async function handler(event: APIGatewayEvent) {
     queryParameters.startDate = event.queryStringParameters.startDate ?
       event.queryStringParameters.startDate :
       moment().subtract(18, 'months').format('YYYY-MM-DD').toString();
+
     queryParameters.endDate = event.queryStringParameters.endDate ?
       event.queryStringParameters.endDate :
       moment().format('YYYY-MM-DD').toString();
-    if (event.queryStringParameters.staffNumber) queryParameters.staffNumber = event.queryStringParameters.staffNumber;
+
+    // Set staffNumber from request context
+    const staffNumber: string = getStaffNumberFromRequestContext(event.requestContext);
+    debug(`Staff number from request context: ${staffNumber}`);
 
     debug('Validating request');
 
-    const {error: joiError} = validateExaminerRecordsSchema(queryParameters);
+    const {error: joiError} = validateExaminerRecordsSchema(queryParameters, staffNumber);
 
     if (joiError) {
       error('Validation error', joiError);
@@ -56,12 +61,12 @@ export async function handler(event: APIGatewayEvent) {
 
     debug('Validating passed');
 
-    const result: ExaminerRecordModel[] = await getExaminerRecords(queryParameters);
+    const result: ExaminerRecordModel[] = await getExaminerRecords(queryParameters, staffNumber);
 
     if (result.length > 0) {
-      debug(`Results found for ${queryParameters.staffNumber} with a payload size of ${result.length}`);
+      debug(`Results found for ${staffNumber} with a payload size of ${result.length}`);
     } else {
-      debug(`No results found for ${queryParameters.staffNumber}`);
+      debug(`No results found for ${staffNumber}`);
     }
 
     return createResponse(gzipSync(JSON.stringify(result)).toString('base64'), HttpStatus.OK);

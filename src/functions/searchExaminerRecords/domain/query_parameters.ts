@@ -1,5 +1,5 @@
 export class ExaminerRecordsQueryParameters {
-  startDate: string;
   staffNumber: string;
+  startDate: string;
   endDate: string;
 }

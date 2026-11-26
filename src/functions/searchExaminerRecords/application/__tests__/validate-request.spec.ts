@@ -7,9 +7,8 @@ describe('Validate request', () => {
       const qp = new ExaminerRecordsQueryParameters();
 
       qp.endDate = '1111-11-11';
-      qp.staffNumber = '1';
 
-      const res = validateExaminerRecordsSchema(qp);
+      const res = validateExaminerRecordsSchema(qp, '1');
 
       expect(res.error).not.toBeNull();
     });
@@ -17,9 +16,8 @@ describe('Validate request', () => {
       const qp = new ExaminerRecordsQueryParameters();
 
       qp.startDate = '1111-11-11';
-      qp.staffNumber = '1';
 
-      const res = validateExaminerRecordsSchema(qp);
+      const res = validateExaminerRecordsSchema(qp, '1');
 
       expect(res.error).not.toBeNull();
     });
@@ -29,18 +27,17 @@ describe('Validate request', () => {
       qp.startDate = '1111-11-11';
       qp.endDate = '1111-11-11';
 
-      const res = validateExaminerRecordsSchema(qp);
+      const res = validateExaminerRecordsSchema(qp, undefined);
 
       expect(res.error).not.toBeNull();
     });
     it('should not return error if all fields are present', () => {
       const qp = new ExaminerRecordsQueryParameters();
 
-      qp.staffNumber = '1';
       qp.startDate = '1111-11-11';
       qp.endDate = '1111-11-11';
 
-      const res = validateExaminerRecordsSchema(qp);
+      const res = validateExaminerRecordsSchema(qp, '1');
 
       expect(res.error).toEqual(undefined);
     });
