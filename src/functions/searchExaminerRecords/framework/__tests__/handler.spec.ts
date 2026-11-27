@@ -10,6 +10,7 @@ import { TestCategory } from '@dvsa/mes-test-schema/category-definitions/common/
 import { sampleToken_12345678 } from '../../../getResult/framework/__tests__/handler.spec.data';
 import { queryParameter } from '../database/__tests__/query-builder.spec.data';
 import { examinerRecord } from './handler.spec.data';
+import * as authService from '@dvsa/mes-microservice-common/framework/security/authorisation';
 
 describe('searchExaminerRecords handler', () => {
   let dummyApigwEvent: APIGatewayEvent;
@@ -41,18 +42,32 @@ describe('searchExaminerRecords handler', () => {
     expect(JSON.parse(resp.body)).toBe('Not permitted to use the parameter test');
   });
 
+  it('should reject staffNumber when supplied as a query parameter', async () => {
+    dummyApigwEvent.queryStringParameters = { staffNumber: queryParameter.staffNumber };
+    const resp = await handler(dummyApigwEvent);
+    expect(resp.statusCode).toBe(400);
+    expect(JSON.parse(resp.body)).toBe('Not permitted to use the parameter staffNumber');
+  });
+
   it('should gets the relevant results when using valid query parameters', async () => {
 
     dummyApigwEvent.queryStringParameters = {
       startDate: queryParameter.startDate,
       endDate: queryParameter.endDate,
-      staffNumber: queryParameter.staffNumber,
     };
 
+    spyOn(authService, 'getStaffNumberFromRequestContext').and.returnValue('87654321');
     spyOn(searchResultsSvc, 'getExaminerRecords').and.returnValue(Promise.resolve(examinerRecord));
 
     const resp = await handler(dummyApigwEvent);
     expect(resp.statusCode).toBe(200);
+    expect(searchResultsSvc.getExaminerRecords).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        startDate: queryParameter.startDate,
+        endDate: queryParameter.endDate,
+      }),
+      '87654321',
+    );
     expect(JSON.parse(resp.body)).toEqual(gzipSync(
       JSON.stringify([{
         appRef: 1,

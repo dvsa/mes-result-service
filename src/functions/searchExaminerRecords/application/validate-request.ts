@@ -7,6 +7,10 @@ export const DATE_FORMAT_ERR_MSG
 
 const getExaminerRecordsSchema = (): joi.ObjectSchema<ExaminerRecordsQueryParameters> => {
   return joi.object().keys({
+    staffNumber: joi
+      .string()
+      .alphanum()
+      .required(),
     startDate: joi
       .string()
       .regex(DATE_FORMAT)
@@ -17,16 +21,12 @@ const getExaminerRecordsSchema = (): joi.ObjectSchema<ExaminerRecordsQueryParame
       .regex(DATE_FORMAT)
       .required()
       .label(DATE_FORMAT_ERR_MSG),
-    staffNumber: joi
-      .string()
-      .alphanum()
-      .required(),
   });
 };
 
-export const validateExaminerRecordsSchema = (queryParameters: ExaminerRecordsQueryParameters) => {
+export const validateExaminerRecordsSchema = (queryParameters: ExaminerRecordsQueryParameters, staffNumber: string) => {
   return getExaminerRecordsSchema().validate({
-    staffNumber: queryParameters.staffNumber,
+    staffNumber,
     startDate: queryParameters.startDate,
     endDate: queryParameters.endDate,
   });
